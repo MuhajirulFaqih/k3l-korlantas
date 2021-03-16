@@ -1,0 +1,122 @@
+
+//Modal
+.e-modal {
+    .modal-dialog {
+        max-width: 80em;
+    }
+    .modal-content {
+        background: transparent;
+        border: none;
+        margin-top: 2em;
+    }
+    .modal-header {
+        border-radius: 0;
+        border: none;
+        font-family: $fontHeader;
+        font-weight: 50;
+        color: $white;
+        letter-spacing: .2rem;
+        padding: 0;
+        h4 {
+            position: relative;
+            font-size: 1.2em;
+            min-width: 20em;
+            margin-left: 2em;
+            padding: 0.65em 1em;
+            background: $blue;
+            -webkit-box-shadow: $shadowBlue;
+            -moz-box-shadow: $shadowBlue;
+            box-shadow: $shadowBlue;
+            &::before {
+                position: absolute;
+                top: .3em;
+                right: .8em;
+                width: 2em;
+                height: 2px;
+                content: "";
+                border-top: .3em dashed $white;
+            }
+        }
+        &.none {
+            h4::before {
+                content: none;
+            }
+        }
+        .close {
+            opacity: 1;
+            font-size: 2.3em;
+            padding: .1em .35em .2em !important;
+            text-shadow: none;
+            border: 2px solid $content;
+            color: $white;
+            background: $blue;
+            border-radius: 50%;
+            outline: none !important;
+            margin-right: 0;
+            font-weight: 100;
+            position: relative;
+            transition: all .5s;
+            &:not(:disabled):not(.disabled):hover, 
+            &:not(:disabled):not(.disabled):focus {
+                opacity: 1;
+            }
+            &::after {
+                content: '';
+                position: absolute;
+                left: -20%;
+                top: -20%;
+                height: 140%;
+                width: 140%;
+                background: $blue;
+                border-radius: 50%;
+                z-index: -1;
+            }
+        }
+    }
+    .modal-body {
+        border: .2em solid $blue;
+        background: $modalBody;
+        padding: 1rem 2rem;
+        min-height: 50vh;
+        &::before {
+            content: "";
+            position: absolute;
+            padding: .85em;
+            border-radius: 50%;
+            background: $blue;
+            bottom: -.85em;
+            left: -.95em;
+        }
+
+        &::after {
+            right: -1em;
+            top: 30%;
+            content: "";
+            position: absolute;
+            width: 1em;
+            height: 40%;
+            background: $blue;
+        }
+    }
+    &.e-modal-sm {
+        .modal-dialog { max-width: 40em; }
+    }
+    &.e-modal-md {
+        .modal-dialog { max-width: 40em; }
+    }
+    &.e-modal-lg {
+        .modal-dialog { max-width: 50em; }
+    }
+    &.e-modal-xl {
+        .modal-dialog { max-width: 70em; }
+    }
+    &.e-modal-mg {
+        .modal-dialog { max-width: 80vw; }
+    }
+}
+
+.modal-backdrop {
+    opacity: 1;
+    background: rgba(24, 28, 35, 0.52);
+    backdrop-filter: blur(15px);
+}

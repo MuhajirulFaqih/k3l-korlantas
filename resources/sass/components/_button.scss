@@ -1,0 +1,86 @@
+//Button
+.e-btn {
+    border: none;
+    border-radius: 0;
+    outline: none !important;
+    background: $default;
+    color: $dark;
+    box-shadow: none;
+    &:active:focus, &:active, &:focus, 
+    &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+        box-shadow: 0 0 0 0.2rem $shadowDefault !important;
+    }
+    &.e-btn-primary {
+        background: $blue !important;
+        color: $content !important;
+        &:active:focus, &:active, &:focus, 
+        &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+            box-shadow: 0 0 0 0.2rem $shadowBlue !important;
+        }
+    }
+    &.e-btn-secondary {
+        background: $transparentBackground !important;
+        color: $white !important;
+        &:active:focus, &:active, &:focus, 
+        &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+            box-shadow: 0 0 0 0.2rem $shadowTransparentBackground !important;
+        }
+    }
+    &.e-btn-warning {
+        background: $orange !important;
+        color: $white !important;
+        &:active:focus, &:active, &:focus, 
+        &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+            box-shadow: 0 0 0 0.2rem $shadowOrange !important;
+        }
+    }
+    &.e-btn-success {
+        background: $green !important;
+        color: $content !important;
+        &:active:focus, &:active, &:focus, 
+        &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+            box-shadow: 0 0 0 0.2rem $shadowGreen !important;
+        }
+    }
+    &.e-btn-info {
+        background: $ocean !important;
+        color: $content !important;
+        &:active:focus, &:active, &:focus, 
+        &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+            box-shadow: 0 0 0 0.2rem $shadowOcean !important;
+        }
+    }
+    &.e-btn-danger {
+        background: $red !important;
+        color: $content !important;
+        &:active:focus, &:active, &:focus, 
+        &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+            box-shadow: 0 0 0 0.2rem $shadowRed !important;
+        }
+    }
+    &.e-btn-dark {
+        background: $dark !important;
+        color: $content !important;
+        &:active:focus, &:active, &:focus, 
+        &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+            box-shadow: 0 0 0 0.2rem $shadowDark !important;
+        }
+    }
+    &.e-btn-light {
+        background: $content !important;
+        color: $dark !important;
+        &:active:focus, &:active, &:focus, 
+        &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+            box-shadow: 0 0 0 0.2rem $shadowContent !important;
+        }
+    }
+    &.e-btn-sm {
+        min-width: 1em;
+    }
+    &.e-btn-md {
+        min-width: 3em;
+    }
+    &.e-btn-lg {
+        min-width: 5em;
+    }
+}

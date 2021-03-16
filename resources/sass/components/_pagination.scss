@@ -1,0 +1,53 @@
+//Pagination
+.e-pagination {
+    li {
+        padding: 0 0.1em;
+    }
+    
+    .page-link {
+        text-align: center;
+        min-width: 2.5em;
+        color: $red;
+        border: none;
+        background: transparent;
+        border-radius: 6px;
+    
+        &:hover, &:active, &:focus {
+            color: $white;
+            box-shadow: none;
+            background: $red;
+        }
+    }
+    .page-item {
+        &.active .page-link {
+            background-color: $blue;
+            border-color: $blue;
+            border-radius: 0.3em;
+    
+            &:active, &:focus, &:hover {
+                outline: 0 !important;
+                box-shadow: none !important;
+                background-color: $blue;
+            }
+        }
+    
+        &.disabled .page-link {
+            color: $ocean;
+            pointer-events: none;
+            cursor: auto;
+            padding: 0.5rem 1rem;
+            background-color: transparent;
+            border-color: transparent;
+        }
+    
+        &:first-child .page-link {
+            border-top-left-radius: 0.3em !important;
+            border-bottom-left-radius: 0.3em !important;
+        }
+        
+        &:last-child .page-link {
+            border-top-right-radius: 0.3em !important;
+            border-bottom-right-radius: 0.3em !important;
+        }
+    }
+}

@@ -1,0 +1,18 @@
+.e-slider {
+    margin: 1em 0;
+    &.e-slider-primary {
+        .vue-slider-rail {
+            background: $content;
+        }
+        .vue-slider-process {
+            background-color: $blue;
+        }
+        .vue-slider-dot-handle {
+            background-color: $blue;
+        }
+        .vue-slider-dot-tooltip-inner,.vue-slider-dot-tooltip-inner-bottom {
+            background: $blue;
+            border-color: $blue;
+        }
+    }
+}

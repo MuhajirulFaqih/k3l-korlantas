@@ -1,0 +1,7 @@
+//Radio
+.e-radio .custom-control-input:checked~.custom-control-label::before,
+.e-radio .custom-control-input:checked~.custom-control-label::after {
+    background-color: $blue;
+    border-radius: 50%;
+    box-shadow: none !important;
+}

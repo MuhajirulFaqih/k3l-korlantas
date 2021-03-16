@@ -1,0 +1,29 @@
+//Alert
+.e-alert {
+    border-radius: .65em;
+    padding: .55em .85em;
+    display: inline-block;
+    font-size: .85em;
+    background: $white;
+    color: $content;
+    &.e-alert-success {
+        color: $white !important;
+        background: $green !important;
+    }
+    &.e-alert-info {
+        color: $white !important;
+        background: $ocean !important;
+    }
+    &.e-alert-warning {
+        color: $white !important;
+        background: $orange !important;
+    }
+    &.e-alert-danger {
+        color: $white !important;
+        background: $red !important;
+    }
+    &.e-alert-primary {
+        color: $white !important;
+        background: $primary !important;
+    }
+}

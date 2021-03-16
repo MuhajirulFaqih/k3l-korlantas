@@ -1,0 +1,114 @@
+.leftbar-outline {
+    position: fixed;
+    width: 9em;
+    height: 100vh;
+    z-index: 101;
+    left: 0;
+    top: 0;
+    font-family: $fontHeader;
+    font-size: .9em;
+}
+
+.leftbar {
+    position: relative;
+    list-style: none;
+    width: 100%;
+    height: 100%;
+    background: #263040;
+    box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+    padding: 0;
+    padding-bottom: 5em;
+    > li {
+        z-index: 102;
+        cursor: pointer;
+        > div {
+            position: relative;
+            text-align: center;
+            padding: .5em 0em; 
+            margin-bottom: 2em;
+            user-select: none;
+            .phospor {
+                font-size: 2em;
+                margin-bottom: .35em;
+            }
+            span {
+                display: block;
+            }
+            .circle {
+                display: block;
+                position: absolute;
+                width: 1em;
+                height: 1em;
+                border-radius: 1em;
+                top: 0; 
+                right: 1em;
+                &.circle-primary {
+                    background: $blue;
+                }
+                &.circle-success {
+                    background: $green;
+                }
+                &.circle-danger {
+                    background: $red;
+                }
+            }
+        }
+        &.leftbar-header {
+            text-align: center;
+            font-size: 1.25em;
+            padding: .85em 0;
+            &:hover {
+                color: $content;
+            }
+        }
+        .leftbar-sub {
+            position: absolute;
+            display: none;
+            left: 100%;
+            top: 0;
+            list-style: none;
+            padding: 0;
+            padding-top: 1.5em;
+            width: 17em;
+            height: 100vh;
+            background: rgba(24, 28, 35, 0.52);
+            backdrop-filter: blur(11px);
+            transition: all .5s;
+            li {
+                padding: .65em 1.8em;
+                > span {
+                    display: inline-block;
+                    margin-left: .75em;
+                }
+                .phospor {
+                    font-size: 1.65em;
+                }
+                &.leftbar-sub-header {
+                    font-size: 1.2em;
+                    padding-left: 1em;
+                    padding-right: 1em;
+                }
+            }
+        }
+        &.active {
+            > div > .phospor {
+                color: $blue;
+            }
+        }
+        &.open {
+            > div > .phospor {
+                color: $blue;
+            }
+            .leftbar-sub {
+                display: block;
+            }
+        }
+    }
+}
+.leftbar-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 103;
+}

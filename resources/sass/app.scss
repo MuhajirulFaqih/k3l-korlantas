@@ -1,0 +1,77 @@
+$theme-map: null;
+
+@import '~bootstrap';
+@import '~bootstrap-vue/src/index.scss';
+@import '~vue-toast-notification/dist/theme-sugar.css';
+@import '~vue-multiselect/dist/vue-multiselect.min.css';
+@import '~vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css';
+@import '_variables.scss';
+@import 'components/_main.scss';
+@import 'monit/_main.scss';
+
+:root { font-size: 14px; }
+
+body {
+    font-family: $fontBody;
+    color: $content;
+    background: $dark;
+}
+
+* {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+a { outline: none !important; }
+a:hover { 
+    color: $darkBlue;
+    text-decoration: none; 
+}
+
+div { word-wrap: break-word; }
+.semi-bold { font-weight: 600; }
+
+h1 { font-size: 3.5rem !important }
+h2 { font-size: 2.5rem !important }
+h3 { font-size: 1.8rem !important }
+h4 { font-size: 1.3rem !important }
+h5 { font-size: 1.2rem !important }
+h6 { font-size: 1rem !important }
+
+//Scrollable
+.ps__thumb-y {
+    background-color: $blue;
+}
+.ps__rail-y {
+    background: rgba(255, 255, 255, 0) !important;
+    &:hover, &:focus, &.ps--clicking {
+        .ps__thumb-y {
+            width: 6px;
+            background-color: $blue;
+        }
+    }
+}
+
+
+.header {
+    font-family: $fontHeader;
+    font-weight: bold;
+    line-height: 1.6;
+}
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+}
+
+@media (min-width: 768px) { 
+    @import '_md.scss';
+}
+
+@media (min-width: 992px) {
+    @import '_sm.scss';
+}

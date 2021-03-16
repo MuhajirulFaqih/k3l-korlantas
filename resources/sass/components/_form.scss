@@ -1,0 +1,46 @@
+//Form
+
+.e-form, .e-form:hover, .e-form:focus, .e-form:active,
+.mx-input, .mx-input:hover, .mx-input:focus, .mx-input:active {
+    background: #2D3457 !important;
+    border: 0.08em solid #777777 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: $white !important;
+    &:focus {
+        border-color: $blue !important;
+    }
+    &.light {
+        background: #353D64;
+    }
+    .custom-file-label {
+        background: transparent !important;
+        border: transparent !important;
+        border-radius: 0 !important;
+        .form-file-text {
+            color: $white;
+        }
+        &::after {
+            border-radius: 0 !important;
+            background: $blue !important;
+            color: $white;
+        }
+    }
+
+    &::-webkit-input-placeholder {
+        color:#adadad;
+    }
+    
+    &::-moz-placeholder {
+        color:#adadad;
+        opacity:  1;
+    }
+
+    &::-ms-input-placeholder {
+        color: #adadad;
+    }
+    
+    &::placeholder {
+        color:#adadad;
+    }
+}

@@ -1,0 +1,42 @@
+//Checkbox
+
+.e-checkbox {
+    cursor: pointer;
+    box-shadow: none;
+    outline: none;
+    margin-bottom: 0.7em;
+    .custom-control-input {
+        cursor: pointer;
+        width: 2rem;
+        height: 2rem;
+    }
+    .custom-control-label {
+        cursor: pointer;
+        padding: 0.15em 0.6em;
+    }
+    .custom-control-label::before {
+        cursor: pointer;
+        padding: 0.6em;
+        border: 0.1em solid #777777;
+        background: transparent;
+        border-radius: 0;
+    }
+    .custom-control-label::after {
+        cursor: pointer;
+        width: 1.4rem;
+        height: 1.4rem;
+    }
+    .custom-control-input:focus ~ .custom-control-label::before {
+        box-shadow: none;
+    }
+    .custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
+        border-color: #777777;
+    }
+    .custom-control-input:checked ~ .custom-control-label::before {
+        border-color: $blue;
+        background: transparent;
+    }
+    .custom-control-input:checked ~ .custom-control-label::after {
+        background: url('/assets/check.png') no-repeat 50%/50% 50%;
+    }
+}

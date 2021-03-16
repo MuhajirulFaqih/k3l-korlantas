@@ -1,0 +1,17 @@
+//Tab
+.e-tab {
+    .nav-link {
+        color: $white;
+        &:hover {
+            border-color: #777777;
+        }
+    }
+    .nav-link.active, .nav-item.show .nav-link {
+        color: $white;
+        background-color: transparent;
+        border-color: #777777;
+    }
+    .nav-item {
+        text-transform: capitalize;
+    }
+}

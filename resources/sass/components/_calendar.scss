@@ -1,0 +1,15 @@
+//Calendar
+.mx-btn { outline: none !important; }
+
+.mx-calendar-content .cell.active { background: $blue; }
+
+.mx-datepicker-range { width: 100% !important; }
+
+.mx-icon-calendar {
+    right: unset !important;
+    left: 8px;
+}
+
+.mx-input, .mx-input:hover, .mx-input:focus, .mx-input:active {
+    padding-left: 2.5em !important;
+}

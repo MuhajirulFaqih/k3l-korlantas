@@ -1,0 +1,20 @@
+//Popover
+
+.e-popover {
+    max-width: 100%;
+    width: 45em;
+    border: none !important;
+    .popover-header {
+        background: #102039;
+        color: $white;
+        border: none !important;
+    }
+    .popover-body {
+        color: $white;
+        background: #262F5C;
+    }
+
+    .arrow:after {
+        border-right-color: #262F5C !important;
+    }
+}
