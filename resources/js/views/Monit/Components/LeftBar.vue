@@ -207,10 +207,10 @@
             <div>
                 <b-row>
                     <b-col cols="6 pr-lg-0">
-                        <button class="e-btn e-btn-primary btn btn-block">-</button>
+                        <button @click="zoomOut" class="e-btn e-btn-primary btn btn-block"><h4 class="mb-0">-</h4></button>
                     </b-col>
                     <b-col cols="6 pl-lg-0">
-                        <button class="e-btn e-btn-primary btn btn-block">+</button>
+                        <button @click="zoomIn" class="e-btn e-btn-primary btn btn-block"><h4 class="mb-0">+</h4></button>
                     </b-col>
                 </b-row>
             </div>
@@ -263,40 +263,50 @@ export default {
         toggleSub (menu) {
             this.openMenu = this.openMenu == menu ? '' : menu
         },
+        zoomIn () {
+            this.$parent.zoom++
+        },
+        zoomOut () {
+            this.$parent.zoom--
+        },
         addLabelMaps () {
-            let mapsOptions = this.$parent.mapsOptions.styles
-            let indexMapsOptions = mapsOptions.findIndex(v => v.elementType == 'labels' && v.featureType == 'poi')
-            if(indexMapsOptions <= -1) {
-                mapsOptions.push({
-                    featureType: "poi",
-                    elementType: "labels",
-                    stylers: [{ visibility: "off" }]
-                })
+            var presetLabel = {
+                featureType: "poi",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }]
             }
+            this.$parent.darkStyle.push(presetLabel)
+            this.$parent.lightStyle.push(presetLabel)
         },
         removeLabelMaps () {
-            let mapsOptions = this.$parent.mapsOptions.styles
-            let indexMapsOptions = mapsOptions.findIndex(v => v.elementType == 'labels' && v.featureType == 'poi')
-            mapsOptions.splice(indexMapsOptions, 1)
+            var darkStyle = this.$parent.darkStyle
+            var indexDarkStyle = darkStyle.findIndex(v => v.elementType == 'labels' && v.featureType == 'poi')
+            darkStyle.splice(indexDarkStyle, 1)
+            
+            var lightStyle = this.$parent.lightStyle
+            var indexLightStyle = lightStyle.findIndex(v => v.elementType == 'labels' && v.featureType == 'poi')
+            lightStyle.splice(indexLightStyle, 1)
         },
         addGeometryMaps () {
-            let mapsOptions = this.$parent.mapsOptions.styles
-            let indexMapsOptions = mapsOptions.findIndex(v => v.elementType == 'road' && v.featureType == 'geometry' && v.stylers[0].visibility == 'off')
-            if(indexMapsOptions <= -1) {
-                mapsOptions.push({
-                    featureType: "road",
-                    elementType: "geometry",
-                    stylers: [{ visibility: "off" }]
-                })
+            var presetLabel = {
+                featureType: "road",
+                elementType: "geometry",
+                stylers: [{ visibility: "off" }]
             }
+            this.$parent.darkStyle.push(presetLabel)
+            this.$parent.lightStyle.push(presetLabel)
         },
         removeGeometryMaps () {
-            let mapsOptions = this.$parent.mapsOptions.styles
-            let indexMapsOptions = mapsOptions.findIndex(v => v.elementType == 'geometry' && v.featureType == 'road' && v.stylers[0].visibility == 'off')
-            mapsOptions.splice(indexMapsOptions, 1)
+            var darkStyle = this.$parent.darkStyle
+            var indexDarkStyle = darkStyle.findIndex(v => v.elementType == 'geometry' && v.featureType == 'road' && v.stylers[0].visibility == 'off')
+            darkStyle.splice(indexDarkStyle, 1)
+            
+            var lightStyle = this.$parent.lightStyle
+            var indexLightStyle = lightStyle.findIndex(v => v.elementType == 'geometry' && v.featureType == 'road' && v.stylers[0].visibility == 'off')
+            lightStyle.splice(indexLightStyle, 1)
         },
         addTrafficMaps () {
-            let maps = this.$parent.$refs.maps
+            var maps = this.$parent.$refs.maps
             maps.$mapPromise.then((map) => {
                 this.trafficLayer = new google.maps.TrafficLayer();
                 this.trafficLayer.setMap(map);
@@ -324,11 +334,10 @@ export default {
     watch: {
         darkMode (val) {
             this.$parent.mapsOptions.styles = val ? this.$parent.darkStyle : this.$parent.lightStyle
-            this.label ? this.removeLabelMaps() : this.addLabelMaps()
-            this.jenisPeta == 'satellite' ? this.addGeometryMaps() : this.removeGeometryMaps()
         },
         label (val) {
             val ? this.removeLabelMaps() : this.addLabelMaps()
+            this.$parent.mapsOptions.styles = this.darkMode ? this.$parent.darkStyle : this.$parent.lightStyle
         },
         traffic (val) {
             val ? this.addTrafficMaps() : this.removeTrafficMaps()
@@ -349,6 +358,8 @@ export default {
                     this.$parent.mapsOptions.mapTypeId = 'hybrid'
                     break;
             }
+            
+            this.$parent.mapsOptions.styles = this.darkMode ? this.$parent.darkStyle : this.$parent.lightStyle
         },
         hotspot(val) {
             this.$parent.$refs.rightbar.hotspot = val
