@@ -17,6 +17,13 @@ body {
     background: $dark;
 }
 
+.light-theme {
+    body {
+        color: $contentLight;
+        background: $white;
+    }
+}
+
 * {
     -webkit-appearance: none;
     -moz-appearance: none;

@@ -2,6 +2,7 @@
 .e-table {
     th,td {
         padding: 0.75rem;
+        outline: none !important;
     }
     td {
         color: $white;
@@ -19,6 +20,21 @@
             font-weight: 100;
             font-size: 0.9em;
             letter-spacing: 0.1em;
+        }
+    }
+}
+
+.light-theme {
+    .e-table {
+        td {
+            color: $contentLight;
+            border-bottom-color: #8790a0 !important;
+        }
+        thead {
+            tr > th {
+                background: #8a93a2;
+                color: $contentLight;
+            }
         }
     }
 }

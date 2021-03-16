@@ -334,6 +334,7 @@ export default {
     watch: {
         darkMode (val) {
             this.$parent.mapsOptions.styles = val ? this.$parent.darkStyle : this.$parent.lightStyle
+            this.$parent.toggleTheme(val)
         },
         label (val) {
             val ? this.removeLabelMaps() : this.addLabelMaps()

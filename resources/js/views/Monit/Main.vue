@@ -1,5 +1,5 @@
 <template>
-    <div class="monit dark-theme">
+    <div class="monit">
         <router-view ref="main"></router-view>
     </div>
 </template>
@@ -162,6 +162,16 @@ export default {
                 fullscreenControl: false,
                 clickableIcons: false
             },
+        }
+    },
+    methods: {
+        toggleTheme (theme) {
+            var bodyTag = document.getElementsByTagName('body')[0]
+            if(!theme) {
+                bodyTag.classList.add('light-theme');
+            } else {
+                bodyTag.classList.remove('light-theme');
+            }
         }
     }
 }

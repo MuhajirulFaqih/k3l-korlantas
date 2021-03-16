@@ -60,3 +60,15 @@
         }
     }
 }
+
+.light-theme {
+    .bottombar {
+        background: rgba(218, 223, 229, 0.49);
+        .bottombar-menu {
+            span {
+                font-weight: 500;
+                color: $contentLight;
+            }
+        }
+    }
+}

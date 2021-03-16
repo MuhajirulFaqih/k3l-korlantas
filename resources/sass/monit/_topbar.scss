@@ -26,11 +26,17 @@
             .topbar-widget-icon {
                 background: $purple; 
             }
+            .topbar-body::after {
+                border-top: .3em dashed $purple;
+            }
         }
         &.topbar-widget-blue {
             border-color: $blue;
             .topbar-widget-icon {
                 background: $blue; 
+            }
+            .topbar-body::after {
+                border-top: .3em dashed $blue;
             }
         }
         &.topbar-widget-ocean {
@@ -38,11 +44,17 @@
             .topbar-widget-icon {
                 background: $ocean;
             }
+            .topbar-body::after {
+                border-top: .3em dashed $ocean;
+            }
         }
         &.topbar-widget-aqua {
             border-color: $aqua;
             .topbar-widget-icon {
                 background: $aqua; 
+            }
+            .topbar-body::after {
+                border-top: .3em dashed $aqua;
             }
         }
         .topbar-widget-icon {
@@ -55,6 +67,7 @@
             }
         }
         .topbar-body {
+            position: relative;
             width: 75%;
             float: right;
             padding: 1em;
@@ -62,6 +75,59 @@
             span {
                 font-size: 1.85em;
             }
+            
+            &::after {
+                position: absolute;
+                bottom: .3em;
+                right: .8em;
+                width: 2em;
+                height: 2px;
+                content: "";
+            }
         }
     }
+}
+
+.light-theme {
+    .topbar {
+        color: $white;
+        .topbar-widget {
+            &.topbar-widget-purple  {
+                background: $purple;
+                .topbar-widget-icon {
+                    background: #8B6DE4; 
+                }
+                .topbar-body::after {
+                    border-top: .3em dashed #8B6DE4;
+                }
+            }
+            &.topbar-widget-blue {
+                background: $blue;
+                .topbar-widget-icon {
+                    background: #6886F1; 
+                }
+                .topbar-body::after {
+                    border-top: .3em dashed #6886F1;
+                }
+            }
+            &.topbar-widget-ocean {
+                background: $ocean;
+                .topbar-widget-icon {
+                    background: #78B1F3;
+                }
+                .topbar-body::after {
+                    border-top: .3em dashed #78B1F3;
+                }
+            }
+            &.topbar-widget-aqua {
+                background: $aqua;
+                .topbar-widget-icon {
+                    background: #5bd8d2;
+                }
+                .topbar-body::after {
+                    border-top: .3em dashed #5bd8d2;
+                }
+            }
+        }
+    }   
 }

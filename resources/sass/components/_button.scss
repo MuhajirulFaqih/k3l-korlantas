@@ -84,3 +84,15 @@
         min-width: 5em;
     }
 }
+
+.light-theme {
+    .e-btn {
+        &.e-btn-secondary {
+            background: rgba(109, 128, 160, .55) !important;
+            &:active:focus, &:active, &:focus, 
+            &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
+                box-shadow: 0 0 0 0.2rem rgba(109, 128, 160, .44) !important;
+            }           
+        }
+    }
+}

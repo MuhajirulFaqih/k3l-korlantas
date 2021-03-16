@@ -83,6 +83,9 @@ export default {
 
     },
     methods : {
+        toggleTheme (theme) {
+            this.$parent.toggleTheme(theme)
+        },
         loadMarkerHotspot (hotspot) {
             if(hotspot <= 29) {
                 return require('@/assets/hotspot-hijau.png').default

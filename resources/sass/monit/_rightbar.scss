@@ -42,8 +42,9 @@
         height: 85%;
     }
     .rightbar-close {
-        transition: all .2s;
         position: absolute;
+        z-index: 2;
+        transition: all .2s;
         top: 1em;
         left: -1.2em;
         padding: .45em 0.55em;
@@ -63,7 +64,8 @@
             font-family: $fontHeader;
         }
         .rightbar-widget {
-            margin: 1em 0em;
+            position: relative;
+            margin: 2em 0em;
             width: 100%;
             padding: .35em;
             border: 2px solid #3D59ED;
@@ -83,6 +85,58 @@
                 font-size: .9em;
                 color: $white;
             }
+            &::before {
+                content: '';
+                position: absolute;
+                top: -.8em;
+                height: .65em;
+                width: 50%;
+                left: 25%;
+                background: $blue;
+            }
+            &::after {
+                content: '';
+                position: absolute;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                bottom: -.75em;
+                background: $blue;
+                left: 50%;
+                transform: translateX(-50%);
+            }
         }
+    }
+}
+
+.light-theme {
+    .rightbar {
+        background: rgba(224, 228, 234, 0.69);
+        backdrop-filter: blur(11px);
+        color: $contentLight;
+        li {
+            padding: 0 1em;
+            &.rightbar-header {
+                color: $contentLight;
+                font-weight: 500;
+                padding: 0.5em 0 1.35em;
+            }
+            .rightbar-widget {
+                border: none;
+                background: #d2d5dc;
+                padding: 1em;
+                div { color: $blue; }
+                span { color: #616C7C; }
+                p { color: $contentLight; }
+                &::before, &::after {
+                    visibility: hidden;
+                }
+            }
+        }
+    }   
+    .hotspot {
+        background: rgba(224, 228, 234, 0.69);
+        backdrop-filter: blur(11px);
+        color: $contentLight;
     }
 }
