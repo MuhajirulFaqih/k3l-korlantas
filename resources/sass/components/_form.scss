@@ -2,8 +2,8 @@
 
 .e-form, .e-form:hover, .e-form:focus, .e-form:active,
 .mx-input, .mx-input:hover, .mx-input:focus, .mx-input:active {
-    background: #2D3457 !important;
-    border: 0.08em solid #777777 !important;
+    background: rgba(45, 52, 87, 0) !important;
+    border: 0.08em solid #6F809B !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     color: $white !important;
@@ -11,7 +11,7 @@
         border-color: $blue !important;
     }
     &.light {
-        background: #353D64;
+        background: #242D3D;
     }
     .custom-file-label {
         background: transparent !important;
@@ -28,19 +28,34 @@
     }
 
     &::-webkit-input-placeholder {
-        color:#adadad;
+        color: #6F809B;
     }
     
     &::-moz-placeholder {
-        color:#adadad;
+        color: #6F809B;
         opacity:  1;
     }
 
     &::-ms-input-placeholder {
-        color: #adadad;
+        color:  #6F809B;
     }
     
     &::placeholder {
-        color:#adadad;
+        color: #6F809B;
+    }
+}
+
+.e-password {
+    > div { position: relative }
+    .phospor {
+        position: absolute;
+        top: 0.435em;
+        right: 0.55em;
+        font-size: 1.5em;
+        user-select: none;
+        display: none;
+        &.active {
+            display: block;
+        }
     }
 }

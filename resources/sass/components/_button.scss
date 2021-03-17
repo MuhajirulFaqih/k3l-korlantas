@@ -6,6 +6,7 @@
     background: $default;
     color: $dark;
     box-shadow: none;
+    font-size: 1em;
     &:active:focus, &:active, &:focus, 
     &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
         box-shadow: 0 0 0 0.2rem $shadowDefault !important;

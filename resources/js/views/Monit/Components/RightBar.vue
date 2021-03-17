@@ -4,7 +4,11 @@
             <button class="btn e-btn e-btn-primary rightbar-close" @click="toggleMenu">
                 <ph-caret-right class="phospor"/>
             </button>
-            <li class="rightbar-header">Kegiatan</li>
+            <li class="rightbar-header">
+                Kegiatan 
+                <a href="javascript:void(0);" @click="$parent.triggerLogout()" v-b-tooltip.hover title="Logout"
+                class="d-block float-right"><ph-sign-out class="phopsor"/></a>
+            </li>
             <perfect-scrollbar class="h-100">
             <li>
                 <div class="rightbar-widget">

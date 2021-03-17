@@ -8,8 +8,9 @@ $theme-map: null;
 @import '_variables.scss';
 @import 'components/_main.scss';
 @import 'monit/_main.scss';
+@import '_login.scss';
 
-:root { font-size: 14px; }
+:root { font-size: 16px; }
 
 body {
     font-family: $fontBody;

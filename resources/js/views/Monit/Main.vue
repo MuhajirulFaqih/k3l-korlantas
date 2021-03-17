@@ -172,6 +172,9 @@ export default {
             } else {
                 bodyTag.classList.remove('light-theme');
             }
+        },
+        triggerLogout() {
+            this.$parent.logout()
         }
     }
 }

@@ -1,0 +1,165 @@
+.front {
+    position: relative;
+    z-index: 100;
+}
+.logo-login {
+    margin-top: 3em;
+    text-align: center;
+    position: relative;
+    hr.blue-line-small {
+        display: inline-block;
+        left: 50%;
+        top: 10%;
+        transform: translate(-50%, -50%);
+        position: absolute;
+        border-top: 0.15em solid $blue;
+        width: 25em;
+        margin-top: 1.2em;
+        &::before, &::after {
+            position: absolute;
+            display: inline-block;
+            content: "";
+            padding: 0.3em;
+            border-radius: 50%;
+            background: $blue;
+            top: -0.4em;
+        }
+        &::before {
+            right: -0.3em;
+        }
+        &::after {
+            left: -0.3em;
+        }
+    }
+    hr.blue-line-small.bottom {
+        margin-top: 2em;
+        width: 22em;
+    }
+    .logo-box {
+        padding: 0;
+        display: inline-block;
+        position: relative;
+        width: 10em;
+        background: $dark;
+    }
+    img {
+        z-index: 3;
+        position: absolute;
+        width: 3.2em;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        -webkit-filter: $shadowBlue;
+        filter: $shadowBlue;
+    }
+
+    .logo-image {
+        display: inline-block;
+        position: relative;
+        padding: 3em;
+        background: $blue;
+        transform: rotate(45deg);
+        margin-top: -.85em;
+        img {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+    }
+}
+
+.bg-overlay {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 30em;
+    background: rgb(255,255,255);
+    background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,168,168,0) 42%, rgba(255,0,0,0.26) 100%);
+    -webkit-animation: fade 5s ease-in-out infinite;
+	        animation: fade 5s ease-in-out infinite;
+}
+
+.bg-login {
+    position: relative;
+    margin-top: 2em !important;
+    > .col-image {
+        position: relative;
+        background: url('/assets/background.jpeg') no-repeat;
+        background-size: cover;
+        background-position: center;
+        min-height: 30em;
+        width: 100%;
+        &::before {
+            content: "";
+            position: absolute;
+            right: 100%;
+            top: 25%;
+            width: 1em;
+            height: 14.5em;
+            background: $darkBlue;
+        }
+        > .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(23, 33, 81, 0.349);
+            z-index: 2;
+        }
+    }
+    > .col-content {
+        background: #1E2532;
+        padding: 4em 3em;
+        h2 {
+            font-family: $fontHeader;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5em;
+        }
+        h6 {
+            margin-bottom: 1em;
+        }
+    }
+}
+
+.copy {
+    margin-top: 4em;
+}
+
+hr.blue-line {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin: 1.2em 10em 0em;
+    border-top: 0.1em solid $blue;
+    &::before, &::after {
+        position: absolute;
+        display: inline-block;
+        content: "";
+        padding: 0.3em;
+        border-radius: 50%;
+        background: $blue;
+        top: -0.3em;
+    }
+    &::before {
+        right: -0.3em;
+    }
+    &::after {
+        left: -0.3em;
+    }
+}
+
+hr.blue-line.bottom {
+    width: 100%;
+    border-top: 0.1em solid $blue;
+    margin: 1.2em 15em 0em;
+}
+
+//Animation
+ @keyframes fade {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+} 

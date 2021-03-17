@@ -9,56 +9,79 @@
   			:options="mapsOptions"
   			class="e-map"
 		>
-            <div id="marker-kegiatan">
-                <GmapMarker v-for="(indexMarkerKegiatan, keyMarkerKegiatan) in markerKegiatan" :key="`kegiatan-${keyMarkerKegiatan}`" 
-                    :position="{ lat: parseFloat(indexMarkerKegiatan.lat), lng: parseFloat(indexMarkerKegiatan.lng) }"
-                    :icon="require('@/assets/kegiatan.png').default" @click="detailKegiatan(indexMarkerKegiatan)"/>
-            </div>
-            
-            <div id="marker-pengaduan">
-                <GmapMarker v-for="(indexMarkerPengaduan, keyMarkerPengaduan) in markerPengaduan" :key="`kegiatan-${keyMarkerPengaduan}`" 
-                    :position="{ lat: parseFloat(indexMarkerPengaduan.lat), lng: parseFloat(indexMarkerPengaduan.lng) }"
-                    :icon="require('@/assets/pengaduan.png').default" @click="detailPengaduan(indexMarkerPengaduan)"/>
-            </div>
-
-            <div id="marker-kejadian">
-                <GmapMarker v-for="(indexMarkerKejadian, keyMarkerKejadian) in markerKejadian" :key="`kegiatan-${keyMarkerKejadian}`" 
-                    :position="{ lat: parseFloat(indexMarkerKejadian.lat), lng: parseFloat(indexMarkerKejadian.lng) }"
-                    :icon="require('@/assets/kejadian.png').default" @click="detailKejadian(indexMarkerKejadian)"/>
-            </div>
-            
             <div id="marker-darurat">
                 <GmapMarker v-for="(indexMarkerDarurat, keyMarkerDarurat) in markerDarurat" :key="`darurat-${keyMarkerDarurat}`" 
                     :position="{ lat: parseFloat(indexMarkerDarurat.lat), lng: parseFloat(indexMarkerDarurat.lng) }"
-                    :icon="require('@/assets/darurat.png').default" @click="detailKegiatan(indexMarkerDarurat)"/>
+                    :icon="require('@/assets/darurat.png').default" @click="$refs.darurat.detail(indexMarkerDarurat)"/>
             </div>
 
             <div id="marker-hotspot">
                 <GmapMarker v-for="(indexMarkerHotspot, keyMarkerHotspot) in markerHotspot" :key="`hotspot-${keyMarkerHotspot}`" 
                     :position="{ lat: parseFloat(indexMarkerHotspot.lat), lng: parseFloat(indexMarkerHotspot.lng) }"
-                    :icon="loadMarkerHotspot" @click="detailDataHotspot(indexMarkerHotspot)"/>
+                    :icon="loadMarkerHotspot" @click="$refs.hotspot.detail(indexMarkerHotspot)"/>
+            </div>
+
+            <div id="marker-kegiatan">
+                <GmapMarker v-for="(indexMarkerKegiatan, keyMarkerKegiatan) in markerKegiatan" :key="`kegiatan-${keyMarkerKegiatan}`" 
+                    :position="{ lat: parseFloat(indexMarkerKegiatan.lat), lng: parseFloat(indexMarkerKegiatan.lng) }"
+                    :icon="require('@/assets/kegiatan.png').default" @click="$refs.kegiatan.detail(indexMarkerKegiatan)"/>
+            </div>
+            
+            <div id="marker-kejadian">
+                <GmapMarker v-for="(indexMarkerKejadian, keyMarkerKejadian) in markerKejadian" :key="`kegiatan-${keyMarkerKejadian}`" 
+                    :position="{ lat: parseFloat(indexMarkerKejadian.lat), lng: parseFloat(indexMarkerKejadian.lng) }"
+                    :icon="require('@/assets/kejadian.png').default" @click="$refs.kejadian.detail(indexMarkerKejadian)"/>
+            </div>
+
+            <div id="marker-pengaduan">
+                <GmapMarker v-for="(indexMarkerPengaduan, keyMarkerPengaduan) in markerPengaduan" :key="`kegiatan-${keyMarkerPengaduan}`" 
+                    :position="{ lat: parseFloat(indexMarkerPengaduan.lat), lng: parseFloat(indexMarkerPengaduan.lng) }"
+                    :icon="require('@/assets/pengaduan.png').default" @click="$refs.pengaduan.detail(indexMarkerPengaduan)"/>
             </div>
             
             <div id="marker-tps">
                 <GmapMarker v-for="(indexMarkerTps, keyMarkerTps) in markerTps" :key="`hotspot-${keyMarkerTps}`" 
                     :position="{ lat: parseFloat(indexMarkerTps.lat), lng: parseFloat(indexMarkerTps.lng) }"
-                    :icon="require('@/assets/tps.png').default" @click="detailDataHotspot(indexMarkerTps)"/>
+                    :icon="require('@/assets/tps.png').default" @click="$refs.tps.detail(indexMarkerTps)"/>
             </div>
         </GmapMap>
         <RightBar ref="rightbar"/>
         <BottomBar ref="topbar"/>
+
+        <Darurat ref="darurat" />
+        <Hotspot ref="hotspot" />
+        <Kegiatan ref="kegiatan" />
+        <Kejadian ref="kejadian" />
+        <LokasiVital ref="lokasiVital" />
+        <Pengaduan ref="pengaduan" />
+        <Personil ref="personil" />
+        <Tps ref="tps" />
     </div>
 </template>
 
 <script>
 
+import BottomBar from '@/views/Monit/Components/BottomBar'
 import LeftBar from '@/views/Monit/Components/LeftBar'
 import RightBar from '@/views/Monit/Components/RightBar'
 import TopBar from '@/views/Monit/Components/TopBar'
-import BottomBar from '@/views/Monit/Components/BottomBar'
+
+import Darurat from '@/views/Monit/Darurat/Main'
+import Hotspot from '@/views/Monit/Hotspot/Main'
+import Kegiatan from '@/views/Monit/Kegiatan/Main'
+import Kejadian from '@/views/Monit/Kejadian/Main'
+import LokasiVital from '@/views/Monit/LokasiVital/Main'
+import Pengaduan from '@/views/Monit/Pengaduan/Main'
+import Personil from '@/views/Monit/Personil/Main'
+import Tps from '@/views/Monit/Tps/Main'
+
 export default {
     name: 'dashboard',
-    components: { LeftBar, RightBar, TopBar, BottomBar },
+    components: { 
+        BottomBar, LeftBar, 
+        RightBar, TopBar, 
+        Darurat, Hotspot, Kegiatan, Kejadian, LokasiVital, Pengaduan, Personil, Tps 
+    },
     data () {
         return {
             zoom: 15,
@@ -95,33 +118,33 @@ export default {
                 return require('@/assets/hotspot-merah.png').default
             }
         },
-        detailKegiatan (kegiatan) {
+        getDefaultMarker() {
+            this.getMarkerKegiatan()
+            this.getMarkerKejadian()
+            this.getMarkerPengaduan()
+        },
+        getMarkerKegiatan() {
+            axios.get("kegiatan/", { params: { limit: 10 } })
+            .then(({ data: { data }}) => {
+                console.log(data)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        },
+        getMarkerKejadian () {
 
         },
-        detailPengaduan (pengaduan) {
+        getMarkerPengaduan () {
 
         },
-        detailKejadian (kejadian) {
-
-        },
-        detailDarurat (darurat) {
-
-        },
-        detailHotspot (hotspot) {
-
-        },
-        detailPersonil (hotspot) {
-
-        },
-        detailLokasiVital (lokasi) {
-
-        },
-        detailTps (lokasi) {
-
-        },
+        triggerLogout() {
+            this.$parent.triggerLogout()
+        }
     },
     mounted () {
         this.mapsOptions.styles = this.darkStyle
+        this.getDefaultMarker()
     }
 }
 </script>

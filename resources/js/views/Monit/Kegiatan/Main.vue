@@ -49,8 +49,11 @@ export default {
         }
     },
     methods : {
-        showModal() {
+        showModal () {
             this.$refs.kegiatan.show()
+        },
+        detail () {
+            
         },
         providerTable () {
             return [

@@ -18,6 +18,13 @@ window.danaDesa = document.head.querySelector('meta[name="dana-desa"]').content;
 window.mastumapel = document.head.querySelector('meta[name="mastumapel"]').content;
 window.socketPrefix = document.head.querySelector('meta[name="socket-prefix"]').content;
 window.hasVc = document.head.querySelector('meta[name="has-vc"]').content;
+window.clientId = document.head.querySelector('meta[name="cid"]').content;
+window.clientSecret = document.head.querySelector('meta[name="csc"]').content;
+window.induk = document.head.querySelector('meta[name="induk"]').content;
+window.danaDesa = document.head.querySelector('meta[name="dana-desa"]').content;
+window.peneranganSatuan = document.head.querySelector('meta[name="penerangan-satuan"]').content;
+window.visiMisi = document.head.querySelector('meta[name="visi-misi"]').content;
+window.kegiatanBhabin = document.head.querySelector('meta[name="kegiatan-bhabin"]').content;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -38,6 +45,7 @@ try {
  */
 
 window.axios = require('axios');
+window.axios.defaults.baseURL = window.baseUrl + '/api/'
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 

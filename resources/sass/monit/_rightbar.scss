@@ -57,9 +57,8 @@
     li {
         padding: 0 1.5em;
         &.rightbar-header {
-            text-align: center;
             font-size: 1.15em;
-            padding: .85em 0;
+            padding: .85em 2em;
             color: $white;
             font-family: $fontHeader;
         }
@@ -119,7 +118,7 @@
             &.rightbar-header {
                 color: $contentLight;
                 font-weight: 500;
-                padding: 0.5em 0 1.35em;
+                padding: 0.85em 2em 1.35em;
             }
             .rightbar-widget {
                 border: none;
