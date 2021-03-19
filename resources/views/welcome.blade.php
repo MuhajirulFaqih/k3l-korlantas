@@ -21,8 +21,8 @@
         <meta name="mastumapel" content="{{ env('MASTUMAPEL') }}">
         <meta name="socket-prefix" content="{{ env('SOCKET_PREFIX') }}">
         <meta name="has-vc" content="{{ env('HAS_VC', true) }}">
-        <meta name="cid" content="{{ env('CLIENT_ID') }}">
-        <meta name="csc" content="{{ env('CLIENT_SECRET') }}">
+        <meta name="cid" content="{{ env('API_CLIENT_ID') }}">
+        <meta name="csc" content="{{ env('API_CLIENT_SECRET') }}">
         <meta name="app-name" content="{{ env('APP_NAME') }}">
         <meta name="induk" content="{{ env('INDUK') }}">
         <meta name="dana-desa" content="{{ env('DANA_DESA') }}">

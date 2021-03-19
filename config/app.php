@@ -171,9 +171,16 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
+        LaravelFCM\FCMServiceProvider::class,
+        // Schedula\Laravel\PassportSocialite\PassportSocialiteServiceProvider::class,
+        Laravel\Passport\PassportServiceProvider::class,
+        PulkitJalan\Google\GoogleServiceProvider::class,
+        Berkayk\OneSignal\OneSignalServiceProvider::class,
+        // Athasamid\LatLngToTimezone\LatLngToTimezoneServiceProvider::class,
 
     ],
 
@@ -226,6 +233,10 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+
+        'FCM' => LaravelFCM\Facades\FCM::class,
+        'Google' => PulkitJalan\Google\Facades\Google::class,
+        'OneSignal' => Berkayk\OneSignal\OneSignalFacade::class
 
     ],
 

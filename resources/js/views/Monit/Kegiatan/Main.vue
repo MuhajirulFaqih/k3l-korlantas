@@ -6,11 +6,38 @@
             title="Kegiatan">
 	  	<div class="d-block">
 	  		<div class="position-relative mt-4">
+                <b-row>
+                    <b-col cols="9">
+                        <b-pagination
+                            align="right"
+                            class="e-pagination"
+                            :total-rows="totalRows"
+                            v-model="currentPage"
+                            :per-page="perPage" />
+                    </b-col>
+                    <b-col cols="3">
+                        <form @submit.prevent="search">
+                            <b-input-group align="right">
+                                <b-form-input
+                                    align="right"
+                                    class="e-form"
+                                    @keyup="whenSearch"
+                                    v-model="filterDebounced"
+                                    placeholder="Cari judul, tipe, dan waktu kegiatan..."/>
+                                <b-input-group-append>
+                                    <button class="btn e-btn e-btn-primary" type="submit">
+                                        <ph-magnifying-glass class="phospor"/>
+                                    </button>
+                                </b-input-group-append>
+                            </b-input-group>
+                        </form>
+                    </b-col>
+                </b-row>
                 <b-table responsive
                     class="e-table"
-                    ref="tabel"
+                    ref="table"
                     :busy.sync="isBusy"
-                    :items="providerTable"
+                    :items="provider"
                     :fields="tableColumns"
                     :current-page="currentPage"
                     :per-page="perPage"
@@ -20,8 +47,26 @@
                     <template v-slot:cell(index)="data">
                         {{ ((currentPage - 1) * perPage) + data.index + 1 }}.
                     </template>
-                </b-table>
-				<div class="loading">
+			        <template v-slot:cell(kuat)="data">
+			        	{{ data.item.kuat_pers == '' || data.item.kuat_pers == null ? 0 : data.item.kuat_pers }} Personil
+			    	</template>
+		            <template v-slot:cell(nama)="data">
+				      	{{ data.item.user.nama }} <br/> {{ data.item.user.jabatan }}
+				    </template>
+				    <template v-slot:cell(aksi)="data">
+				    	<div class="dropdown-container">
+                            <b-dropdown text="Pilih" class="e-btn-dropdown" boundary>
+                                <b-dropdown-item @click="detail(data.item, 'master')">
+                                    <ph-note class="phospor"/> Detail
+                                </b-dropdown-item>
+                                <b-dropdown-item @click="lokasi(data.item)">
+                                    <ph-map-pin class="phospor"/> Lihat lokasi
+                                </b-dropdown-item>
+                            </b-dropdown>
+                        </div>
+				    </template>
+			    </b-table>
+				<div class="loading" v-show="isBusy">
 			        <b-spinner variant="primary"></b-spinner>
 			    </div>
 	      	</div>
@@ -30,6 +75,9 @@
 </template>
 
 <script>
+import { format, formatISO, parseISO } from 'date-fns'
+import { debounce } from 'lodash'
+import id from 'date-fns/locale/id'
 export default {
     name: 'kegiatan',
     data () {
@@ -43,9 +91,19 @@ export default {
             sortBy: 'id',
             sortDesc: true,
             tableColumns: [
-                { key: 'index', label: 'No.'},
-                { key: 'tes', label: 'Tes', sortable: true},
-            ],
+                { key: 'index', label: 'No' },
+                { key: 'judul', label: 'Judul', thStyle: { width: '25%' }, sortable: true },
+                { key: 'tipe.tipe', label: 'Tipe', sortable: true },
+                { key: 'kuat', label: 'Kuat pers', sortable: true },
+                { 
+                    key: 'w_kegiatan', label: 'Waktu kegiatan', 
+                    formatter: v => format(parseISO(v), 'd MMMM yyyy HH:mm:ss', {locale: id}) ,
+                    sortable: true,
+                },
+                { key: 'user.nrp', label: 'Nrp', sortable: true },
+                { key: 'nama', label: 'Nama', sortable: true },
+                { key: 'aksi', label: 'Aksi' },
+            ]
         }
     },
     methods : {
@@ -55,11 +113,63 @@ export default {
         detail () {
             
         },
-        providerTable () {
-            return [
-                { tes: 'Tes' }
-            ]
-        }
-    }
+        refreshTable () {
+            this.totalRows > this.perPage ? 
+            (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
+            : this.$refs.table.refresh()
+        },
+        provider (ctx) {
+            let sortBy
+            switch(ctx.sortBy) {
+                case 'judul':
+                    sortBy = 'judul'
+                    break
+                case 'tipe.tipe':
+                    sortBy = 'tipe_laporan'
+                    break
+                case 'kuat':
+                    sortBy = 'kuat_pers'
+                    break
+                case 'w_kegiatan':
+                    sortBy = 'waktu_kegiatan'
+                    break
+                case 'user.nrp':
+                    sortBy = 'id_user'
+                    break
+                case 'nama':
+                    sortBy = 'id_user'
+                    break
+                default:
+                    sortBy = 'waktu_kegiatan'
+            }
+
+            let payload = {
+                page: ctx.currentPage,
+                filter: ctx.filter === '' ? null : ctx.filter,
+                sort: sortBy + ':' + (ctx.sortDesc ? 'desc' : 'asc'),
+            }
+
+            return axios.get('kegiatan', {
+                    params: payload,
+            }).then(({ data: { data, meta: { pagination }}}) => {
+                this.totalRows = pagination.total
+                this.perPage = pagination.per_page
+                this.currentPage = pagination.current_page
+                return data
+            }).catch(error => {
+                this.totalRows = 0
+                return []
+            })
+        },
+        search: debounce(function () {
+            this.filter = this.filterDebounced
+            this.currentPage = 1
+        }, 500),
+        whenSearch () {
+            if(this.filterDebounced == '') {
+                this.search()
+            }
+        },
+    },
 }
 </script>

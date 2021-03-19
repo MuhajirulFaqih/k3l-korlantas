@@ -86,6 +86,24 @@
     }
 }
 
+.e-btn-dropdown {
+    .btn, .btn:hover, .btn:focus, .btn:active, 
+    .btn:not(:disabled):not(.disabled):active:focus, 
+    .btn:not(:disabled):not(.disabled).active:focus {
+        background: $blue;
+        padding: 0.25rem 1.5rem;
+        color: $white;
+        letter-spacing: 0.1em;
+        border-radius: 0 !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    &.show > .btn.dropdown-toggle {
+        background: $darkBlue !important;
+    }
+}
+
 .light-theme {
     .e-btn {
         &.e-btn-secondary {

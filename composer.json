@@ -9,11 +9,20 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "apility/laravel-fcm": "^1.4",
+        "berkayk/onesignal-laravel": "^1.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.2",
+        "islamic-network/prayer-times": "^1.0",
+        "laravel-notification-channels/fcm": "^2.2",
         "laravel/framework": "^8.12",
-        "laravel/tinker": "^2.5"
+        "laravel/helpers": "^1.4",
+        "laravel/passport": "^10.1",
+        "laravel/tinker": "^2.5",
+        "maatwebsite/excel": "^3.1",
+        "pulkitjalan/google-apiclient": "^4.1",
+        "spatie/laravel-fractal": "^5.8",
+        "webklex/laravel-imap": "^2.4"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

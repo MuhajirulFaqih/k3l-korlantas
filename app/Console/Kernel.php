@@ -25,6 +25,16 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        if (env("USE_EMAIL", false)){
+            if (env('EMAIL_URL', null)){
+                $schedule->command("email:grabapi")->hourly();
+            } else {
+                $schedule->command("email:grab")->hourly();
+            }
+        }
+
+        //Cronjob notif kejadian
+        $schedule->command('kejadian:broadcast')->everyFiveMinutes();
     }
 
     /**

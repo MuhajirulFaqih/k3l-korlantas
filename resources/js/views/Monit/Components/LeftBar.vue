@@ -102,13 +102,13 @@
                         <div @click="openMenu = ''"><ph-x class="phospor"/></div>
                     </li>
                     <li class="leftbar-sub-header">Kegiatan</li>
-                    <li>
-                        <button class="e-btn leftbar-sub-icon btn">
+                    <li @click="toggleKegiatan">
+                        <button :class="`e-btn ${kegiatanStatus ? `e-btn-primary` : `e-btn-secondary`} leftbar-sub-icon btn`">
                             <ph-eye class="phospor" />
                         </button>
                         <span>Tampil</span>
                     </li>
-                    <li>
+                    <li v-if="kegiatanStatus">
                         Menampilkan
                         <vue-slider
                             class="e-slider e-slider-primary"
@@ -129,13 +129,13 @@
                         <div @click="openMenu = ''"><ph-x class="phospor"/></div>
                     </li>
                     <li class="leftbar-sub-header">Pengaduan</li>
-                    <li>
-                        <button class="e-btn leftbar-sub-icon btn">
+                    <li @click="togglePengaduan">
+                        <button :class="`e-btn ${pengaduanStatus ? `e-btn-primary` : `e-btn-secondary`} leftbar-sub-icon btn`">
                             <ph-eye class="phospor" />
                         </button>
                         <span>Tampil</span>
                     </li>
-                    <li>
+                    <li v-if="pengaduanStatus">
                         Menampilkan
                         <vue-slider
                             class="e-slider e-slider-primary"
@@ -156,13 +156,13 @@
                         <div @click="openMenu = ''"><ph-x class="phospor"/></div>
                     </li>
                     <li class="leftbar-sub-header">Kejadian</li>
-                    <li>
-                        <button class="e-btn leftbar-sub-icon btn">
+                    <li @click="toggleKejadian">
+                        <button :class="`e-btn ${kejadianStatus ? `e-btn-primary` : `e-btn-secondary`} leftbar-sub-icon btn`">
                             <ph-eye class="phospor" />
                         </button>
                         <span>Tampil</span>
                     </li>
-                    <li>
+                    <li v-if="kejadianStatus">
                         Menampilkan
                         <vue-slider
                             class="e-slider e-slider-primary"
@@ -201,7 +201,7 @@
             </li>
         </ul>
         <div class="leftbar-bottom">
-            <div>
+            <div v-if="$parent.markerSingleShow">
                 <button class="e-btn e-btn-warning btn btn-block">Refresh Data</button>
             </div>
             <div>
@@ -221,6 +221,7 @@
 <script>
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
+import { debounce } from 'lodash'
 export default {
     name: 'leftbar',
     components: { VueSlider },
@@ -232,8 +233,11 @@ export default {
             traffic: false,
             jenisPeta: 'default',
             trafficLayer: null,
+            kegiatanStatus: true,
             kegiatan: 10,
+            pengaduanStatus: true,
             pengaduan: 10,
+            kejadianStatus: true,
             kejadian: 10,
             hotspot: false,
             optionsSlider: {
@@ -264,10 +268,16 @@ export default {
             this.openMenu = this.openMenu == menu ? '' : menu
         },
         zoomIn () {
-            this.$parent.zoom++
+            var maps = this.$parent.$refs.maps
+            maps.$mapPromise.then((map) => {
+                map.setZoom(map.getZoom() + 1)
+            });
         },
         zoomOut () {
-            this.$parent.zoom--
+            var maps = this.$parent.$refs.maps
+            maps.$mapPromise.then((map) => {
+                map.setZoom(map.getZoom() - 1)
+            });
         },
         addLabelMaps () {
             var presetLabel = {
@@ -329,7 +339,16 @@ export default {
         },
         triggerHotspot () {
             this.hotspot = !this.hotspot
-        }
+        },
+        toggleKegiatan (val) {
+            this.kegiatanStatus = this.$parent.kegiatanStatus = !this.kegiatanStatus
+        },
+        togglePengaduan (val) {
+            this.pengaduanStatus = this.$parent.pengaduanStatus = !this.pengaduanStatus
+        },
+        toggleKejadian (val) {
+            this.kejadianStatus = this.$parent.kejadianStatus = !this.kejadianStatus
+        },
     },
     watch: {
         darkMode (val) {
@@ -364,7 +383,34 @@ export default {
         },
         hotspot(val) {
             this.$parent.$refs.rightbar.hotspot = val
-        }
+        },
+        kegiatanStatus (val) {
+            var kegiatan = this.$parent.markerKegiatan;
+            if(val) {
+                kegiatan.length == 0 ? this.$parent.getMarkerKegiatan() : ''
+            }   
+        },
+        pengaduanStatus (val) {
+            var pengaduan = this.$parent.markerPengaduan;
+            if(val) {
+                pengaduan.length == 0 ? this.$parent.getMarkerPengaduan() : ''
+            }
+        },
+        kejadianStatus (val) {
+            var kejadian = this.$parent.markerKejadian;
+            if(val) {
+                kejadian.length == 0 ? this.$parent.getMarkerKejadian() : ''
+            }
+        },
+        kegiatan :debounce(function (val, old) {
+            this.$parent.getMarkerKegiatan()
+        }, 500),
+        pengaduan :debounce(function (val, old) {
+            this.$parent.getMarkerPengaduan()
+        }, 500),
+        kejadian :debounce(function (val, old) {
+            this.$parent.getMarkerKejadian()
+        }, 500),
     }
 }
 </script>

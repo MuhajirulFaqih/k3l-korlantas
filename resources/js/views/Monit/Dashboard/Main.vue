@@ -21,19 +21,19 @@
                     :icon="loadMarkerHotspot" @click="$refs.hotspot.detail(indexMarkerHotspot)"/>
             </div>
 
-            <div id="marker-kegiatan">
+            <div id="marker-kegiatan" v-if="kegiatanStatus">
                 <GmapMarker v-for="(indexMarkerKegiatan, keyMarkerKegiatan) in markerKegiatan" :key="`kegiatan-${keyMarkerKegiatan}`" 
                     :position="{ lat: parseFloat(indexMarkerKegiatan.lat), lng: parseFloat(indexMarkerKegiatan.lng) }"
                     :icon="require('@/assets/kegiatan.png').default" @click="$refs.kegiatan.detail(indexMarkerKegiatan)"/>
             </div>
             
-            <div id="marker-kejadian">
+            <div id="marker-kejadian" v-if="kejadianStatus">
                 <GmapMarker v-for="(indexMarkerKejadian, keyMarkerKejadian) in markerKejadian" :key="`kegiatan-${keyMarkerKejadian}`" 
                     :position="{ lat: parseFloat(indexMarkerKejadian.lat), lng: parseFloat(indexMarkerKejadian.lng) }"
                     :icon="require('@/assets/kejadian.png').default" @click="$refs.kejadian.detail(indexMarkerKejadian)"/>
             </div>
 
-            <div id="marker-pengaduan">
+            <div id="marker-pengaduan" v-if="pengaduanStatus">
                 <GmapMarker v-for="(indexMarkerPengaduan, keyMarkerPengaduan) in markerPengaduan" :key="`kegiatan-${keyMarkerPengaduan}`" 
                     :position="{ lat: parseFloat(indexMarkerPengaduan.lat), lng: parseFloat(indexMarkerPengaduan.lng) }"
                     :icon="require('@/assets/pengaduan.png').default" @click="$refs.pengaduan.detail(indexMarkerPengaduan)"/>
@@ -100,10 +100,14 @@ export default {
             markerPengawalan: [],
             markerLokasiVital: [],
             markerTps: [],
+            markerSingleShow: false,
+            kegiatanStatus: true, //Belongs to leftbar
+            pengaduanStatus: true, //Belongs to leftbar
+            kejadianStatus: true, //Belongs to leftbar
         }
     },
     computed: {
-
+        
     },
     methods : {
         toggleTheme (theme) {
@@ -124,21 +128,33 @@ export default {
             this.getMarkerPengaduan()
         },
         getMarkerKegiatan() {
-            axios.get("kegiatan/", { params: { limit: 10 } })
+            axios.get("kegiatan/", { params: { limit: this.$refs.leftbar.kegiatan, sort: 'created_at:desc' } })
             .then(({ data: { data }}) => {
-                console.log(data)
+                this.markerKegiatan = data
             })
             .catch(error => {
                 console.log(error)
             })
         },
         getMarkerKejadian () {
-
+            axios.get("kejadian/", { params: { limit: this.$refs.leftbar.kejadian, sort: 'created_at:desc' } })
+            .then(({ data: { data }}) => {
+                this.markerKejadian = data
+            })
+            .catch(error => {
+                console.log(error)
+            })
         },
         getMarkerPengaduan () {
-
+            axios.get("pengaduan/", { params: { limit: this.$refs.leftbar.pengaduan, sort: 'created_at:desc' } })
+            .then(({ data: { data }}) => {
+                this.markerPengaduan = data
+            })
+            .catch(error => {
+                console.log(error)
+            })
         },
-        triggerLogout() {
+        triggerLogout () {
             this.$parent.triggerLogout()
         }
     },

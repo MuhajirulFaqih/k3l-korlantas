@@ -7,7 +7,7 @@
     .page-link {
         text-align: center;
         min-width: 2.5em;
-        color: $red;
+        color: $blue;
         border: none;
         background: transparent;
         border-radius: 6px;
@@ -15,7 +15,7 @@
         &:hover, &:active, &:focus {
             color: $white;
             box-shadow: none;
-            background: $red;
+            background: $blue;
         }
     }
     .page-item {

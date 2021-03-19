@@ -81,7 +81,7 @@
 				.then(({data}) => {
                     this.isBusy = false
                     localStorage.setItem('token', data.access_token)
-                    this.$router.push({ name: 'Dashboard' })
+                    this.$router.push({ name: 'Monit' })
                     this.$toast.success('Anda berhasil login')
 				})
 				.catch(error => {
