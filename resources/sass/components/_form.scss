@@ -26,7 +26,7 @@
             color: $white;
         }
     }
-
+    
     &::-webkit-input-placeholder {
         color: #6F809B;
     }
@@ -35,7 +35,7 @@
         color: #6F809B;
         opacity:  1;
     }
-
+    
     &::-ms-input-placeholder {
         color:  #6F809B;
     }
@@ -56,6 +56,18 @@
         display: none;
         &.active {
             display: block;
+        }
+    }
+}
+
+.light-theme {
+    .e-form, .e-form:hover, .e-form:focus, .e-form:active,
+    .mx-input, .mx-input:hover, .mx-input:focus, .mx-input:active {
+        background: rgb(188 193 201) !important;
+        border: 0.08em solid #abb2bd !important;
+        color: #313436 !important;
+        &:focus {
+            border-color: $blue !important;
         }
     }
 }

@@ -20,6 +20,7 @@
             font-weight: 100;
             font-size: 0.9em;
             letter-spacing: 0.1em;
+            vertical-align: middle;
         }
     }
 }
@@ -32,7 +33,7 @@
         }
         thead {
             tr > th {
-                background: #8a93a2;
+                background: #a0a8b7;
                 color: $contentLight;
             }
         }

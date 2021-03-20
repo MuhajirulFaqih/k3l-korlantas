@@ -2,6 +2,9 @@
     <b-modal ref="kegiatan"
             hide-footer centered
             modal-class="e-modal e-modal-mg"
+            :no-close-on-backdrop="isBusy"
+            :no-close-on-esc="isBusy"
+            :hide-header-close="isBusy"
             title-tag="h4"
             title="Kegiatan">
 	  	<div class="d-block">
@@ -23,7 +26,7 @@
                                     class="e-form"
                                     @keyup="whenSearch"
                                     v-model="filterDebounced"
-                                    placeholder="Cari judul, tipe, dan waktu kegiatan..."/>
+                                    placeholder="Cari judul, tipe, waktu kegiatan..."/>
                                 <b-input-group-append>
                                     <button class="btn e-btn e-btn-primary" type="submit">
                                         <ph-magnifying-glass class="phospor"/>
@@ -56,7 +59,7 @@
 				    <template v-slot:cell(aksi)="data">
 				    	<div class="dropdown-container">
                             <b-dropdown text="Pilih" class="e-btn-dropdown" boundary>
-                                <b-dropdown-item @click="detail(data.item, 'master')">
+                                <b-dropdown-item @click="detail(data.item, 'bottombar')">
                                     <ph-note class="phospor"/> Detail
                                 </b-dropdown-item>
                                 <b-dropdown-item @click="lokasi(data.item)">
@@ -88,7 +91,7 @@ export default {
             filter: '',
             filterDebounced: '',
             isBusy: false,
-            sortBy: 'id',
+            sortBy: 'waktu_kegiatan',
             sortDesc: true,
             tableColumns: [
                 { key: 'index', label: 'No' },
@@ -109,14 +112,6 @@ export default {
     methods : {
         showModal () {
             this.$refs.kegiatan.show()
-        },
-        detail () {
-            
-        },
-        refreshTable () {
-            this.totalRows > this.perPage ? 
-            (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
-            : this.$refs.table.refresh()
         },
         provider (ctx) {
             let sortBy
@@ -146,7 +141,7 @@ export default {
             let payload = {
                 page: ctx.currentPage,
                 filter: ctx.filter === '' ? null : ctx.filter,
-                sort: sortBy + ':' + (ctx.sortDesc ? 'desc' : 'asc'),
+                sort: (sortBy != "" ? sortBy : 'waktu_kegiatan') + ':' + (ctx.sortDesc ? 'desc' : 'asc'),
             }
 
             return axios.get('kegiatan', {
@@ -160,6 +155,18 @@ export default {
                 this.totalRows = 0
                 return []
             })
+        },
+        detail (item, type) {
+            this.$refs.kegiatan.hide()
+            let self = this
+            setTimeout(function() {
+                self.$refs.detail.showModal(item, type)
+            }, 500)
+        },
+        refreshTable () {
+            this.totalRows > this.perPage ? 
+            (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
+            : this.$refs.table.refresh()
         },
         search: debounce(function () {
             this.filter = this.filterDebounced

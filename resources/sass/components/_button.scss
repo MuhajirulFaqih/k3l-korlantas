@@ -37,7 +37,7 @@
     }
     &.e-btn-success {
         background: $green !important;
-        color: $content !important;
+        color: $white !important;
         &:active:focus, &:active, &:focus, 
         &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
             box-shadow: 0 0 0 0.2rem $shadowGreen !important;
@@ -53,7 +53,7 @@
     }
     &.e-btn-danger {
         background: $red !important;
-        color: $content !important;
+        color: $white !important;
         &:active:focus, &:active, &:focus, 
         &:not(:disabled):not(.disabled):active:focus, &:not(:disabled):not(.disabled).active:focus {
             box-shadow: 0 0 0 0.2rem $shadowRed !important;

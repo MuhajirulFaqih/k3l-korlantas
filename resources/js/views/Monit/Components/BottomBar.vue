@@ -7,31 +7,31 @@
                 </div>
                 <span>Kegiatan</span>
             </a>
-            <a href="javascript:void(0);" class="bottombar-menu">
+            <a href="javascript:void(0);"  @click="showPengaduan" class="bottombar-menu">
                 <div class="bottombar-icon">
                     <ph-newspaper-clipping class="phospor"/>
                 </div>
                 <span>Pengaduan</span>
             </a>
-            <a href="javascript:void(0);" class="bottombar-menu">
+            <a href="javascript:void(0);" @click="showKejadian" class="bottombar-menu">
                 <div class="bottombar-icon">
                     <ph-activity class="phospor"/>
                 </div>
                 <span>Kejadian</span>
             </a>
-            <a href="javascript:void(0);" class="bottombar-menu">
+            <a href="javascript:void(0);" @click="showPersonil" class="bottombar-menu">
                 <div class="bottombar-icon">
                     <ph-pedestrian class="phospor"/>
                 </div>
                 <span>Personil</span>
             </a>
-            <a href="javascript:void(0);" class="bottombar-menu">
+            <a href="javascript:void(0);" @click="showHistory" class="bottombar-menu">
                 <div class="bottombar-icon">
                     <ph-video-camera class="phospor"/>
                 </div>
                 <span>History VC</span>
             </a>
-            <a href="javascript:void(0);" class="bottombar-menu">
+            <a href="javascript:void(0);" @click="showDarurat" class="bottombar-menu">
                 <div class="bottombar-icon">
                     <ph-shield-warning class="phospor"/>
                 </div>
@@ -39,14 +39,24 @@
             </a>
         </div>
         <Kegiatan ref="kegiatan"/>
+        <Pengaduan ref="pengaduan"/>
+        <Kejadian ref="kejadian"/>
+        <History ref="history"/>
+        <Personil ref="personil"/>
+        <Darurat ref="darurat"/>
     </div>
 </template>
 
 <script>
 import Kegiatan from "@/views/Monit/Kegiatan/Main"
+import Pengaduan from "@/views/Monit/Pengaduan/Main"
+import Kejadian from "@/views/Monit/Kejadian/Main"
+import History from "@/views/Monit/HistoryVC/Main"
+import Personil from "@/views/Monit/Personil/Main"
+import Darurat from "@/views/Monit/Darurat/Main"
 export default {
     name: 'bottom-bar',
-    components: { Kegiatan },
+    components: { Kegiatan, Pengaduan, Kejadian, History, Personil, Darurat },
     data () {
         return {
 
@@ -55,7 +65,22 @@ export default {
     methods: {
         showKegiatan () {
             this.$refs.kegiatan.showModal()
-        }
+        },
+        showPengaduan () {
+            this.$refs.pengaduan.showModal()
+        },
+        showKejadian () {
+            this.$refs.kejadian.showModal()
+        },
+        showHistory () {
+            this.$refs.history.showModal()
+        },
+        showPersonil () {
+            this.$refs.personil.showModal()
+        },
+        showDarurat () {
+            this.$refs.darurat.showModal()
+        },
     }
 }
 </script>
