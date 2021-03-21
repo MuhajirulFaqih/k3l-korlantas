@@ -151,28 +151,35 @@ class KejadianController extends Controller
                 $darurat = Darurat::find($kejadian->id_darurat);
                 if(!$darurat->update(['selesai' => true]))
                     return response()->json(['error' => 'Terjadi kesalahan'], 500);
-
-                $this->kirimNotifikasiViaGcm('darurat-selesai', $darurat->toArray(), [$darurat->user->fcm_id]);
+                
+                if(!env('APP_DEV')) {
+                    $this->kirimNotifikasiViaGcm('darurat-selesai', $darurat->toArray(), [$darurat->user->fcm_id]);
+                }
 
                 broadcast(new DaruratSelesaiEvent($darurat));
 
-                if (env('USE_ONESIGNAL', false))
-                    $this->kirimNotifikasiViaOnesignal('darurat-selesai', $darurat->toArray(), [$darurat->user->id]);
+                if (env('USE_ONESIGNAL', false)) {
+                    if(!env('APP_DEV')) {
+                        $this->kirimNotifikasiViaOnesignal('darurat-selesai', $darurat->toArray(), [$darurat->user->id]);
+                    }
+                }
             }
         }
 
         // Send notif
-        $this->broadcastNotifikasi($user, $tindakLanjut);
+        if(!env('APP_DEV')) {
+            $this->broadcastNotifikasi($user, $tindakLanjut);
+        }
 
-        // Broadcast to monit
-        $data = fractal()
+        $fractal = fractal()
             ->item($tindakLanjut)
             ->transformWith(TindakLanjutTransformer::class)
-            ->serializeWith(DataArraySansIncludeSerializer::class)
-            ->toArray();
+            ->serializeWith(DataArraySansIncludeSerializer::class);
+        // Broadcast to monit
+        $data = $fractal->toArray();
         event(new TindakLanjutEvent($data['data']));
 
-        return response()->json(['success' => true],201);
+        return response()->json($fractal->respond(), 201);
     }
 
     public function listkejadian(Request $request)
@@ -286,13 +293,17 @@ class KejadianController extends Controller
         ]);
 
         if($request->jenis == 'semua') { 
-            $this->broadcastNotifikasi($user, $kejadian); 
+            if(!env('APP_DEV')) {
+                $this->broadcastNotifikasi($user, $kejadian); 
+            }
         } else {
-            $this->broadcastNotifikasiKejadianVerified($request->user(), 
-                                                    $kejadian, 
-                                                    $request->jenis, 
-                                                    $request->kesatuan,
-                                                    $request->personil);
+            if(!env('APP_DEV')) {
+                $this->broadcastNotifikasiKejadianVerified($request->user(), 
+                                                        $kejadian, 
+                                                        $request->jenis, 
+                                                        $request->kesatuan,
+                                                        $request->personil);
+            }
         }
 
         return response()->json(['success' => true], 200);

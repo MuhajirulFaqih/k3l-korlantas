@@ -1,5 +1,4 @@
 //Form
-
 .e-form, .e-form:hover, .e-form:focus, .e-form:active,
 .mx-input, .mx-input:hover, .mx-input:focus, .mx-input:active {
     background: rgba(45, 52, 87, 0) !important;
@@ -45,6 +44,11 @@
     }
 }
 
+.e-form .custom-file-input:focus ~ .custom-file-label {
+    box-shadow: none !important;
+}
+
+//Password
 .e-password {
     > div { position: relative }
     .phospor {

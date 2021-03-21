@@ -1,0 +1,13 @@
+.e-list {
+    .list-group-item {
+        background: $modalBody;
+    }
+}
+
+.light-theme {
+    .e-list {
+        .list-group-item {
+            background: #abb2bd;
+        }
+    }   
+}

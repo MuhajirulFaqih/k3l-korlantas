@@ -5,3 +5,7 @@
 .e-text-info { color: $ocean !important; }
 .e-text-danger { color: $red !important; }
 .e-text-content { color: $content !important; }
+
+.light-theme {
+    .e-text-content { color: $contentLight !important; }
+}

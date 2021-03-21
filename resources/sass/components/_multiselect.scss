@@ -3,8 +3,22 @@
     background: rgba(45, 52, 87, 0) !important;
     color: $white;
     border-radius: 0 !important;
-    border: 0.08em solid #6F809B !important;
+    border: .08em solid #6F809B !important;
     overflow: hidden;
+}
+
+.multiselect--above .multiselect__tags {
+    height: auto;
+    padding: .375rem .75rem .15rem;
+}
+
+.multiselect--above .multiselect__tag {
+    margin-bottom: 0;
+    margin-top: 4px;
+}
+
+.multiselect__placeholder {
+    margin-bottom: 0 !important;
 }
 
 .multiselect__content-wrapper {
@@ -19,14 +33,14 @@
     padding-top: 3px;
 }
 .multiselect__tags {
-    height: calc(1.5em + 0.75rem + 2px);
-    padding: 0.375rem 0.75rem;   
+    height: calc(1.5rem + .75rem + 2px);
+    padding: .375rem .75rem;
 }
 
 .light-theme {
     .multiselect__tags  {
         background: rgb(188 193 201) !important;
-        border: 0.08em solid #abb2bd !important;
+        border: .08em solid #abb2bd !important;
         color: #313436 !important;
     }
     .multiselect__content-wrapper {

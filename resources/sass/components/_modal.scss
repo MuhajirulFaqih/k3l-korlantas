@@ -108,7 +108,7 @@
         .modal-dialog { max-width: 50em; }
     }
     &.e-modal-xl {
-        .modal-dialog { max-width: 70em; }
+        .modal-dialog { max-width: 60em; }
     }
     &.e-modal-mg {
         .modal-dialog { max-width: 80vw; }
@@ -125,6 +125,7 @@
     .e-modal {
         .modal-body {
             background: #abb2bd;
+            color: $contentLight;
             border: none;
             &::before, &::after {
                 visibility: hidden;

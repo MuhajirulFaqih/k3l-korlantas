@@ -187,18 +187,20 @@ class KegiatanController extends Controller
             return response()->json(['error' => 'Terjadi kesalahan saat menyimpan data'], 500);
 
         // Send notifikasi
-        $this->broadcastNotifikasi($user, $komentar);
+        if(!env('APP_DEV')) {
+            $this->broadcastNotifikasi($user, $komentar);
+        }
 
+        $fractal = fractal()
+                ->item($komentar)
+                ->transformWith(KomentarTransformer::class)
+                ->serializeWith(DataArraySansIncludeSerializer::class);
         // Broadcast to monit
-        $data = fractal()
-            ->item($komentar)
-            ->transformWith(KomentarTransformer::class)
-            ->serializeWith(DataArraySansIncludeSerializer::class)
-            ->toArray();
+        $data = $fractal->toArray();
         if ($user->jenis_pemilik !== 'admin')
             event(new KomentarEvent($data['data']));
 
-        return response()->json(['success' => true]);
+        return $fractal->respond();
     }
 
     public function getJenisTipe(Request $request)
