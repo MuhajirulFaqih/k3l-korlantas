@@ -46,7 +46,7 @@
             </div>
         </GmapMap>
         <RightBar ref="rightbar"/>
-        <BottomBar ref="topbar"/>
+        <BottomBar ref="bottombar"/>
 
         <Darurat ref="darurat" />
         <Hotspot ref="hotspot" />

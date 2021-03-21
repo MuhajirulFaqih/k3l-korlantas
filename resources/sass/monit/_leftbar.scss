@@ -18,7 +18,7 @@
     box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
     padding: 0;
     padding-bottom: 5em;
-    > li {
+    > div > li {
         z-index: 102;
         cursor: pointer;
         > div {
@@ -112,13 +112,46 @@
     width: 100%;
     z-index: 103;
 }
+.leftbar-sub {
+    position: absolute;
+    display: none;
+    left: 9em;
+    top: 0;
+    list-style: none;
+    padding: 0;
+    padding-top: 1.5em;
+    width: 17em;
+    height: 100vh;
+    background: rgba(24, 28, 35, 0.52);
+    backdrop-filter: blur(11px);
+    transition: all .5s;
+    &.open {
+        display: block;
+    }
+    li {
+        cursor: pointer;
+        padding: .65em 1.8em;
+        > span {
+            display: inline-block;
+            margin-left: .75em;
+        }
+        .phospor {
+            font-size: 1.65em;
+        }
+        &.leftbar-sub-header {
+            font-size: 1.2em;
+            padding-left: 1em;
+            padding-right: 1em;
+        }
+    }
+}
 
 .light-theme {
     .leftbar {
         color: $white;
         background: $blue;
         box-shadow: 6px 0px 30px rgba(106, 126, 164, 0.28);
-        > li {
+        > div > li {
             &.leftbar-header {
                 font-weight: 500;
                 &:hover {
@@ -140,5 +173,9 @@
                 }
             }
         }
+    }
+    .leftbar-sub {
+        background: rgb(203, 205, 209, 0.52);
+        color: $contentLight;
     }
 }

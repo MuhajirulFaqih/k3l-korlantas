@@ -1,5 +1,5 @@
 <template>
-    <div class="topbar-outline">
+    <div :class="`topbar-outline ${topClass ? 'close' : ''}`">
         <div class="topbar">
             <div class="topbar-widget topbar-widget-purple">
                 <div class="topbar-widget-icon">
@@ -38,11 +38,25 @@
                 </div>
             </div>
         </div>
+        <!-- <div class="w-100 mt-3">
+            <b-row>
+                <b-col cols="12 d-flex justify-content-center align-items-center">
+                    <button class="btn e-btn e-btn-primary topbar-btn" @click="showTopbar">
+                        <ph-caret-circle-down class="phospor"/>
+                    </button>
+                </b-col>
+            </b-row>
+        </div> -->
     </div>
 </template>
 
 <script>
 export default {
     name: 'top-bar',
+    data () {
+        return {
+            topClass: false,
+        }
+    }
 }
 </script>

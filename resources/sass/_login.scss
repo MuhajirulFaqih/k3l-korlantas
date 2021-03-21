@@ -12,7 +12,7 @@
         top: 10%;
         transform: translate(-50%, -50%);
         position: absolute;
-        border-top: 0.15em solid $blue;
+        border-top: 0.15em solid $blue !important;
         width: 25em;
         margin-top: 1.2em;
         &::before, &::after {
@@ -133,7 +133,7 @@ hr.blue-line {
     display: inline-block;
     width: 100%;
     margin: 1.2em 10em 0em;
-    border-top: 0.1em solid $blue;
+    border-top: 0.15em solid $blue !important;
     &::before, &::after {
         position: absolute;
         display: inline-block;
@@ -141,7 +141,7 @@ hr.blue-line {
         padding: 0.3em;
         border-radius: 50%;
         background: $blue;
-        top: -0.3em;
+        top: -0.4em;
     }
     &::before {
         right: -0.3em;

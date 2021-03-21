@@ -1,9 +1,9 @@
 <template>
-    <div :class="`rightbar-outline ${openMenu}`">
+    <div :class="`rightbar-outline ${rightClass ? 'close' : ''}`">
         <ul :class="`rightbar ${hotspotClass('expand')}`">
-            <button class="btn e-btn e-btn-primary rightbar-close" @click="toggleMenu">
+            <!-- <button class="btn e-btn e-btn-primary rightbar-close" @click="toggleMenu">
                 <ph-caret-right class="phospor"/>
-            </button>
+            </button> -->
             <li class="rightbar-header">
                 Kegiatan 
                 <a href="javascript:void(0);" @click="$parent.triggerLogout()" v-b-tooltip.hover title="Logout"
@@ -128,14 +128,11 @@ export default {
     name: 'right-bar',
     data () {
         return {
-            openMenu: '',
+            rightClass: false,
             hotspot: false,
         }
     },
     methods: {
-        toggleMenu () {
-            this.openMenu = this.openMenu == 'close' ? '' : 'close'
-        },
         hotspotClass (val) {
             return this.hotspot ? val : ''
         }

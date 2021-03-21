@@ -6,12 +6,35 @@
     justify-content: center;
     width: 100%;
     z-index: 100;
+    flex-flow: wrap;
     font-family: $fontHeader;
     font-size: .85em;
+    transition: all .5s;
+    .topbar-btn {
+        transition: all .5s;
+        padding: .45em 0.55em;
+        font-size: 1.65em;
+        .phospor {
+            transition: all .5s;
+            transform: rotate(180deg);
+        }
+    }
+    &.close {
+        .topbar {
+            margin-top: -15em;
+        }
+        .topbar-btn {
+            transform: rotate(-45deg);
+            .phospor {
+                transform: rotate(45deg);
+            }
+        }
+    }
 }
 
 
 .topbar {
+    transition: all .5s;
     color: $white;
     .topbar-widget {
         width: 19em;
