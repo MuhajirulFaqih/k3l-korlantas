@@ -183,7 +183,7 @@ export default {
             })
         },
         detail (item, type) {
-            this.$refs.kejadian.hide()
+            if(type == 'bottombar') { this.$refs.kejadian.hide() }
             let self = this
             setTimeout(function() {
                 self.$refs.detail.showModal(item, type)

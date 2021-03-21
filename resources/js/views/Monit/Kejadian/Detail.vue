@@ -222,7 +222,7 @@ import id from 'date-fns/locale/id'
 import moment from 'moment'
 moment.locale('id')
 export default {
-    name: 'detail-kegiatan',
+    name: 'detail-kejadian',
     data () {
         return {
             formTindakLanjut: true,

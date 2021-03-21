@@ -80,7 +80,7 @@ class PengaduanController extends Controller
             ->respond();
     }
 
-    public function buatKomentar(Request $request, Pengaduan $pengaduan){
+    public function buatKomentar(Request $request, Pengaduan $pengaduan) {
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['admin', 'masyarakat']) || ($user->jenis_pemilik == 'masyarakat' && $pengaduan->id_user != $user->id))
@@ -97,11 +97,17 @@ class PengaduanController extends Controller
 
         if (!$komentar)
             return response()->json(['error' => 'Terjadi kesalahan'], 500);
+        
+        if(!env('APP_DEV')) {
+            $this->broadcastNotifikasi($user, $komentar);
+        }
 
-        $this->broadcastNotifikasi($user, $komentar);
+        $fractal = fractal()
+            ->item($komentar)
+            ->transformWith(KomentarTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class);
 
-
-        return response()->json(['success' => true], 201);
+        return $fractal->respond();
     }
 
     public function tambah(Request $request){
