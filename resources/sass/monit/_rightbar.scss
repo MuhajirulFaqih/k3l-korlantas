@@ -23,7 +23,7 @@
         overflow: hidden;
         padding: .65em 1.5em;
         &.active {
-            height: 15%;
+            height: 20vh;
         }
     }
 }
@@ -39,7 +39,7 @@
     margin-bottom: 0;
     transition: height .5s;
     &.expand {
-        height: 85%;
+        height: 80vh;
     }
     .rightbar-close {
         position: absolute;

@@ -9,95 +9,21 @@
                 <a href="javascript:void(0);" @click="$parent.triggerLogout()" v-b-tooltip.hover title="Logout"
                 class="d-block float-right"><ph-sign-out class="phopsor"/></a>
             </li>
-            <perfect-scrollbar class="h-100">
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>1 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>2 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>3 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>4 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>5 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>6 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>7 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>8 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>9 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>10 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
-            <li>
-                <div class="rightbar-widget">
-                    <b-img src="https://dummyimage.com/600x400/fff/000" class="w-100" alt=""/>
-                    <div>Satlantas Polres Kutai Kartanegara</div>
-                    <span>22 Januari 2019 09:08</span>
-                    <p>11 Giat strong point depan pemkab kukar</p>
-                </div>
-            </li>
+            <perfect-scrollbar class="h-100" @ps-y-reach-end="onScroll" ref="kegiatan">
+                <li v-for="(v, i) in kegiatan" :key="`kegiatan-${i}`">
+                    <div class="rightbar-widget">
+                        <b-img v-if="v.dokumentasi == null" src="/assets/sample-kegiatan.png" class="w-100" alt=""/>
+                        <b-img v-else :src="v.dokumentasi" class="w-100" alt=""/>
+                        <div>{{ v.user.nama }}</div>
+                        <span>{{ v.w_kegiatan }}</span>
+                        <p>{{ v.judul }}</p>
+                    </div>
+                </li>
+                <li>
+                    <center v-show="isBusy" class="mt-1">
+                        <b-spinner variant="primary"></b-spinner>
+                    </center>
+                </li>
             </perfect-scrollbar>
         </ul>
         <div :class="`hotspot ${hotspotClass('active')}`">
@@ -130,11 +56,96 @@ export default {
         return {
             rightClass: false,
             hotspot: false,
+            totalRows: 0,
+            perPage: 10,
+            currentPage: 1,
+            scrollStatus: false,
+            isBusy: false,
+            kegiatan: [],
+            tinggi: '-',
+            sedang: '-',
+            rendah: '-',
         }
     },
     methods: {
         hotspotClass (val) {
             return this.hotspot ? val : ''
+        },
+        onScroll (event) {
+            if(this.kegiatan.length !== 0 && this.isBusy !== true) {
+                if(this.scrollStatus == false) {
+                    this.scrollStatus = true
+                    this.getKegiatan('pagination')
+                } else {
+                    this.scrollStatus = true
+                }
+            }
+        },
+        getKegiatan(from) {
+            if(this.totalRows !== 0 && (this.totalRows == this.kegiatan.length)) {
+                return
+            }
+            this.isBusy = true
+            let payload = {
+                page: from == 'master' ? this.currentPage : (this.currentPage + 1),
+                sort: 'created_at:desc',
+            }
+            axios.get('kegiatan', { params: payload })
+            .then(({ data: { data, meta: { pagination }}}) => {
+                this.totalRows = pagination.total
+                this.perPage = pagination.per_page
+                this.currentPage = pagination.current_page
+                if(from == 'master') { 
+                    this.kegiatan = data 
+                } else {
+                    var self = this
+                    data.forEach(function(v, i) {
+                        self.kegiatan.push(v)
+                    })
+                }
+                this.isBusy = false
+                this.scrollStatus = false
+            }).catch(error => {
+                this.totalRows = 0
+                console.log("error")
+            })
+        },
+        kegiatanBaru(data) {
+            var kegiatan = data
+            if(!(this.totalRows !== 0 && (this.totalRows == this.kegiatan.length))) {
+                this.kegiatan.pop()
+            }
+            this.totalRows++
+            this.kegiatan.unshift(kegiatan)
+        },
+        getHotspot () {
+            axios.get('titik-api')
+            .then(({data}) => {
+                var self = this
+                // data.forEach(function(key) {
+                //     if(key.type == 'jumlah' && key.kategori == 'rendah') {
+                //         self.rendah = key.jumlah
+                //     } else if(key.type == 'jumlah' && key.kategori == 'sedang') {
+                //         self.sedang = key.jumlah
+                //     } else {
+                //         self.tinggi = key.jumlah
+                //     }
+                // })
+                console.log(data)
+            })
+        },
+        resetHotspot () {
+            this.rendah = '-'
+            this.sedang = '-'
+            this.tinggi = '-'
+        },
+    },
+    mounted() {
+        this.getKegiatan('master')
+    },
+    watch: {
+        hotspot (val) {
+            val ? this.getHotspot() : this.resetHotspot()
         }
     }
 }

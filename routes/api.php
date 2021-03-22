@@ -968,6 +968,15 @@ Route::group([
         Route::post('/export-dana-sosial', 'API\DanaReportController@exportDanaSosial');
     });
     // End of report dana desa
+    
+    //Start titik api
+    Route::group([
+    'prefix' => 'titik-api',
+    // 'middleware' => ['auth:api']
+    ], function (){
+        Route::get('/', 'API\TitikApiController@index');
+    });
+    // End of titik api
 
     //SP2HP
     Route::group([

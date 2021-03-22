@@ -7,7 +7,7 @@
                 </div>
                 <div class="topbar-body">
                     <div>Total Kejadian</div>
-                    <span>189</span>
+                    <span>{{ semua }}</span>
                 </div>
             </div>
             <div class="topbar-widget topbar-widget-blue">
@@ -16,7 +16,7 @@
                 </div>
                 <div class="topbar-body">
                     <div>Belum Ditangani</div>
-                    <span>50</span>
+                    <span>{{ belum }}</span>
                 </div>
             </div>
             <div class="topbar-widget topbar-widget-ocean">
@@ -25,7 +25,7 @@
                 </div>
                 <div class="topbar-body">
                     <div>Proses Penanganan</div>
-                    <span>50</span>
+                    <span>{{ prosesPenanganan }}</span>
                 </div>
             </div>
             <div class="topbar-widget topbar-widget-aqua">
@@ -34,7 +34,7 @@
                 </div>
                 <div class="topbar-body">
                     <div>Selesai</div>
-                    <span>89</span>
+                    <span>{{ selesai }}</span>
                 </div>
             </div>
         </div>
@@ -56,7 +56,25 @@ export default {
     data () {
         return {
             topClass: false,
+            semua: '-',
+            belum: '-',
+            selesai: '-',
+            prosesPenanganan: '-',
         }
+    },
+    methods: {
+        refreshData() {
+            axios.get('/kejadian/total')
+            .then(({data}) => {
+                this.semua = data[0].total
+                this.prosesPenanganan = data[0].proses
+                this.selesai = data[0].selesai
+                this.belum = data[0].belum
+            })
+        }
+    },
+    mounted () {
+        this.refreshData()
     }
 }
 </script>
