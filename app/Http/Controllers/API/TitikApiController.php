@@ -29,10 +29,11 @@ class TitikApiController extends Controller
                     $tinggi++;
                 }
                 $hotspot['data'][] = [
+                    'id' => $v['id'],
                     'type' => 'hotspot',
                     'tk' => $v['properties']['c'],
-                    'lat' => $v['geometry']['coordinates'][0],
-                    'lng' => $v['geometry']['coordinates'][1],
+                    'lat' => $v['geometry']['coordinates'][1],
+                    'lng' => $v['geometry']['coordinates'][0],
                     'satellite' => $v['properties']['s'],
                     'sumber' => 'Stasiun Bumi LAPAN'
                 ];
@@ -42,6 +43,21 @@ class TitikApiController extends Controller
             $hotspot['total']['rendah'] = $rendah;
             $hotspot['total']['semua'] = $tinggi + $sedang + $rendah;
             return response()->json($hotspot, 200);
+        }
+        catch (BadResponseException $e) {
+            return response()->json(['message' => 'Terjadi kesalahan ' . $e->getMessage()], 500);
+        }
+    }
+    
+    public function detail(Request $request, $id)
+    {
+        $client = new Guzzle(['http_errors' => false]);
+        $url  = env('URL_LAPAN', 'http://103.51.131.166/getHSdetail?hsid=' . $id . '&mode=cluster');
+        try {
+            $response = $client->request('GET', $url);
+            $data = $response->getBody()->getContents();
+            $data = json_decode($data, true);
+            return response()->json($data, 200);
         }
         catch (BadResponseException $e) {
             return response()->json(['message' => 'Terjadi kesalahan ' . $e->getMessage()], 500);

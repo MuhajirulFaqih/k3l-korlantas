@@ -245,6 +245,7 @@ export default {
     components: { VueSlider },
     data () {
         return {
+            isBusy: false,
             openMenu: '',
             darkMode: true,
             label: false,
@@ -364,7 +365,7 @@ export default {
             this.jenisPeta = val
         },
         triggerHotspot () {
-            this.hotspot = !this.hotspot
+            if(!this.isBusy) { this.hotspot = !this.hotspot }
         },
         toggleKegiatan (val) {
             this.kegiatanStatus = this.$parent.kegiatanStatus = !this.kegiatanStatus
@@ -414,6 +415,7 @@ export default {
             this.$parent.mapsOptions.styles = this.darkMode ? this.$parent.darkStyle : this.$parent.lightStyle
         },
         hotspot(val) {
+            this.isBusy = val
             this.$parent.$refs.rightbar.hotspot = val
         },
         kegiatanStatus (val) {
@@ -436,13 +438,13 @@ export default {
         },
         kegiatan :debounce(function (val, old) {
             this.$parent.getMarkerKegiatan()
-        }, 500),
+        }, 700),
         pengaduan :debounce(function (val, old) {
             this.$parent.getMarkerPengaduan()
-        }, 500),
+        }, 700),
         kejadian :debounce(function (val, old) {
             this.$parent.getMarkerKejadian()
-        }, 500),
+        }, 700),
     }
 }
 </script>

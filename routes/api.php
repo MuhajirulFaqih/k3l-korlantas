@@ -971,10 +971,11 @@ Route::group([
     
     //Start titik api
     Route::group([
-    'prefix' => 'titik-api',
-    // 'middleware' => ['auth:api']
+        'prefix' => 'titik-api',
+        'middleware' => ['auth:api']
     ], function (){
         Route::get('/', 'API\TitikApiController@index');
+        Route::get('/detail/{hotspot}', 'API\TitikApiController@detail');
     });
     // End of titik api
 

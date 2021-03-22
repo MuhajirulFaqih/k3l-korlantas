@@ -29,19 +29,19 @@
         <div :class="`hotspot ${hotspotClass('active')}`">
             <b-row class="mt-3">
                 <b-col cols="3">
-                    <div class="e-alert e-alert-success w-100 text-center">10</div>
+                    <div class="e-alert e-alert-success w-100 text-center">{{ rendah }}</div>
                 </b-col>
                 <b-col cols="8">C(%) ≤ 29%</b-col>
             </b-row>
             <b-row class="mt-2">
                 <b-col cols="3">
-                    <div class="e-alert e-alert-warning w-100 text-center">9</div>
+                    <div class="e-alert e-alert-warning w-100 text-center">{{ sedang }}</div>
                 </b-col>
                 <b-col cols="8">30% ≤ C(%) ≤ 79%</b-col>
             </b-row>
             <b-row class="mt-2">
                 <b-col cols="3">
-                    <div class="e-alert e-alert-danger w-100 text-center">8</div>
+                    <div class="e-alert e-alert-danger w-100 text-center">{{ tinggi }}</div>
                 </b-col>
                 <b-col cols="8">C(%) ≥ 80%</b-col>
             </b-row>
@@ -121,23 +121,21 @@ export default {
         getHotspot () {
             axios.get('titik-api')
             .then(({data}) => {
+                this.tinggi = data.total.tinggi
+                this.sedang = data.total.sedang
+                this.rendah = data.total.rendah
                 var self = this
-                // data.forEach(function(key) {
-                //     if(key.type == 'jumlah' && key.kategori == 'rendah') {
-                //         self.rendah = key.jumlah
-                //     } else if(key.type == 'jumlah' && key.kategori == 'sedang') {
-                //         self.sedang = key.jumlah
-                //     } else {
-                //         self.tinggi = key.jumlah
-                //     }
-                // })
-                console.log(data)
+                data.data.forEach(function(index) {
+                    self.$parent.markerHotspot.push(index)
+                })
+                this.$parent.$refs.leftbar.isBusy = false
             })
         },
         resetHotspot () {
             this.rendah = '-'
             this.sedang = '-'
             this.tinggi = '-'
+            this.$parent.markerHotspot = []
         },
     },
     mounted() {

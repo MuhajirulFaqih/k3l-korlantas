@@ -18,7 +18,7 @@
             <div id="marker-hotspot">
                 <GmapMarker v-for="(indexMarkerHotspot, keyMarkerHotspot) in markerHotspot" :key="`hotspot-${keyMarkerHotspot}`" 
                     :position="{ lat: parseFloat(indexMarkerHotspot.lat), lng: parseFloat(indexMarkerHotspot.lng) }"
-                    :icon="loadMarkerHotspot" @click="$refs.hotspot.detail(indexMarkerHotspot)"/>
+                    :icon="loadMarkerHotspot(indexMarkerHotspot.tk)" @click="$refs.hotspot.detail(indexMarkerHotspot)"/>
             </div>
 
             <div id="marker-kegiatan" v-if="kegiatanStatus">
@@ -114,9 +114,9 @@ export default {
             this.$parent.toggleTheme(theme)
         },
         loadMarkerHotspot (hotspot) {
-            if(hotspot <= 29) {
+            if(hotspot == 7) {
                 return require('@/assets/hotspot-hijau.png').default
-            } else if (hotspot <= 79) {
+            } else if (hotspot == 8) {
                 return require('@/assets/hotspot-orange.png').default
             } else {
                 return require('@/assets/hotspot-merah.png').default
