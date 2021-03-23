@@ -47,6 +47,7 @@ h4 { font-size: 1.3rem !important }
 h5 { font-size: 1.2rem !important }
 h6 { font-size: 1rem !important }
 hr { border-top: 1px solid rgb(60 68 80) !important; }
+.h-100vh { height: 100vh; }
 
 //Scrollable
 .ps__thumb-y {
@@ -69,6 +70,9 @@ hr { border-top: 1px solid rgb(60 68 80) !important; }
     font-weight: bold;
     line-height: 1.6;
 }
+
+.font-header { font-family: $fontHeader; }
+.font-body { font-family: $fontBody; }
 
 .loading {
     position: absolute;

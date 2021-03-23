@@ -1,3 +1,9 @@
 *
 !public/
+!pin-personil/
+!personil/
+!paslon/
+!jenis/
+!excel/
+!surat/
 !.gitignore

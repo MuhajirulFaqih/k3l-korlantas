@@ -251,6 +251,8 @@ class Personil extends Model
                             ->where('o.revoked', '!=' , 1);
                     });
                 })
+                ->whereNotNull('lat')
+                ->whereNotNull('lng')
                 ->where([['lat', '!=', 0.0], ['lng', '!=', 0.0]]);
         
         switch ($jenis) {

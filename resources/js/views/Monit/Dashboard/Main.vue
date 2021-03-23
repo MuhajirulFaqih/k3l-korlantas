@@ -44,6 +44,24 @@
                     :position="{ lat: parseFloat(indexMarkerTps.lat), lng: parseFloat(indexMarkerTps.lng) }"
                     :icon="require('@/assets/tps.png').default" @click="$refs.tps.detail(indexMarkerTps)"/>
             </div>
+            
+            <div id="marker-personil" v-if="markerPersonilShow">
+                <GmapMarker v-for="(indexMarkerPersonil, keyMarkerPersonil) in markerPersonil" :key="`personil-${keyMarkerPersonil}`" 
+                    :position="{ lat: parseFloat(indexMarkerPersonil.lat), lng: parseFloat(indexMarkerPersonil.lng) }"
+                    :icon="indexMarkerPersonil.icon" @click="$refs.personil.detail(indexMarkerPersonil)"/>
+            </div>
+
+            <div id="marker-patroli" v-if="markerPersonilShow">
+                <GmapMarker v-for="(indexMarkerPatroli, keyMarkerPatroli) in markerPatroli" :key="`pengawalan-${keyMarkerPatroli}`" 
+                    :position="{ lat: parseFloat(indexMarkerPatroli.lat), lng: parseFloat(indexMarkerPatroli.lng) }"
+                    :icon="require('@/assets/patroli.png').default" @click="$refs.personil.detail(indexMarkerPatroli)"/>
+            </div>
+           
+            <div id="marker-pengawalan" v-if="markerPersonilShow">
+                <GmapMarker v-for="(indexMarkerPengawalan, keyMarkerPengawalan) in markerPengawalan" :key="`pengawalan-${keyMarkerPengawalan}`" 
+                    :position="{ lat: parseFloat(indexMarkerPengawalan.lat), lng: parseFloat(indexMarkerPengawalan.lng) }"
+                    :icon="require('@/assets/pengawalan.png').default" @click="$refs.personil.detail(indexMarkerPengawalan)"/>
+            </div>
         </GmapMap>
         <RightBar ref="rightbar"/>
         <BottomBar ref="bottombar"/>
@@ -96,10 +114,12 @@ export default {
             markerHotspot: [],
             markerPersonil: [],
             markerMasyarakat: [],
+            logPatroliPengawalan: [],
             markerPatroli: [],
             markerPengawalan: [],
             markerLokasiVital: [],
             markerTps: [],
+            markerPersonilShow: true,
             markerSingleShow: false,
             kegiatanStatus: true, //Belongs to leftbar
             pengaduanStatus: true, //Belongs to leftbar

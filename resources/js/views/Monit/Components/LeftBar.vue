@@ -82,20 +82,23 @@
             <li class="leftbar-sub-header">
                 Jenis Peta
             </li>
-            <li @click="settingJenisPeta('default')">
-                <button :class="`e-btn ${jenisPeta == 'default' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`">
+            <li>
+                <button :class="`e-btn ${jenisPeta == 'default' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`" 
+                    @click="settingJenisPeta('default')">
                     <ph-navigation-arrow class="phospor" /> 
                     Default
                 </button>
             </li>
-            <li @click="settingJenisPeta('satellite')">
-                <button :class="`e-btn ${jenisPeta == 'satellite' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`">
+            <li>
+                <button :class="`e-btn ${jenisPeta == 'satellite' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`" 
+                    @click="settingJenisPeta('satellite')">
                     <ph-globe-hemisphere-east class="phospor" /> 
                     Satellite
                 </button>
             </li>
-            <li  @click="settingJenisPeta('terrain')">
-                <button :class="`e-btn ${jenisPeta == 'terrain' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`" >
+            <li>
+                <button :class="`e-btn ${jenisPeta == 'terrain' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`" 
+                    @click="settingJenisPeta('terrain')">
                     <ph-map-trifold class="phospor" /> 
                     Terrain
                 </button>
@@ -117,37 +120,103 @@
             </li>
         </ul>
         <ul :class="`leftbar-sub ${openMenuClass('tracking')}`">
-            <li class="text-right p-0 px-2">
-                <div @click="openMenu = ''"><ph-x class="phospor"/></div>
-            </li>
-            <li class="leftbar-sub-header">Tracking Personil</li>
-            <li>
-                <button class="e-btn leftbar-sub-icon btn">
-                    <ph-eye class="phospor" />
-                </button>
-                <span>Tampil</span>
-            </li>
-            <li class="leftbar-sub-header">
-                Status
-            </li>
-            <li>
-                <button class="e-btn e-btn-primary btn btn-block text-left">
-                    <ph-users class="phospor" /> 
-                    Semua
-                </button>
-            </li>
-            <li>
-                <button class="e-btn e-btn-secondary btn btn-block text-left">
-                    <ph-identification-card class="phospor" /> 
-                    Dinas
-                </button>
-            </li>
-            <li>
-                <button class="e-btn e-btn-secondary btn btn-block text-left">
-                    <ph-user-rectangle class="phospor" /> 
-                    Lepas Dinas
-                </button>
-            </li>
+            <perfect-scrollbar class="h-100vh pb-4">
+                <li class="text-right p-0 px-2">
+                    <div @click="openMenu = ''"><ph-x class="phospor"/></div>
+                </li>
+                <li class="leftbar-sub-header">Tracking Personil</li>
+                <li @click="setTracking"> 
+                    <button :class="`e-btn ${tracking ? `e-btn-primary` : `e-btn-secondary`} leftbar-sub-icon btn`"
+                        :disabled="isBusy">
+                        <ph-eye class="phospor" />
+                    </button>
+                    <span>Tampil</span>
+                </li>
+                <li class="leftbar-sub-header">
+                    Jumlah
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingLimit == 10 ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)"
+                        @click="setTrackingLimit(10)">
+                        <ph-clipboard-text class="phospor" /> 
+                        10 Data
+                    </button>
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingLimit == 50 ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)"
+                        @click="setTrackingLimit(50)">
+                        <ph-clipboard-text class="phospor" /> 
+                        50 Data
+                    </button>
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingLimit == 100 ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)"
+                        @click="setTrackingLimit(100)">
+                        <ph-clipboard-text class="phospor" /> 
+                        100 Data
+                    </button>
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingLimit == 200 ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)"
+                        @click="setTrackingLimit(200)">
+                        <ph-clipboard-text class="phospor" /> 
+                        200 Data
+                    </button>
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingLimit == 100 ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)"
+                        @click="setTrackingLimit(500)">
+                        <ph-clipboard-text class="phospor" /> 
+                        500 Data
+                    </button>
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingLimit == 'semua' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)"
+                        @click="setTrackingLimit('semua')">
+                        <ph-clipboard-text class="phospor" /> 
+                        Semua
+                    </button>
+                </li>
+                <li class="leftbar-sub-header">
+                    Status
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingType == 'semua' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)"
+                        @click="setTrackingType('semua')">
+                        <ph-users class="phospor" /> 
+                        Semua status
+                    </button>
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingType == 'dinas' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)"
+                        @click="setTrackingType('dinas')">
+                        <ph-identification-card class="phospor" /> 
+                        Dinas
+                    </button>
+                </li>
+                <li>
+                    <button :class="`e-btn ${trackingType == 'lepas_dinas' ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                        @click="setTrackingType('lepas_dinas')"
+                        :disabled="tracking == false || (tracking == true && isBusy == true)">
+                        <ph-user-rectangle class="phospor" /> 
+                        Lepas Dinas
+                    </button>
+                </li>
+                <li>
+                    <span v-if="tracking == true && isBusy == true" class="font-body">Memuat {{ jumlahPersonil }} dari {{ jumlahTotalPersonil }} data</span>
+                    <div class="text-center">
+                        <b-spinner v-show="tracking == true && isBusy == true" variant="primary mt-2" />
+                    </div>
+                </li>
+            </perfect-scrollbar>
         </ul>
         <ul :class="`leftbar-sub ${openMenuClass('kegiatan')}`">
             <li class="text-right p-0 px-2">
@@ -214,7 +283,7 @@
                 <div @click="openMenu = ''"><ph-x class="phospor"/></div>
             </li>
             <li class="leftbar-sub-header">Lokasi Vital</li>
-            <perfect-scrollbar class="h-100">
+            <perfect-scrollbar class="h-100vh">
                 
             </perfect-scrollbar>
         </ul>
@@ -261,6 +330,11 @@ export default {
             kejadianStatus: true,
             kejadian: 10,
             hotspot: false,
+            tracking: false,
+            trackingLimit: 10,
+            trackingType: 'semua',
+            trackingPage: 1,
+            trackingTotal: 0,
             optionsSlider: {
                 eventType: 'auto',
                 width: '100%',
@@ -279,7 +353,12 @@ export default {
         }
     },
     computed:{
-        
+        jumlahPersonil() {
+            return (Number(this.$parent.markerPersonil.length) + Number(this.$parent.markerPatroli.length) + Number(this.$parent.markerPengawalan.length))
+        },
+        jumlahTotalPersonil() {
+            return this.trackingLimit !== 'semua' ? this.trackingLimit : this.trackingTotal
+        },
     },
     methods: {
         openMenuClass (menu) {
@@ -346,6 +425,66 @@ export default {
         removeTrafficMaps () {
             this.trafficLayer.setMap(null);
         },
+        showDataTracking () {
+            this.$parent.markerPersonil = []
+            this.$parent.markerPatroli = []
+            this.$parent.markerPengawalan = []
+            this.trackingPage = 1
+            this.fetchDataTracking()
+            var maps = this.$parent.$refs.maps
+            var self = this
+            if(this.trackingType == 'lepas_dinas') {
+                maps.$mapPromise.then((map) => {
+                    self.$parent.logPatroliPengawalan.forEach(function(key) {
+                        key.polyline.setVisible(false)
+                    })
+                })
+            } else {
+                maps.$mapPromise.then((map) => {
+                    self.$parent.logPatroliPengawalan.forEach(function(key) {
+                        key.polyline.setVisible(true)
+                    })
+                })
+            }
+        },
+        fetchDataTracking () {
+            var self = this
+            this.isBusy = true
+            axios.get('personil/lihat/tracking', { params: { page: this.trackingPage, jenis : this.trackingType } })
+            .then(({data}) => {
+                let personil = data
+                let markerPersonil = this.$parent.markerPersonil
+                var maps = this.$parent.$refs.maps
+                this.trackingTotal = personil.meta.pagination.total
+                maps.$mapPromise.then((map) => {
+                    personil.data.forEach(function(key) {
+                        var tempPersonil = key
+                        tempPersonil.angle = 0
+                        if (tempPersonil.dinas.kegiatan == 'Patroli') {
+                            var angle = google.maps.geometry.spherical.computeHeading(new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng), new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng))
+                            self.$set(self.$parent.markerPatroli, self.$parent.markerPatroli.length, tempPersonil)
+                        } else if (tempPersonil.dinas.kegiatan == 'Pengawalan') {
+                            var angle = google.maps.geometry.spherical.computeHeading(new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng), new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng))
+                            self.$set(self.$parent.markerPengawalan, self.$parent.markerPengawalan.length, tempPersonil)
+                        } else {
+                            self.$set(self.$parent.markerPersonil, self.$parent.markerPersonil.length, tempPersonil)
+                        }
+                    })
+                })
+                if(personil.meta.pagination.total != 0) {
+                    var totalData = this.trackingLimit == 'semua' ? personil.meta.pagination.total : this.trackingLimit
+                    if((markerPersonil.length + personil.data.length + 10) <= totalData) {
+                        setTimeout(function() {
+                            this.trackingPage = this.trackingPage + 1
+                            self.fetchDataTracking()
+                        }, 8000)
+                    } else { this.isBusy = false }
+                } else { this.isBusy = false }
+            })
+        },
+        hideDataTracking () {
+            this.$parent.markerPersonilShow = false
+        },
         settingDarkMode () {
             this.darkMode = !this.darkMode
         },
@@ -363,6 +502,15 @@ export default {
         },
         settingJenisPeta (val) {
             this.jenisPeta = val
+        },
+        setTracking () {
+            if(!this.isBusy) { this.tracking = !this.tracking }
+        },
+        setTrackingType (val) {
+            this.trackingType = val
+        },
+        setTrackingLimit (val) {
+            this.trackingLimit = val
         },
         triggerHotspot () {
             if(!this.isBusy) { this.hotspot = !this.hotspot }
@@ -413,6 +561,15 @@ export default {
             }
             
             this.$parent.mapsOptions.styles = this.darkMode ? this.$parent.darkStyle : this.$parent.lightStyle
+        },
+        tracking (val) {
+            val ? this.showDataTracking() : this.hideDataTracking()
+        },
+        trackingType (val) {
+            this.showDataTracking()
+        },
+        trackingLimit (val) {
+            this.showDataTracking()
         },
         hotspot(val) {
             this.isBusy = val
