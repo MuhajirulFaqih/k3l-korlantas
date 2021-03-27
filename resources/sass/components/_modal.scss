@@ -77,7 +77,7 @@
         border: .2em solid $blue;
         background: $modalBody;
         padding: 1rem 2rem;
-        min-height: 50vh;
+        min-height: 30em;
         &::before {
             content: "";
             position: absolute;
@@ -124,7 +124,7 @@
 .light-theme {
     .e-modal {
         .modal-body {
-            background: #abb2bd;
+            background: #e8ebf0;
             color: $contentLight;
             border: none;
             &::before, &::after {

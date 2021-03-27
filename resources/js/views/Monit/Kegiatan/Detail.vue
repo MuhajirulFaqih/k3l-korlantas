@@ -200,7 +200,6 @@ export default {
             isBusyCreate: false,
             single: null,
             commentText: null,
-            from: null,
             comment: [],
         }
     },
@@ -210,13 +209,12 @@ export default {
         },
     },
     methods : {
-        showModal (item, type) {
+        showModal (item) {
             this.totalRows = 0
             this.perPage = 10
             this.currentPage = 1
             this.single = item
             this.getComment('master', item.id)
-            this.from = type
             this.$refs.detail.show()
         },
         commentClass(id) {
@@ -294,14 +292,7 @@ export default {
             this.$refs.comment.$el.scrollTop = 0;
         },
         hideModal() {
-            this.$refs.detail.hide()
             this.single = null
-            let self = this
-            if(this.from !== 'marker') {
-                setTimeout(function() {
-                    self.$parent.showModal()
-                }, 500)
-            }
         },
     },
 }

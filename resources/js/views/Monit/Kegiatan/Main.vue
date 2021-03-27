@@ -60,7 +60,7 @@
                         <template v-slot:cell(aksi)="data">
                             <div class="dropdown-container">
                                 <b-dropdown text="Pilih" class="e-btn-dropdown" boundary>
-                                    <b-dropdown-item @click="detail(data.item, 'bottombar')">
+                                    <b-dropdown-item @click="detail(data.item)">
                                         <ph-note class="phospor"/> Detail
                                     </b-dropdown-item>
                                     <b-dropdown-item @click="lokasi(data.item)">
@@ -115,7 +115,7 @@ export default {
         }
     },
     methods : {
-        showModal (item, type) {
+        showModal (item) {
             this.single = item
             this.$refs.kegiatan.show()
         },
@@ -162,11 +162,10 @@ export default {
                 return []
             })
         },
-        detail (item, type) {
-            if(type == 'bottombar') { this.$refs.kegiatan.hide() }
+        detail (item) {
             let self = this
             setTimeout(function() {
-                self.$refs.detail.showModal(item, type)
+                self.$refs.detail.showModal(item)
             }, 500)
         },
         refreshTable () {

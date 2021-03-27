@@ -168,7 +168,7 @@
                     </button>
                 </li>
                 <li>
-                    <button :class="`e-btn ${trackingLimit == 100 ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
+                    <button :class="`e-btn ${trackingLimit == 500 ? `e-btn-primary` : `e-btn-secondary`} btn btn-block text-left`"
                         :disabled="tracking == false || (tracking == true && isBusy == true)"
                         @click="setTrackingLimit(500)">
                         <ph-clipboard-text class="phospor" /> 

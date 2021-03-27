@@ -67,8 +67,8 @@
 .light-theme {
     .e-form, .e-form:hover, .e-form:focus, .e-form:active,
     .mx-input, .mx-input:hover, .mx-input:focus, .mx-input:active {
-        background: rgb(188 193 201) !important;
-        border: 0.08em solid #abb2bd !important;
+        background: #e8ebf0 !important;
+        border: 0.08em solid #cbd1dc !important;
         color: #313436 !important;
         &:focus {
             border-color: $blue !important;

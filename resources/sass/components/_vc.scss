@@ -1,0 +1,39 @@
+.e-call {
+    position: relative;
+    height: 65vh;
+    padding: 1em .5em;
+    .e-person {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: .45rem;
+        background: $content;
+        z-index: 90;
+    }
+    .e-person-other {
+        position: absolute;
+        right: 1em;
+        bottom: 1em;
+        width: 20%;
+        height: auto;
+        z-index: 100;
+        .e-person-other-thumb {
+            width: 100%;
+            background: $dark;
+            height: 7em;
+            display: block;
+            border: 2px solid $white;
+        }
+    }
+    .e-call-close {
+        position: absolute;
+        left: 50%;
+        bottom: 1em;
+        transform: translateX(-50%);
+        font-size: 2em;
+        z-index: 100;
+        border-radius: .45rem;
+    }
+}

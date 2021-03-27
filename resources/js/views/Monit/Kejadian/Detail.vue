@@ -231,7 +231,6 @@ export default {
             isBusy: false,
             isBusyCreate: false,
             single: null,
-            from: null,
             jenis: '',
             jenisOptions: [
                 { text: 'Semua Personil', value: 'semua' },
@@ -262,11 +261,10 @@ export default {
         }
     },
     methods : {
-        showModal (item, type) {
+        showModal (item) {
             this.formTindakLanjut = true
             this.personilKejadian = false
             this.fetchKejadian(item.id)
-            this.from = type
             this.$refs.detail.show()
         },
         dateFormat(item) {
@@ -375,14 +373,7 @@ export default {
         },
         hidePilihPersonil () { this.personilKejadian = false },
         hideModal() {
-            this.$refs.detail.hide()
             this.single = null
-            let self = this
-            if(this.from !== 'marker') {
-                setTimeout(function() {
-                    self.$parent.showModal()
-                }, 500)
-            }
         },
     },
 }

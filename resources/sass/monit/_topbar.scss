@@ -37,6 +37,7 @@
     transition: all .5s;
     color: $white;
     .topbar-widget {
+        position: relative;
         width: 19em;
         padding: .35em;
         margin: 0 1em;
@@ -44,8 +45,19 @@
         border: 2px solid;
         background: rgba(38, 48, 64, 0.46);
         backdrop-filter: blur(6px);
+        &::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: -8px;
+            width: 8px;
+            height: 50%;
+        }
         &.topbar-widget-purple  {
             border-color: $purple;
+            &::before {
+                background: $purple;
+            }
             .topbar-widget-icon {
                 background: $purple; 
             }
@@ -55,6 +67,9 @@
         }
         &.topbar-widget-blue {
             border-color: $blue;
+            &::before {
+                background: $blue;
+            }
             .topbar-widget-icon {
                 background: $blue; 
             }
@@ -64,6 +79,9 @@
         }
         &.topbar-widget-ocean {
             border-color: $ocean;
+            &::before {
+                background: $ocean;
+            }
             .topbar-widget-icon {
                 background: $ocean;
             }
@@ -73,6 +91,9 @@
         }
         &.topbar-widget-aqua {
             border-color: $aqua;
+            &::before {
+                background: $aqua;
+            }
             .topbar-widget-icon {
                 background: $aqua; 
             }
