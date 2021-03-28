@@ -289,7 +289,7 @@
         </ul>
         <div class="leftbar-bottom">
             <div v-if="$parent.markerSingleShow">
-                <button class="e-btn e-btn-warning btn btn-block">Refresh Data</button>
+                <button class="e-btn e-btn-warning btn btn-block" @click="$parent.resetDefaultMarker">Refresh Data</button>
             </div>
             <div>
                 <b-row>

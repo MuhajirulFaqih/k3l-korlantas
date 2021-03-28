@@ -1,4 +1,4 @@
-<template>
+f<template>
     <div >
         <LeftBar ref="leftbar"/>
         <TopBar ref="topbar"/>
@@ -9,55 +9,62 @@
   			:options="mapsOptions"
   			class="e-map"
 		>
-            <div id="marker-darurat">
+
+            <div id="marker-single" v-if="markerSingleShow">
+                <GmapMarker v-for="(indexMarkerSingle, keyMarkerSingle) in markerSingle" :key="`single-${keyMarkerSingle}`" 
+                    :position="{ lat: parseFloat(indexMarkerSingle.data.lat), lng: parseFloat(indexMarkerSingle.data.lng) }"
+                    :icon="loadMarkerSingle(indexMarkerSingle)" @click="detailMarkerSingle(indexMarkerSingle)"/>
+            </div>
+
+            <div id="marker-darurat" v-if="!markerSingleShow">
                 <GmapMarker v-for="(indexMarkerDarurat, keyMarkerDarurat) in markerDarurat" :key="`darurat-${keyMarkerDarurat}`" 
                     :position="{ lat: parseFloat(indexMarkerDarurat.lat), lng: parseFloat(indexMarkerDarurat.lng) }"
                     :icon="require('@/assets/darurat.png').default" @click="$refs.darurat.detail(indexMarkerDarurat)"/>
             </div>
 
-            <div id="marker-hotspot">
+            <div id="marker-hotspot" v-if="!markerSingleShow">
                 <GmapMarker v-for="(indexMarkerHotspot, keyMarkerHotspot) in markerHotspot" :key="`hotspot-${keyMarkerHotspot}`" 
                     :position="{ lat: parseFloat(indexMarkerHotspot.lat), lng: parseFloat(indexMarkerHotspot.lng) }"
                     :icon="loadMarkerHotspot(indexMarkerHotspot.tk)" @click="$refs.hotspot.detail(indexMarkerHotspot)"/>
             </div>
 
-            <div id="marker-kegiatan" v-if="kegiatanStatus">
+            <div id="marker-kegiatan" v-if="kegiatanStatus && !markerSingleShow">
                 <GmapMarker v-for="(indexMarkerKegiatan, keyMarkerKegiatan) in markerKegiatan" :key="`kegiatan-${keyMarkerKegiatan}`" 
                     :position="{ lat: parseFloat(indexMarkerKegiatan.lat), lng: parseFloat(indexMarkerKegiatan.lng) }"
                     :icon="require('@/assets/kegiatan.png').default" @click="$refs.kegiatan.detail(indexMarkerKegiatan)"/>
             </div>
             
-            <div id="marker-kejadian" v-if="kejadianStatus">
+            <div id="marker-kejadian" v-if="kejadianStatus && !markerSingleShow">
                 <GmapMarker v-for="(indexMarkerKejadian, keyMarkerKejadian) in markerKejadian" :key="`kegiatan-${keyMarkerKejadian}`" 
                     :position="{ lat: parseFloat(indexMarkerKejadian.lat), lng: parseFloat(indexMarkerKejadian.lng) }"
                     :icon="require('@/assets/kejadian.png').default" @click="$refs.kejadian.detail(indexMarkerKejadian)"/>
             </div>
 
-            <div id="marker-pengaduan" v-if="pengaduanStatus">
+            <div id="marker-pengaduan" v-if="pengaduanStatus && !markerSingleShow">
                 <GmapMarker v-for="(indexMarkerPengaduan, keyMarkerPengaduan) in markerPengaduan" :key="`kegiatan-${keyMarkerPengaduan}`" 
                     :position="{ lat: parseFloat(indexMarkerPengaduan.lat), lng: parseFloat(indexMarkerPengaduan.lng) }"
                     :icon="require('@/assets/pengaduan.png').default" @click="$refs.pengaduan.detail(indexMarkerPengaduan)"/>
             </div>
             
-            <div id="marker-tps">
+            <div id="marker-tps" v-if="!markerSingleShow">
                 <GmapMarker v-for="(indexMarkerTps, keyMarkerTps) in markerTps" :key="`hotspot-${keyMarkerTps}`" 
                     :position="{ lat: parseFloat(indexMarkerTps.lat), lng: parseFloat(indexMarkerTps.lng) }"
                     :icon="require('@/assets/tps.png').default" @click="$refs.tps.detail(indexMarkerTps)"/>
             </div>
             
-            <div id="marker-personil" v-if="markerPersonilShow">
+            <div id="marker-personil" v-if="markerPersonilShow && !markerSingleShow">
                 <GmapMarker v-for="(indexMarkerPersonil, keyMarkerPersonil) in markerPersonil" :key="`personil-${keyMarkerPersonil}`" 
                     :position="{ lat: parseFloat(indexMarkerPersonil.lat), lng: parseFloat(indexMarkerPersonil.lng) }"
                     :icon="indexMarkerPersonil.icon" @click="$refs.personil.detail(indexMarkerPersonil)"/>
             </div>
 
-            <div id="marker-patroli" v-if="markerPersonilShow">
+            <div id="marker-patroli" v-if="markerPersonilShow && !markerSingleShow">
                 <GmapMarker v-for="(indexMarkerPatroli, keyMarkerPatroli) in markerPatroli" :key="`pengawalan-${keyMarkerPatroli}`" 
                     :position="{ lat: parseFloat(indexMarkerPatroli.lat), lng: parseFloat(indexMarkerPatroli.lng) }"
                     :icon="require('@/assets/patroli.png').default" @click="$refs.personil.detail(indexMarkerPatroli)"/>
             </div>
            
-            <div id="marker-pengawalan" v-if="markerPersonilShow">
+            <div id="marker-pengawalan" v-if="markerPersonilShow && !markerSingleShow">
                 <GmapMarker v-for="(indexMarkerPengawalan, keyMarkerPengawalan) in markerPengawalan" :key="`pengawalan-${keyMarkerPengawalan}`" 
                     :position="{ lat: parseFloat(indexMarkerPengawalan.lat), lng: parseFloat(indexMarkerPengawalan.lng) }"
                     :icon="require('@/assets/pengawalan.png').default" @click="$refs.personil.detail(indexMarkerPengawalan)"/>
@@ -107,6 +114,7 @@ export default {
             lightStyle: this.$parent.lightStyle,
             darkStyle: this.$parent.darkStyle,
             mapsOptions: this.$parent.mapsOptions,
+            markerSingle: [],
             markerKegiatan: [],
             markerPengaduan: [],
             markerKejadian: [],
@@ -142,10 +150,54 @@ export default {
                 return require('@/assets/hotspot-merah.png').default
             }
         },
+        detailMarkerSingle (item) {
+            switch (item.type) {
+                case 'kegiatan':
+                    this.$refs.kegiatan.detail(item.data)
+                    break;
+                case 'pengaduan':
+                    this.$refs.pengaduan.detail(item.data)
+                    break;
+                case 'kejadian':
+                    this.$refs.kejadian.detail(item.data)
+                    break;
+                case 'personil':
+                    this.$refs.personil.detail(item.data)
+                    break;
+                default:
+                    this.$refs.darurat.detail(item.data)
+                    break;
+            }
+        },
+        loadMarkerSingle (item) {
+            switch (item.type) {
+                case 'kegiatan':
+                    return require('@/assets/kegiatan.png').default
+                    break;
+                case 'pengaduan':
+                    return require('@/assets/pengaduan.png').default
+                    break;
+                case 'kejadian':
+                    return require('@/assets/kejadian.png').default
+                    break;
+                case 'personil':
+                    return item.data.icon
+                    break;
+                default:
+                    return require('@/assets/darurat.png').default
+                    break;
+            }
+        },
         getDefaultMarker() {
             this.getMarkerKegiatan()
             this.getMarkerKejadian()
             this.getMarkerPengaduan()
+        },
+        getMarkerSingle(item) {
+            this.markerSingle = [item]
+            this.center = { lat: parseFloat(item.data.lat), lng: parseFloat(item.data.lng) }
+            this.zoom = 16
+            this.markerSingleShow = true
         },
         getMarkerKegiatan() {
             axios.get("kegiatan/", { params: { limit: this.$refs.leftbar.kegiatan, sort: 'created_at:desc' } })
@@ -173,6 +225,12 @@ export default {
             .catch(error => {
                 console.log(error)
             })
+        },
+        resetDefaultMarker () {
+            this.zoom = 15
+            this.center = { lat: Number(defaultLat), lng: Number(defaultLng) }
+            this.markerSingle = []
+            this.markerSingleShow = false
         },
         triggerLogout () {
             this.$parent.triggerLogout()

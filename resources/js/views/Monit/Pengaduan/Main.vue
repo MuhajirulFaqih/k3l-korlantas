@@ -156,6 +156,15 @@ export default {
                 self.$refs.detail.showModal(item)
             }, 500)
         },
+        lokasi (item) {
+            if(item.lat == null && item.lng == null) { 
+                this.$toast.error("Lokasi tidak dapat di tampilkan")
+                return
+            }
+            var marker = { type: 'pengaduan', data: item }
+            this.$parent.$parent.getMarkerSingle(marker)
+            this.$refs.pengaduan.hide()
+        },
         refreshTable () {
             this.totalRows > this.perPage ? 
             (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
