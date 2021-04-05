@@ -4,7 +4,9 @@ import store from '@/store'
 
 import Login from '@/views/Login/Main'
 import Monit from '@/views/Monit/Main'
-import Dashboard from '@/views/Monit/Dashboard/Main'
+import MonitDashboard from '@/views/Monit/Dashboard/Main'
+import Executive from '@/views/Executive/Main'
+import ExecutiveDashboard from '@/views/Executive/Dashboard/Main'
 
 Vue.use(Router);
 
@@ -19,7 +21,19 @@ const router = new Router({
 		        {
 		          path: '',
 		          name: 'Monit',
-		          component: Dashboard
+		          component: MonitDashboard
+		        },
+		    ]
+		},
+		{
+	      	path: '/executive',
+	      	meta: { requiresAuth: true },
+	      	component: Executive,
+	      	children: [
+		        {
+		          path: '',
+		          name: 'Executive',
+		          component: ExecutiveDashboard
 		        },
 		    ]
 		},

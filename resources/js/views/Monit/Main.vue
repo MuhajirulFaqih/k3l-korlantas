@@ -176,6 +176,9 @@ export default {
         triggerLogout() {
             this.$parent.logout()
         }
+    },
+    mounted () {
+        document.body.classList.remove("e-monit")
     }
 }
 </script>

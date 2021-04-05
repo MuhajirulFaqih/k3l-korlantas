@@ -409,11 +409,11 @@ export default {
         removeGeometryMaps () {
             var darkStyle = this.$parent.darkStyle
             var indexDarkStyle = darkStyle.findIndex(v => v.elementType == 'geometry' && v.featureType == 'road' && v.stylers[0].visibility == 'off')
-            darkStyle.splice(indexDarkStyle, 1)
+            if(indexDarkStyle !== -1)  { darkStyle.splice(indexDarkStyle, 1) }
             
             var lightStyle = this.$parent.lightStyle
             var indexLightStyle = lightStyle.findIndex(v => v.elementType == 'geometry' && v.featureType == 'road' && v.stylers[0].visibility == 'off')
-            lightStyle.splice(indexLightStyle, 1)
+            if(indexLightStyle !== -1)  { lightStyle.splice(indexLightStyle, 1) }
         },
         addTrafficMaps () {
             var maps = this.$parent.$refs.maps
