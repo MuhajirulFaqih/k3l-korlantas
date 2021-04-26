@@ -3,7 +3,6 @@ window._ = require('lodash');
 window.Popper = require('popper.js').default;
 window.appName = document.head.querySelector('meta[name="app-name"]').content;
 window.baseUrl = document.head.querySelector('meta[name="base-url"]').content;
-window.apiUrl = document.head.querySelector('meta[name="api-url"]').content;
 window.token = document.head.querySelector('meta[name="token"]').content;
 window.socketUrl = document.head.querySelector('meta[name="echo"]').content;
 window.audioEmergency = document.head.querySelector('meta[name="emergency-audio-url"]').content;
@@ -46,7 +45,7 @@ try {
  */
 
 window.axios = require('axios');
-window.axios.defaults.baseURL = window.apiUrl + '/api/'
+window.axios.defaults.baseURL = window.baseUrl + '/api/'
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 

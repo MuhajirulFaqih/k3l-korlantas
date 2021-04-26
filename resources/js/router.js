@@ -7,6 +7,10 @@ import Monit from '@/views/Monit/Main'
 import MonitDashboard from '@/views/Monit/Dashboard/Main'
 import Executive from '@/views/Executive/Main'
 import ExecutiveDashboard from '@/views/Executive/Dashboard/Main'
+import ExecutiveKegiatan from '@/views/Executive/Kegiatan/Main'
+import ExecutivePengaduan from '@/views/Executive/Pengaduan/Main'
+import ExecutiveKejadian from '@/views/Executive/Kejadian/Main'
+import ExecutiveDarurat from '@/views/Executive/Darurat/Main'
 
 Vue.use(Router);
 
@@ -19,9 +23,9 @@ const router = new Router({
 	      	component: Monit,
 	      	children: [
 		        {
-		          path: '',
-		          name: 'Monit',
-		          component: MonitDashboard
+                    path: '',
+                    name: 'Monit',
+                    component: MonitDashboard
 		        },
 		    ]
 		},
@@ -31,9 +35,29 @@ const router = new Router({
 	      	component: Executive,
 	      	children: [
 		        {
-		          path: '',
-		          name: 'Executive',
-		          component: ExecutiveDashboard
+		            path: '',
+		            name: 'Executive',
+		            component: ExecutiveDashboard
+		        },
+		        {
+		            path: 'kegiatan',
+		            name: 'Kegiatan | Executive',
+		            component: ExecutiveKegiatan
+		        },
+		        {
+		            path: 'pengaduan',
+		            name: 'Pengaduan | Executive',
+		            component: ExecutivePengaduan
+		        },
+		        {
+		            path: 'kejadian',
+		            name: 'Kejadian | Executive',
+		            component: ExecutiveKejadian
+		        },
+		        {
+		            path: 'darurat',
+		            name: 'Darurat | Executive',
+		            component: ExecutiveDarurat
 		        },
 		    ]
 		},
