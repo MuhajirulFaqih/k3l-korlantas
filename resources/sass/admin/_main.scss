@@ -1,0 +1,352 @@
+p {
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+}
+
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.navbar {
+    padding: 15px 10px;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 40px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-btn {
+    box-shadow: none;
+    outline: none !important;
+    border: none;
+    position: absolute;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed #ddd;
+    margin: 40px 0;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    color: $content;
+    transition: all .5s;
+    transform-origin: bottom left;
+    height: auto;
+    left: 0;
+    -webkit-box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+    -moz-box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+    box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+    a:hover {
+        color: $content !important;
+    }
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+#sidebar .sidebar-header {
+    padding: 10px 20px 4px;
+    background: $primary;
+}
+
+#sidebar ul.components {
+    padding: 1.5em;
+}
+
+#sidebar ul li a {
+    font-size: 14px;
+    padding: 1em 0em;
+    display: block;
+    text-decoration: none;
+    &:hover {
+        font-weight: 700;
+    }
+    &.active {
+        font-weight: 700;
+    }
+}
+
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: #fff;
+    background: none;
+}
+
+.control-right {
+    display: block;
+    float: right;
+    padding: 8px;
+}
+
+.command-options {
+    padding: 20px 0px;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+ul ul a {
+    font-size: 0.85em !important;
+    padding: .5em 0em !important;
+    padding-left: 1.5em !important;
+    background: none;
+}
+
+ul.CTAs {
+    padding: 20px;
+}
+
+ul.CTAs a {
+    text-align: center;
+    font-size: 0.9em !important;
+    display: block;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+a.download {
+    background: #fff;
+    color: #1e272e;
+}
+
+a.article, a.article:hover {
+    background: #182127 !important;
+    color: #fff !important;
+}
+
+
+
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+#content {
+    width: 100%;
+    padding: 0;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+#sidebarCollapse {
+    width: 50px;
+    height: 40px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.6s;
+    left: 250px;
+    z-index: 1000;
+}
+
+#sidebarCollapse.active {
+    width: 50px;
+    height: 40px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.9s;
+    left: 1px;
+}
+
+#sidebarCollapse span {
+    width: 80%;
+    height: 2px;
+    display: block;
+    background: #fff;
+    transition: all 0.8s cubic-bezier(0.810, -0.330, 0.345, 1.375);
+    transition-delay: 0.2s;
+    transform: none;
+    opacity: 1;
+    margin: 5px auto;
+}
+#sidebarCollapse.active span {
+    transform: none;
+    opacity: 1;
+    margin: 5px auto;
+}
+.top {
+    width: 100%;
+    height: 45px;
+    padding: 0;
+    transition: all 0.3s;
+    background-color: #303d4e;
+    margin-bottom: 1em;
+    -webkit-box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+    -moz-box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+    box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+    a:hover {
+        color: $content !important;
+    }
+}
+
+.author {
+    margin-right: 15px;   
+    margin-top: 2px;
+    display: inline-block;  
+}
+
+.administrator {
+    font-family: $efontBody;
+    background: #242F3E;
+    a:hover { 
+        text-decoration: none; 
+    }
+
+    .e-bg-main {
+        background: #25303f;
+    }
+    
+    .e-shadow-main {
+        -webkit-box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+        -moz-box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+        box-shadow: 6px 0px 30px rgba(0, 0, 0, 0.17);
+    }
+    
+    .pagination {
+        .page-link {
+            color: $content;
+            border: none;
+            background: #2b384a;
+        
+            &:hover, &:active, &:focus {
+                color: $white;
+                box-shadow: none;
+                background: $primary;
+            }
+        }
+        .page-item {
+            &.active .page-link {
+                background-color: $primary;
+                border-color: $primary;
+        
+                &:active, &:focus, &:hover {
+                    outline: 0 !important;
+                    box-shadow: none !important;
+                    background-color: $primary;
+                }
+            }
+        
+            &.disabled .page-link {
+                pointer-events: none;
+                cursor: auto;
+                background-color: #2b384a;
+                border-color: rgba(255, 255, 255, 0);
+            }
+        }
+    }
+    
+    
+    .table {
+        td {
+            color: $content;
+            border-top: none !important;
+            border-bottom: 0.1em solid $tableBorder !important;
+            padding: 1.5em 1em;
+        }
+        thead {
+            tr > th {
+                background: $tableHeader;
+                color: $content;
+                font-family: $efontHeader;
+                vertical-align: middle;
+                font-weight: bold;
+                border-top: none;
+                border-bottom: none;
+            }
+        }
+    }
+    
+    .modal {
+        .modal-content {
+            background: #2b333f;
+        }
+        .modal-header, .modal-footer {
+            font-family: $efontHeader;
+            border: none;
+        }
+    }
+
+    .modal-backdrop {
+        opacity: 1;
+        background: rgba(24, 28, 35, 0.94);
+        backdrop-filter: blur(0);
+    }
+
+    .ui.fluid.search, .custom-file-label, .form-control, .form-control:hover, .form-control:focus, .form-control:active {
+        background: rgba(45, 52, 87, 0) !important;
+        border: 1px solid #5a616d !important;
+        color: $content;
+        box-shadow: none;
+        font-weight: 400 !important;
+        &:focus {
+            border: 1px solid #6a717e !important;
+        }
+    }
+    
+    .ui.fluid.search > input {
+        color: $content !important;
+    }
+
+    .ui.dropdown .menu {
+        background: #232f3f;
+        color: $content !important;
+    }
+    
+    .ui.dropdown .menu .selected.item, .ui.dropdown.selected {
+        background: #1a2330;
+    }
+    
+    .ui.selection.dropdown .menu>.item {
+        border: none;
+        color: $content !important;
+    }
+    
+    .btn-dropdown {
+        .btn, .btn:hover, .btn:focus, .btn:active, 
+        .btn:not(:disabled):not(.disabled):active:focus, 
+        .btn:not(:disabled):not(.disabled).active:focus {
+            position: relative;
+            background: $primary;
+            color: $white;
+            padding: .5em 3em .5em 1em;
+            letter-spacing: 0.1em;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .dropdown-toggle::after {
+            right: 8px !important;
+        }
+    }
+
+    .mx-icon-calendar, .mx-icon-clear {
+        color: $content;
+    }
+
+    .body {
+        a:hover {
+            color: $content !important;
+        }
+    }
+}

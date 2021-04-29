@@ -54,6 +54,12 @@
                         <span>Area</span>
                     </div>
                 </li>
+                <li>
+                    <div @click="$router.push({ name: 'Dashboard | Administrator' })">
+                        <ph-user-square class="phospor" />
+                        <span>Admin</span>
+                    </div>
+                </li>
             </perfect-scrollbar>
         </ul>
         <!-- Sub leftbar -->

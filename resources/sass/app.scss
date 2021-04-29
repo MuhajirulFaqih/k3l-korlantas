@@ -4,11 +4,12 @@ $theme-map: null;
 @import '~bootstrap-vue/src/index.scss';
 @import '~vue-toast-notification/dist/theme-sugar.css';
 @import '~vue-multiselect/dist/vue-multiselect.min.css';
+@import 'vue-search-select/dist/VueSearchSelect.css';
 @import '~vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css';
 @import '_variables.scss';
 @import 'components/_main.scss';
 @import 'monit/_main.scss';
-@import 'executive/_main.scss';
+@import 'admin/_main.scss';
 @import '_login.scss';
 
 :root { font-size: 16px; }
@@ -83,7 +84,6 @@ hr { border-top: 1px solid rgb(60 68 80) !important; }
     z-index: 100;
 }
 .cursor-default { cursor: default; }
-
 .light-theme {
     hr { border-top: 1px solid #ccd4e2 !important; }
 }

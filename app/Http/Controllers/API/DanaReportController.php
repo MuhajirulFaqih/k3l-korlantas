@@ -8,7 +8,7 @@ use App\Models\DansosPagu;
 use App\Models\GiatDanaDesa;
 use App\Http\Controllers\Controller;
 use App\Models\Pendapatan;
-use App\RincianBelanja;
+use App\Models\RincianBelanja;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\BelanjaBidangTransformer;
 use App\Transformers\DansosLaporanTransformer;

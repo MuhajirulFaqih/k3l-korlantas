@@ -75,7 +75,7 @@ class InformasiController extends Controller
             'aktif' => 'required'
         ]);
 
-        $informasi->aktif = $validatedData['aktif'] == 'true' ? 0 : 1;
+        $informasi->aktif = $validatedData['aktif'] == 'true' ? 1 : 0;
 
         if(!$informasi->save())
             return response()->json(['error' => 'Terjadi kesalahan'], 500);

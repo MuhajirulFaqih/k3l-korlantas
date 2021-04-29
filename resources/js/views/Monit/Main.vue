@@ -179,6 +179,7 @@ export default {
     },
     mounted () {
         document.body.classList.remove("e-monit")
+        document.body.classList.remove("administrator")
     }
 }
 </script>

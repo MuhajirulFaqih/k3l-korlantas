@@ -825,29 +825,29 @@ Route::group([
     });
 
     Route::get('provinsi', function () {
-        $provinsi = \App\Provinsi::with(['kabupaten'])->get();
+        $provinsi = \App\Models\Provinsi::with(['kabupaten'])->get();
         return response()->json(['provinsi' => $provinsi]);
     });
 
     Route::get('kabupaten-provinsi', function () {
         $where = env('TINGKAT_DANA_DESA', 'provinsi') == 'kabupaten' ? 'id_kab' : 'id_prov';
-        $kabupaten = \App\Kabupaten::where($where, env('PROVINSI_DANA_DESA'))->get();
+        $kabupaten = \App\Models\Kabupaten::where($where, env('PROVINSI_DANA_DESA'))->get();
         return response()->json(['kabupaten' => $kabupaten]);
     });
 
     Route::get('kecamatan/{kabupaten}', function ($id) {
-        $kecamatan = \App\Kecamatan::where('id_kab', $id)->get();
+        $kecamatan = \App\Models\Kecamatan::where('id_kab', $id)->get();
         return response()->json(['kecamatan' => $kecamatan]);
     });
 
     Route::get('kelurahan/{kecamatan}', function ($id) {
-        $kelurahan = \App\Kelurahan::where('id_kec', $id)->get();
+        $kelurahan = \App\Models\Kelurahan::where('id_kec', $id)->get();
         return response()->json(['kelurahan' => $kelurahan]);
     });
 
     Route::get('wilayah', function () {
         $id_kab = explode(',', env('APP_KAB'));
-        $kecamatan = App\Kecamatan::whereIn('id_kab', $id_kab)->orderBy('nama', 'asc')->get();
+        $kecamatan = App\Models\Kecamatan::whereIn('id_kab', $id_kab)->orderBy('nama', 'asc')->get();
 
         return fractal()
             ->collection($kecamatan)

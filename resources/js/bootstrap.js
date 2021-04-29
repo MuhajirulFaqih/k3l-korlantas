@@ -25,6 +25,8 @@ window.danaDesa = document.head.querySelector('meta[name="dana-desa"]').content;
 window.peneranganSatuan = document.head.querySelector('meta[name="penerangan-satuan"]').content;
 window.visiMisi = document.head.querySelector('meta[name="visi-misi"]').content;
 window.kegiatanBhabin = document.head.querySelector('meta[name="kegiatan-bhabin"]').content;
+window.personilKegiatan = document.head.querySelector('meta[name="personil-kegiatan"]').content;
+window.hasEdisposisi = document.head.querySelector('meta[name="edisposisi"]').content;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support

@@ -25,10 +25,11 @@
         <meta name="csc" content="{{ env('API_CLIENT_SECRET') }}">
         <meta name="app-name" content="{{ env('APP_NAME') }}">
         <meta name="induk" content="{{ env('INDUK') }}">
-        <meta name="dana-desa" content="{{ env('DANA_DESA') }}">
         <meta name="penerangan-satuan" content="{{ env('PENERANGAN_SATUAN', 0) }}">
         <meta name="visi-misi" content="{{ env('VISI_MISI', 0) }}">
         <meta name="kegiatan-bhabin" content="{{ env('KEGIATAN_BHABIN') }}">
+        <meta name="personil-kegiatan" content="{{ env('PERSONIL_KEGIATAN') }}">
+        <meta name="edisposisi" content="{{ env('HAS_EDISPOSISI', 0) }}">
 
         <title>{{ ENV('APP_NAME') }}</title>
 

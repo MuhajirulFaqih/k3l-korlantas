@@ -43,10 +43,10 @@ class KesatuanController extends Controller
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $validatedData = $request->validate([
-            'kesatuan'      => 'required',
-            'email'             => 'email:required',
-            'induk'               => 'required',
-            'banner'       => 'nullable|image',
+            'kesatuan' => 'required',
+            'email' => 'required|email',
+            'induk' => 'required',
+            'banner' => 'nullable|image',
         ]);
 
         if (isset($validatedData['banner'])) {
@@ -76,7 +76,7 @@ class KesatuanController extends Controller
 
         $validatedData = $request->validate([
             'kesatuan'      => 'required',
-            'email'         => 'email:required',
+            'email'         => 'required|email',
             'induk'         => 'required',
             'banner'       => 'nullable|image',
         ]);
