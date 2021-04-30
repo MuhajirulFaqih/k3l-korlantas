@@ -15,7 +15,7 @@ class Absensi extends Model
 
     public function personil()
     {
-    	return $this->belongsTo(Personil::class, 'id_personil');
+    	return $this->belongsTo(Personil::class, 'id_personil')->withTrashed();
     }
 
     public function scopeFiltered($query, $kesatuan, $tanggal, $nrp)

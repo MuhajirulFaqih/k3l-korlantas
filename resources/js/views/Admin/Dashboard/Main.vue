@@ -68,6 +68,7 @@
 				<div v-if="personilKegiatan">
 					<b-card header="Personil Pengirim Kegiatan Terbanyak"
 						header-tag="h4"
+						class="e-bg-main e-shadow-main"
 						header-class="bg-primary">
 						<div>
 							<center>
@@ -75,7 +76,6 @@
 									v-model="rentangTanggal"
 									@input="onInputRentangTgl"
 									range
-									:shortcuts="shortcuts"
 									lang="id"
 									placeholder="Pilih rentang tanggal"
 									format="DD-MM-YYYY"
@@ -83,10 +83,11 @@
 							</center>
 							<hr/>
 						</div>
-						<div class="beauty-scroll h-info2">
+						<perfect-scrollbar class="h-info2">
 							<b-list-group>
 								<b-list-group-item 
 										:key="index"
+										class="e-bg-main"
 										v-for="(i, index) in kegiatanPersonil">
 											<span class="float-right">{{ i.jumlah }} kegiatan</span>
 											<p justify class="text-white">
@@ -95,7 +96,7 @@
 											{{ i.jabatan }}
 								</b-list-group-item>
 							</b-list-group>
-						</div>
+						</perfect-scrollbar>
 					</b-card>
 				</div>
 				<video v-else loop autoplay playsinline class="e-bg-main e-shadow-main w-100" ref="video" :src="video" type="video/mp4" />
@@ -136,13 +137,7 @@ export default {
 			informasi: [],
 			kegiatanPersonil: [],
 			video: null,
-			rentangTanggal: null,
-			shortcuts: [{
-				test: "Today",
-				onclick: () => {
-					this.time3 = [new Date(), new Date()];
-				}
-			}],
+			rentangTanggal: [new Date(), new Date()],
 			timePickerOptions: {
 				start: "00:00",
 				step: "00:30",

@@ -51,6 +51,6 @@ class AbsensiController extends Controller
 	            ->orderBy('id_personil', 'DESC')
 	            ->get();
 	    
-	    return Excel::download(new AbsensiExport($data), 'Document.xlsx');
+	    return Excel::download(new AbsensiExport($data), 'Absensi.xlsx');
     }
 }
