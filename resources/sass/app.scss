@@ -84,6 +84,11 @@ hr { border-top: 1px solid rgb(60 68 80) !important; }
     z-index: 100;
 }
 .cursor-default { cursor: default; }
+.e-list-checkbox {
+    .custom-checkbox {
+        margin-bottom: 1em;
+    }
+}
 .light-theme {
     hr { border-top: 1px solid #ccd4e2 !important; }
 }

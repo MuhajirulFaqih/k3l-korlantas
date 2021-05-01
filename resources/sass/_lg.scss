@@ -2,4 +2,32 @@
     :root {
         font-size: 12px;
     }
+
+    .topbar {
+        font-size: .85em;
+    }
+
+    .topbar .topbar-widget {
+        width: 16em;
+    }
+
+    .topbar .topbar-widget .topbar-widget-icon {
+        width: 25%;
+    }
+
+    .rightbar-outline {
+        width: 16em;
+    }
+
+    .leftbar-outline {
+        font-size: .75em;
+    }
+
+    .leftbar-sub {
+        font-size: .85em;
+    }
+    
+    .bottombar-outline {
+        font-size: .85em;
+    }
 }

@@ -1,121 +1,126 @@
 <template>
-    <b-modal ref="darurat"
-            hide-footer centered
-            modal-class="e-modal e-modal-mg"
-            :no-close-on-backdrop="isBusy"
-            :no-close-on-esc="isBusy"
-            :hide-header-close="isBusy"
-            title-tag="h4"
-            title="Darurat">
-	  	<div class="d-block">
-	  		<div class="position-relative mt-4">
-                <b-row>
-                    <b-col cols="5">
-                        <b-pagination
-                            align="right"
-                            class="e-pagination"
-                            :total-rows="totalRows"
-                            v-model="currentPage"
-                            :per-page="perPage" />
-                    </b-col>
-                    <b-col cols="2">
+    <div>
+        <b-modal ref="darurat"
+                hide-footer centered
+                modal-class="e-modal e-modal-mg"
+                :no-close-on-backdrop="isBusy"
+                :no-close-on-esc="isBusy"
+                :hide-header-close="isBusy"
+                title-tag="h4"
+                title="Darurat">
+            <div class="d-block">
+                <div class="position-relative mt-4">
+                    <b-row>
+                        <b-col cols="5">
+                            <b-pagination
+                                align="right"
+                                class="e-pagination"
+                                :total-rows="totalRows"
+                                v-model="currentPage"
+                                :per-page="perPage" />
+                        </b-col>
+                        <b-col cols="2">
+                            <multiselect
+                                v-model="status"
+                                :options="statusOptions"
+                                :searchable="false"
+                                :show-labels="false"
+                                value="value"
+                                label="text"
+                                placeholder="Pilih status..."
+                                track-by="text"
+                                :multiple="false"
+                                @input="sortingStatus">
+                            </multiselect>
+                        </b-col>
+                        <b-col cols="2">
                         <multiselect
-                            v-model="status"
-                            :options="statusOptions"
-                            :searchable="false"
-                            :show-labels="false"
-                            value="value"
-                            label="text"
-                            placeholder="Pilih status..."
-                            track-by="text"
-                            :multiple="false"
-                            @input="sortingStatus">
-                        </multiselect>
-                    </b-col>
-                    <b-col cols="2">
-			    	<multiselect
-                            v-model="statusKejadian"
-                            :options="statusKejadianOptions"
-                            :searchable="false"
-                            :show-labels="false"
-                            value="value"
-                            label="text"
-                            placeholder="Pilih status kejadian..."
-                            track-by="text"
-                            :multiple="false"
-                            @input="sortingStatusKejadian">
-                        </multiselect>
-                    </b-col>
-                    <b-col cols="3">
-                        <form @submit.prevent="search">
-                            <b-input-group align="right">
-                                <b-form-input
-                                    align="right"
-                                    class="e-form"
-                                    @keyup="whenSearch"
-                                    v-model="filterDebounced"
-                                    placeholder="Cari judul, tipe, waktu kegiatan..."/>
-                                <b-input-group-append>
-                                    <button class="btn e-btn e-btn-primary" type="submit">
-                                        <ph-magnifying-glass class="phospor"/>
-                                    </button>
-                                </b-input-group-append>
-                            </b-input-group>
-                        </form>
-                    </b-col>
-                </b-row>
-                <b-table responsive
-                    class="e-table"
-                    ref="table"
-                    :busy.sync="isBusy"
-                    :items="provider"
-                    :fields="tableColumns"
-                    :current-page="currentPage"
-                    :per-page="perPage"
-                    :filter="filter"
-                    :sort-by.sync="sortBy"
-                    :sort-desc.sync="sortDesc">
-                    <template v-slot:cell(index)="data">
-                        {{ ((currentPage - 1) * perPage) + data.index + 1 }}.
-                    </template>
-			        <template v-slot:cell(nama)="data">
-				      	{{ data.item.user.nama }} <br/> {{ data.item.user.jabatan }}
-				    </template>
-				    <template v-slot:cell(status)="data">
-				      	<span v-if="data.item.selesai == 1">Selesai</span>
-				      	<span v-else>Belum selesai</span>
-				    </template>
-				    <template v-slot:cell(status_kejadian)="data">
-				      	<span v-if="data.item.kejadian != null">Di ubah ke kejadian</span>
-				      	<span v-else>Tidak di ubah</span>
-				    </template>
-				    <template v-slot:cell(aksi)="data">
-				    	<div class="dropdown-container">
-                            <b-dropdown text="Pilih" class="e-btn-dropdown" boundary>
-                                <b-dropdown-item @click="detail(data.item, 'bottombar')">
-                                    <ph-note class="phospor"/> Detail
-                                </b-dropdown-item>
-                                <b-dropdown-item @click="lokasi(data.item)">
-                                    <ph-map-pin class="phospor"/> Lihat lokasi
-                                </b-dropdown-item>
-                            </b-dropdown>
-                        </div>
-				    </template>
-			    </b-table>
-				<div class="loading" v-show="isBusy">
-			        <b-spinner variant="primary"></b-spinner>
-			    </div>
-	      	</div>
-	    </div>
-    </b-modal>
+                                v-model="statusKejadian"
+                                :options="statusKejadianOptions"
+                                :searchable="false"
+                                :show-labels="false"
+                                value="value"
+                                label="text"
+                                placeholder="Pilih status kejadian..."
+                                track-by="text"
+                                :multiple="false"
+                                @input="sortingStatusKejadian">
+                            </multiselect>
+                        </b-col>
+                        <b-col cols="3">
+                            <form @submit.prevent="search">
+                                <b-input-group align="right">
+                                    <b-form-input
+                                        align="right"
+                                        class="e-form"
+                                        @keyup="whenSearch"
+                                        v-model="filterDebounced"
+                                        placeholder="Cari judul, tipe, waktu kegiatan..."/>
+                                    <b-input-group-append>
+                                        <button class="btn e-btn e-btn-primary" type="submit">
+                                            <ph-magnifying-glass class="phospor"/>
+                                        </button>
+                                    </b-input-group-append>
+                                </b-input-group>
+                            </form>
+                        </b-col>
+                    </b-row>
+                    <b-table responsive
+                        class="e-table"
+                        ref="table"
+                        :busy.sync="isBusy"
+                        :items="provider"
+                        :fields="tableColumns"
+                        :current-page="currentPage"
+                        :per-page="perPage"
+                        :filter="filter"
+                        :sort-by.sync="sortBy"
+                        :sort-desc.sync="sortDesc">
+                        <template v-slot:cell(index)="data">
+                            {{ ((currentPage - 1) * perPage) + data.index + 1 }}.
+                        </template>
+                        <template v-slot:cell(nama)="data">
+                            {{ data.item.user.nama }} <br/> {{ data.item.user.jabatan }}
+                        </template>
+                        <template v-slot:cell(status)="data">
+                            <span v-if="data.item.selesai == 1">Selesai</span>
+                            <span v-else>Belum selesai</span>
+                        </template>
+                        <template v-slot:cell(status_kejadian)="data">
+                            <span v-if="data.item.kejadian != null">Di ubah ke kejadian</span>
+                            <span v-else>Tidak di ubah</span>
+                        </template>
+                        <template v-slot:cell(aksi)="data">
+                            <div class="dropdown-container">
+                                <b-dropdown text="Pilih" class="e-btn-dropdown" boundary>
+                                    <b-dropdown-item @click="detail(data.item, 'bottombar')">
+                                        <ph-note class="phospor"/> Detail
+                                    </b-dropdown-item>
+                                    <b-dropdown-item @click="lokasi(data.item)">
+                                        <ph-map-pin class="phospor"/> Lihat lokasi
+                                    </b-dropdown-item>
+                                </b-dropdown>
+                            </div>
+                        </template>
+                    </b-table>
+                    <div class="loading" v-show="isBusy">
+                        <b-spinner variant="primary"></b-spinner>
+                    </div>
+                </div>
+            </div>
+        </b-modal>
+        <Detail ref="detail"/>
+    </div>
 </template>
 
 <script>
+import Detail from '@/views/Monit/Darurat/Detail'
 import { format, formatISO, parseISO } from 'date-fns'
 import { debounce } from 'lodash'
 import id from 'date-fns/locale/id'
 export default {
     name: 'darurat',
+    components: { Detail },
     data () {
         return {
             totalRows: 0,
@@ -203,11 +208,19 @@ export default {
             })
         },
         detail (item, type) {
-            this.$refs.darurat.hide()
             let self = this
             setTimeout(function() {
                 self.$refs.detail.showModal(item, type)
             }, 500)
+        },
+        lokasi (item) {
+            if(item.lat == null && item.lng == null) { 
+                this.$toast.error("Lokasi tidak dapat di tampilkan")
+                return
+            }
+            var marker = { type: 'darurat', data: item }
+            this.$parent.$parent.getMarkerSingle(marker)
+            this.$refs.darurat.hide()
         },
         refreshTable () {
             this.totalRows > this.perPage ? 

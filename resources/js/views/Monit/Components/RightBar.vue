@@ -28,19 +28,19 @@
         </ul>
         <div :class="`hotspot ${hotspotClass('active')}`">
             <b-row class="mt-3">
-                <b-col cols="3">
+                <b-col cols="4">
                     <div class="e-alert e-alert-success w-100 text-center">{{ rendah }}</div>
                 </b-col>
                 <b-col cols="8">C(%) ≤ 29%</b-col>
             </b-row>
             <b-row class="mt-2">
-                <b-col cols="3">
+                <b-col cols="4">
                     <div class="e-alert e-alert-warning w-100 text-center">{{ sedang }}</div>
                 </b-col>
                 <b-col cols="8">30% ≤ C(%) ≤ 79%</b-col>
             </b-row>
             <b-row class="mt-2">
-                <b-col cols="3">
+                <b-col cols="4">
                     <div class="e-alert e-alert-danger w-100 text-center">{{ tinggi }}</div>
                 </b-col>
                 <b-col cols="8">C(%) ≥ 80%</b-col>

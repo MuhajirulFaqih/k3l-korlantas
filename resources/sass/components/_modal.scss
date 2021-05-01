@@ -99,7 +99,12 @@
         }
     }
     &.e-modal-sm {
-        .modal-dialog { max-width: 40em; }
+        .modal-dialog { 
+            max-width: 40em;
+            .modal-body {
+                min-height: 10em;
+            }
+        }
     }
     &.e-modal-md {
         .modal-dialog { max-width: 40em; }

@@ -3,12 +3,12 @@
 		<b-row>
 	    	<b-col cols="2" md="2">
 	    		<b-row>
-	    			<b-col cols="6"><h4>Penerangan Satuan</h4></b-col>
-	    			<b-col cols="6">
-	    				<b-button @click="$refs.modalTambah.show()" variant="primary" size="sm">
-							<icon name="plus"/> Tambah
+	    			<b-col cols="12">
+						<h4 class="d-inline-block mr-3">Informasi </h4>
+						<b-button @click="$refs.modalTambah.show()" variant="primary" size="sm">
+							<ph-plus class="phospor"/> Tambah
 						</b-button>
-	    			</b-col>
+					</b-col>
 	    		</b-row>
 			</b-col>
 	    	<b-col cols="6" md="6">
@@ -38,15 +38,17 @@
 	               :sort-by.sync="sortBy"
 	               :sort-desc.sync="sortDesc">
 
-		        <template slot="index" slot-scope="data">
+		        <template v-slot:cell(index)="data">
 		          	{{ ((currentPage - 1) * 10) + data.index + 1 }}
 		        </template>
-				<template slot="jenis" slot-scope="row">
-                    <icon :name="row.item.type === 'video' ? 'video' : (row.item.type === 'image' ? 'images' : 'file-pdf')"/> {{ row.item.type }}
+				<template v-slot:cell(jenis)="row">
+					<ph-video-camera class="phospor" v-if="row.item.type === 'video'"/>
+					<ph-image class="phospor" v-else-if="row.item.type === 'image'"/>
+					<ph-file-text class="phospor" v-else/> {{ row.item.type }}
 				</template>
-			    <template slot="aksi" slot-scope="row">
+			    <template v-slot:cell(aksi)="row">
 		            <b-button size="md" variant="danger" @click="prepareDelete(row.item)">
-		              <icon name="trash"/>
+		              <ph-trash class="phospor"/>
 		            </b-button>
 			    </template>
 		    </b-table>
@@ -63,8 +65,7 @@
 				cancel-title="Batal"
 				@ok="submitPeneranganSatuan"
 				@hide="resetFormTambah"
-				ref="modalTambah"
-				size="xl">
+				ref="modalTambah">
 				<template slot="modal-header">
 					<h3 class="modal-title">Tambah Penerangan Satuan</h3>
 				</template>
@@ -78,7 +79,7 @@
                         </b-form-group>
                         <div v-if="payload.type != 'video'">
                             <input type="file" ref="fileUpload" name="image" style="display:none" :accept="payload.type == 'image' ? 'image/*' : 'application/pdf'" multiple @change="onChange" />
-                            <h5>Upload <icon
+                            <h5>Upload <ph-upload
                                     name="upload"
                                     style="cursor: pointer"
                                     :disabled="isFormBusy"
@@ -92,7 +93,7 @@
                                     {{file.name}}
                                 </li>
                                 <li v-for="file in files" :key="'payload-'+file.id" class="d-flex justify-content-between align-items-baseline mb-2">
-                                    {{file.file.replace(baseUrl+'/api/upload/penerangan_satuan/', '')}}
+                                    {{file.file.replace('upload/penerangan_satuan/', '')}}
                                 </li>
                             </ul>
                         </div>
@@ -146,23 +147,13 @@
                     {text: 'Gambar', value: 'image'},
                     {text: 'Pdf', value: 'pdf'},
                     {text: 'Video', value: 'video'}
+				],
+				tableColumns: [
+                    { key: 'index', label: 'No' },
+                    { key: 'jenis', label: 'Jenis' },
+                    { key: 'judul', label: 'Judul' },
+                    { key: 'aksi', label: 'Aksi' },
                 ],
-        		tableColumns: {
-        			index: {
-			            label: 'No.'
-			        },
-		          	jenis: {
-		            	label: 'Jenis',
-		            	sortable: false
-		          	},
-		          	judul: {
-						label: 'Judul',
-						sortable: true
-					},
-		          	aksi: {
-		            	label: 'Aksi',
-		          	},
-				},
 				payload: {
 					id: null,
 					judul: null,
@@ -187,12 +178,7 @@
 					sort: ctx.sortBy !== null ? (ctx.sortBy + ':' + (ctx.sortDesc ? 'desc' : 'asc')) : 'judul:desc'
 				}
 
-				var promise = axios.get(baseUrl+'/api/penerangan-satuan', {
-						params: payload,
-						headers: {
-								Authorization: sessionStorage.getItem('token')
-						}
-					})
+				var promise = axios.get('penerangan-satuan', {params: payload})
 					.then(({data : {data, meta: { pagination }}}) => {
 						this.totalRows = pagination.total
 						this.perPage = pagination.per_page
@@ -246,7 +232,6 @@
                     var headers  = {}
                     if (this.payload.type == 'video'){
 				        headers = {
-				            'Authorization' : sessionStorage.getItem('token'),
                             'Accept': 'application/json'
                         }
                         payload = {
@@ -266,19 +251,18 @@
 
                         headers = {
                             'Content-Type': 'multipart/form-data',
-                            'Authorization': sessionStorage.getItem('token'),
                             'Accept': 'application/json'
                         }
                     }
 
-					axios.post(baseUrl+'/api/penerangan-satuan', payload, {
+					axios.post('penerangan-satuan', payload, {
                         headers,
                         onUploadProgress: function (progressEvent) {
                             this.valueProgressUpload = (parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total)))
                         }.bind(this)
 					})
 					.then(({data}) => {
-						this.$noty.success('Penerangan Satuan berhasil ditambah')
+						this.$toast.success('Penerangan Satuan berhasil ditambah')
 						this.$refs.modalTambah.hide()
 						this.$refs.tabelPeneranganSatuan.refresh()
 					})
@@ -286,7 +270,7 @@
 						console.log(error)
 						if (error.response) {
 							if (error.response.status === 422) {
-								this.$noty.error(flattenDeep(values(error.response.data.errors)).join('<br>'))
+								this.$toast.error(flattenDeep(values(error.response.data.errors)).join('<br>'))
 							}
 						}
 					})
@@ -308,11 +292,7 @@
 				this.files = []
 			},
 			prepareUbah({ id }) {
-				var promise = axios.get(baseUrl+'/api/penerangan-satuan/'+id, {
-					headers: {
-						Authorization: sessionStorage.getItem('token')
-					}
-				})
+				var promise = axios.get('penerangan-satuan/'+id)
 				.then(({data : { data }}) => {
 				    this.payload.id = data.id
 					this.payload.judul = data.judul
@@ -341,12 +321,12 @@
 		                      headers: { Authorization: sessionStorage.getItem('token') }
 		                })
 		                .then((response) => {
-		                  this.$noty.success('Password personil '+ item.nama +' berhasil di reset', { layout: 'topRight' })
+		                  this.$toast.success('Password personil '+ item.nama +' berhasil di reset', { layout: 'topRight' })
 		                  this.$refs.tabelPersonil.refresh()
 		                })
 		                .catch(({ response: { status, data: { errors }}}) => {
 		                      if (status === 422)
-		                        this.$noty.danger('Terjadi kesalahan saat menghapus data', { layout: 'topRight' })
+		                        this.$toast.danger('Terjadi kesalahan saat menghapus data', { layout: 'topRight' })
 		                })
 		            }
 		        })
@@ -366,12 +346,12 @@
 		                      headers: { Authorization: sessionStorage.getItem('token') }
 		                })
 		                .then((response) => {
-		                  this.$noty.success('Data penerangan satuan '+ item.judul +' berhasil di hapus', { layout: 'topRight' })
+		                  this.$toast.success('Data penerangan satuan '+ item.judul +' berhasil di hapus', { layout: 'topRight' })
 		                  this.$refs.tabelPeneranganSatuan.refresh()
 		                })
 		                .catch(({ response: { status, data: { errors }}}) => {
 		                      if (status === 422)
-		                        this.$noty.danger('Terjadi kesalahan saat menghapus data', { layout: 'topRight' })
+		                        this.$toast.danger('Terjadi kesalahan saat menghapus data', { layout: 'topRight' })
 		                })
 		            }
 		        })
@@ -381,11 +361,7 @@
 				this.payload.id_kelurahan = items.map((val) => val.value)
 			},
 			fetchJabatan(){
-				var promise = axios.get(baseUrl+'/api/jabatan', {
-					headers: {
-						Authorization: sessionStorage.getItem('token')
-					}
-				})
+				var promise = axios.get('jabatan')
 				.then(({data: {data}}) => {
 					this.jabatan = data.map((val) => {
 						return {value: val.id, text: val.jabatan}
@@ -396,11 +372,7 @@
 				})
 			},
 			fetchPangkat(){
-				var promise = axios.get(baseUrl+'/api/pangkat', {
-					headers: {
-						Authorization: sessionStorage.getItem('token')
-					}
-				})
+				var promise = axios.get('pangkat')
 				.then(({data: {data}}) => {
 					this.pangkat = data.map((val) => {
 						return {value: val.id, text: val.pangkat}
@@ -411,11 +383,7 @@
 				})
 			},
 			fetchKesatuan(){
-				var promise = axios.get(baseUrl+'/api/kesatuan', {
-					headers: {
-						Authorization: sessionStorage.getItem('token')
-					}
-				})
+				var promise = axios.get('kesatuan')
 				.then(({data: {data}}) => {
 					this.kesatuan = data.map((val) => {
 						return {value: val.id, text: val.kesatuan}
@@ -426,7 +394,7 @@
 				})
 			},
 			fetchWilKel(){
-				var promise = axios.get(baseUrl+'/api/wilayah')
+				var promise = axios.get('wilayah')
 				.then(({data : { data }}) => {
 					var kels = []
 					data.forEach((kec) => {

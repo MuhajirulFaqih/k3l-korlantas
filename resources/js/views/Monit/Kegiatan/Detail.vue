@@ -26,64 +26,64 @@
                                     </b-col>
                                 </b-row>
                                 <b-row v-if="single.tipe.tipe != null">
-                                    <b-col cols="12" lg="3">Tipe</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.tipe.tipe }}</b></b-col>
+                                    <b-col cols="3">Tipe</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.tipe.tipe }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.sasaran != null">
-                                    <b-col cols="12" lg="3">Sasaran</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.sasaran }}</b></b-col>
+                                    <b-col cols="3">Sasaran</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.sasaran }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.lokasi != null">
-                                    <b-col cols="12" lg="3">Lokasi</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.lokasi }}</b></b-col>
+                                    <b-col cols="3">Lokasi</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.lokasi }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.kuat_pers != null">
-                                    <b-col cols="12" lg="3">Kuat pers</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.kuat_pers }} Personil</b></b-col>
+                                    <b-col cols="3">Kuat pers</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.kuat_pers }} Personil</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.hasil != null">
-                                    <b-col cols="12" lg="3">Hasil</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.hasil }} Personil</b></b-col>
+                                    <b-col cols="3">Hasil</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.hasil }} Personil</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.jml_giat != null">
-                                    <b-col cols="12" lg="3">Jumlah giat</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.jml_giat }}</b></b-col>
+                                    <b-col cols="3">Jumlah giat</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.jml_giat }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.jml_tsk != null">
-                                    <b-col cols="12" lg="3">Jumlah tsk</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.jml_tsk }}</b></b-col>
+                                    <b-col cols="3">Jumlah tsk</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.jml_tsk }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.bb != null">
-                                    <b-col cols="12" lg="3">Jumlah bb</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.jml_bb }}</b></b-col>
+                                    <b-col cols="3">Jumlah bb</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.jml_bb }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.perkembangan != null">
-                                    <b-col cols="12" lg="3">Perkembangan</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.perkembangan }}</b></b-col>
+                                    <b-col cols="3">Perkembangan</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.perkembangan }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.dasar != null">
-                                    <b-col cols="12" lg="3">Dasar</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.dasar }}</b></b-col>
+                                    <b-col cols="3">Dasar</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.dasar }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.modus != null">
-                                    <b-col cols="12" lg="3">Modus</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.modus }}</b></b-col>
+                                    <b-col cols="3">Modus</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.modus }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.tsk_bb != null">
-                                    <b-col cols="12" lg="3">Tsk BB</b-col>
-                                    <b-col cols="12" lg="1">:</b-col>
-                                    <b-col cols="12" lg="8"><b>{{ single.tsk_bb }}</b></b-col>
+                                    <b-col cols="3">Tsk BB</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="8"><b>{{ single.tsk_bb }}</b></b-col>
                                 </b-row>
                             </perfect-scrollbar>
                         </b-col>

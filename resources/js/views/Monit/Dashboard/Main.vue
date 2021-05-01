@@ -1,4 +1,4 @@
-f<template>
+<template>
     <div >
         <LeftBar ref="leftbar"/>
         <TopBar ref="topbar"/>
@@ -69,6 +69,12 @@ f<template>
                     :position="{ lat: parseFloat(indexMarkerPengawalan.lat), lng: parseFloat(indexMarkerPengawalan.lng) }"
                     :icon="require('@/assets/pengawalan.png').default" @click="$refs.personil.detail(indexMarkerPengawalan)"/>
             </div>
+            
+            <div id="marker-lokasi-vital">
+                <GmapMarker v-for="(indexMarkerLokasiVital, keyMarkerLokasiVital) in markerLokasiVital" :key="`lokasivital-${keyMarkerLokasiVital}`" 
+                    :position="{ lat: parseFloat(indexMarkerLokasiVital.lat), lng: parseFloat(indexMarkerLokasiVital.lng) }"
+                    :icon="indexMarkerLokasiVital.jenis.icon" @click="$refs.lokasiVital.detail(indexMarkerLokasiVital)"/>
+            </div>
         </GmapMap>
         <RightBar ref="rightbar"/>
         <BottomBar ref="bottombar"/>
@@ -81,6 +87,10 @@ f<template>
         <Pengaduan ref="pengaduan" />
         <Personil ref="personil" />
         <Tps ref="tps" />
+
+        <audio :src="audioEmergency" ref="emergency" loop></audio>
+	    <audio :src="audioKejadian" ref="audioKejadian" loop></audio>
+        <audio :src="ringBackTone" ref="rbt" loop></audio>
     </div>
 </template>
 
@@ -99,6 +109,9 @@ import LokasiVital from '@/views/Monit/LokasiVital/Main'
 import Pengaduan from '@/views/Monit/Pengaduan/Main'
 import Personil from '@/views/Monit/Personil/Main'
 import Tps from '@/views/Monit/Tps/Main'
+import Vcall from '@/views/Monit/Vcall/Main'
+
+import LaravelEcho from "laravel-echo"
 
 export default {
     name: 'dashboard',
@@ -132,6 +145,11 @@ export default {
             kegiatanStatus: true, //Belongs to leftbar
             pengaduanStatus: true, //Belongs to leftbar
             kejadianStatus: true, //Belongs to leftbar
+            audioEmergency: audioEmergency,
+	        audioKejadian: audioKejadian,
+            ringBackTone: ringBackTone,
+            socketDarurat: false,
+            socketDaruratRadius: [],
         }
     },
     computed: {
@@ -234,7 +252,72 @@ export default {
         },
         triggerLogout () {
             this.$parent.triggerLogout()
-        }
+        },
+        initLaravelEcho() {
+            var self = this
+
+            Echo = new LaravelEcho({
+                broadcaster: "socket.io",
+                host: socketUrl,
+                auth: { headers: { Authorization: localStorage.getItem('token') }}
+            });
+
+            Echo.private(socketPrefix + ':Monit')
+                .listen('.CallReady', this.$refs.vcall.callReady)
+                .listen('.darurat-baru', this.daruratBaru)
+                .listen('.kegiatan-baru', this.kegiatanBaru)
+                .listen('.pengaduan-baru', this.pengaduanBaru)
+                .listen('.kegiatan-komentar', this.kegiatanKomentar)
+                .listen('.personil-relokasi', this.relokasiPersonil)
+                .listen('.masyarakat-relokasi', this.relokasiMasyarakat)
+                .listen('.tps-relokasi', this.relokasiTps)
+                .listen('.kejadian-baru', this.kejadianBaru)
+                .listen('.kejadian-tindaklanjut', this.kejadianTindaklanjut)
+                .listen('.darurat-selesai', this.daruratStatusSelesai)
+                .listen('.personil-logout', this.personilLogout)
+        },
+        daruratBaru({ data }) {
+            var self = this
+            this.$toast.open({
+                message: data.user.nama + ' mengirim darurat baru!',
+                type: 'error',
+                duration: 0,
+                onDismiss: function() {
+                    self.$refs.emergency.pause()
+				    self.$refs.emergency.currentTime = 0
+                },
+            })
+            if(this.$refs.vcall.call == false) { this.$refs.emergency.play() }
+        },
+        detailDaruratBaru() {
+            this.markerSingleShow = true
+            this.socketDarurat = true
+            this.markerDarurat.push(data)
+            this.$refs.peta.$mapPromise.then((map) => {
+                var radius = new google.maps.Circle({
+                    strokeColor: '#f44336',
+                    strokeOpacity: 0.35,
+                    strokeWeight: 1,
+                    fillColor: '#f44336',
+                    fillOpacity: 0.35,
+                    map: map,
+                    center: { lat: parseFloat(data.lat), lng: parseFloat(data.lng) },
+                    radius: parseFloat(data.acc)
+                })
+                this.socketDaruratRadius.push(radius)
+            })
+            this.zoom = 20
+            this.center = { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
+        },
+        kegiatanBaru(data){
+            this.$toast.info(data.data.user.nama + ' menambah kegiatan baru', { layout: 'topRight' })
+        },
+        kegiatanKomentar(data){
+            this.$toast.info(data.data.user.nama + ' mengomentari kegiatan ' + data.data.induk, { layout: 'topRight' })
+        },
+        pengaduanBaru(data){
+            this.$toast.info(data.data.user.nama + ' menambah pengaduan baru', { layout: 'topRight' })
+        },
     },
     mounted () {
         this.mapsOptions.styles = this.darkStyle

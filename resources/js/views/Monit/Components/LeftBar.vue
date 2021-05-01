@@ -290,7 +290,17 @@
             </li>
             <li class="leftbar-sub-header">Lokasi Vital</li>
             <perfect-scrollbar class="h-100vh">
-                
+                <ul class="list-unstyled e-list-checkbox">
+                    <!-- <li><b-form-checkbox v-model="tempatVitalSemua">Semua</b-form-checkbox></li> -->
+                    <li>
+                        <b-form-checkbox-group 
+                            stacked 
+                            @change="fetchTempatVital"
+                            v-model="jenisTempatVital"
+                            :options="jenisTempatVitalOptions">
+                        </b-form-checkbox-group>
+                    </li>
+                </ul>
             </perfect-scrollbar>
         </ul>
         <div class="leftbar-bottom">
@@ -341,6 +351,10 @@ export default {
             trackingType: 'semua',
             trackingPage: 1,
             trackingTotal: 0,
+            tempatVitalSemua: false,
+            tempatVitalJenisSelected: [],
+            jenisTempatVital: [],
+            jenisTempatVitalOptions: [],
             optionsSlider: {
                 eventType: 'auto',
                 width: '100%',
@@ -491,6 +505,33 @@ export default {
         hideDataTracking () {
             this.$parent.markerPersonilShow = false
         },
+        fetchJenisLokasi () {
+            axios.get('jenis')
+            .then(({ data }) => {
+                this.jenisTempatVitalOptions = data.data
+            })
+        },
+        fetchTempatVital(value) {
+            var selected = this.tempatVitalJenisSelected
+            var marker = this.$parent.markerLokasiVital
+            if(value.length > selected.length) {
+                var jenis = value.filter(function(i) { return selected.indexOf(i) < 0 })
+                axios.get('tempat-vital/jenis/' + jenis[0])
+                .then(({ data : { data } }) => {
+                    if(data) { 
+                        data.forEach(function(v){ marker.push(v) })
+                    }
+                })
+            } else {
+                var jenis = selected.filter(function(i) { return value.indexOf(i) < 0 })
+                var removeIndex = []
+				marker.forEach(function(obj, index) {
+            		if(obj.jenis.value == jenis[0]) { removeIndex.push(index) }
+                })
+				for (var i = removeIndex.length - 1; i >= 0; i--) { marker.splice(removeIndex[i], 1) }
+            }
+            this.tempatVitalJenisSelected = value
+        },
         settingDarkMode () {
             this.darkMode = !this.darkMode
         },
@@ -608,6 +649,9 @@ export default {
         kejadian :debounce(function (val, old) {
             this.$parent.getMarkerKejadian()
         }, 700),
+    },
+    mounted () {
+        this.fetchJenisLokasi()
     }
 }
 </script>

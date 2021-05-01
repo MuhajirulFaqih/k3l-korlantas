@@ -24,7 +24,7 @@
                     <ph-git-diff class="phospor"/>
                 </div>
                 <div class="topbar-body">
-                    <div>Proses Penanganan</div>
+                    <div>Penanganan</div>
                     <span>{{ prosesPenanganan }}</span>
                 </div>
             </div>
