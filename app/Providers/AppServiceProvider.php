@@ -25,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         setlocale(LC_TIME, 'id_ID.UTF-8');
+        config(['app.locale' => 'id']);
+	    \Carbon\Carbon::setLocale('id');
         
         Schema::defaultStringLength(191);
         

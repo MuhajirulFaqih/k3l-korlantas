@@ -270,10 +270,7 @@ export default {
                 .listen('.kegiatan-komentar', this.kegiatanKomentar)
                 .listen('.personil-relokasi', this.relokasiPersonil)
                 .listen('.masyarakat-relokasi', this.relokasiMasyarakat)
-                .listen('.tps-relokasi', this.relokasiTps)
                 .listen('.kejadian-baru', this.kejadianBaru)
-                .listen('.kejadian-tindaklanjut', this.kejadianTindaklanjut)
-                .listen('.darurat-selesai', this.daruratStatusSelesai)
                 .listen('.personil-logout', this.personilLogout)
         },
         daruratBaru({ data }) {
@@ -293,7 +290,7 @@ export default {
             this.markerSingleShow = true
             this.socketDarurat = true
             this.markerDarurat.push(data)
-            this.$refs.peta.$mapPromise.then((map) => {
+            this.$refs.maps.$mapPromise.then((map) => {
                 var radius = new google.maps.Circle({
                     strokeColor: '#f44336',
                     strokeOpacity: 0.35,
@@ -317,6 +314,163 @@ export default {
         },
         pengaduanBaru(data){
             this.$toast.info(data.data.user.nama + ' menambah pengaduan baru', { layout: 'topRight' })
+        },
+        relokasiPersonil({data : {data}}){
+            var self = this
+
+            if (this.markerSingle.type == 'personil' && this.markerSingle.data.id == data.id) {
+                this.markerSingle.data = data
+            }
+
+            this.$refs.maps.$mapPromise.then((map) => {
+                if (self.$refs.leftbar.tracking === false)
+                    return
+                if (self.$refs.leftbar.tracking === true && self.$refs.leftbar.trackingType == 'dinas' && data.dinas.kegiatan == 'LEPAS DINAS') {
+                    self.removeMarkerPersonil(data)
+                    return
+                }
+                if (self.$refs.leftbar.tracking === true && self.$refs.leftbar.trackingType == 'lepas_dinas' && data.dinas.kegiatan != 'LEPAS DINAS') {
+                    self.removeMarkerPersonil(data)
+                    return
+                }
+
+                var personil = data
+                var indexMarkerPersonil = self.markerPersonil.findIndex((o) => o.id === personil.id );
+
+                personil.position = {
+                    lat: personil.lat,
+                    lng: personil.lng
+                }
+
+                if (personil.dinas.kegiatan === 'Patroli' || personil.dinas.kegiatan === 'Pengawalan') {
+                    var angle = indexMarkerPersonil >= 0 ? google.maps.geometry.spherical.computeHeading(new google.maps.LatLng(self.markerPersonil[indexMarkerPersonil].lat, self.markerPersonil[indexMarkerPersonil].lng), new google.maps.LatLng(personil.position.lat, personil.position.lng)) : 0;
+                    personil.style = {
+                        'width' : "20px",
+                        'transform' : "rotate("+ angle +"deg)",
+                        'transform-origin' : "center"
+                    }
+                    var indexLogPatroliPengawalan = self.logPatroliPengawalan.findIndex((o) => o.id === personil.id)
+                    if (indexLogPatroliPengawalan < 0 ){
+                        var color = this.randomColor()
+                        var polyline = new google.maps.Polyline({
+                            path: [],
+                            strokeColor: color,
+                            strokeOpactity: 0.8,
+                            strokeWidth: 2,
+                            map: map
+                        })
+                        indexLogPatroliPengawalan = self.logPatroliPengawalan.length
+                        self.$set(self.logPatroliPengawalan, indexLogPatroliPengawalan, {'id': personil.id, 'polyline': polyline})
+                    }
+                    var path = self.logPatroliPengawalan[indexLogPatroliPengawalan].polyline.getPath().getArray()
+                    path.push({lat: parseFloat(personil.lat), lng: parseFloat(personil.lng)})
+                    self.logPatroliPengawalan[indexLogPatroliPengawalan].polyline.setPath(path)
+                } else {
+                    personil.style = {
+                        'width': "30px"
+                    }
+                    var indexLogPatroliPengawalan = self.logPatroliPengawalan.findIndex((o) => o.id === personil.id)
+                    if (indexLogPatroliPengawalan >= 0){
+                        self.logPatroliPengawalan[indexLogPatroliPengawalan].polyline.setMap(null)
+                        self.logPatroliPengawalan.splice(indexLogPatroliPengawalan, 1)
+                    }
+                }
+                if (indexMarkerPersonil < 0) {
+                    self.$set(self.markerPersonil, self.markerPersonil.length, personil)
+                } else {
+                    self.$set(self.markerPersonil, indexMarkerPersonil, personil);
+                }
+            })
+        },
+        removeMarkerPersonil (data) {
+            var indexPers  = this.markerPersonil.findIndex((o) => o.id === data.id)
+            var indexPatwal  = this.logPatroliPengawalan.findIndex((o) => o.id === data.id)
+            this.markerPersonil.splice(indexPers, 1)
+            this.logPatroliPengawalan.splice(indexPatwal, 1)
+        },
+        relokasiMasyarakat ({data: { data } }) {
+            var singleKejadian = this.markerSingle.findIndex((o) => o.tipe == 'kejadian')
+            var singleDarurat = this.markerSingle.findIndex((o) => o.tipe == 'darurat')
+            if (this.markerKejadian.length == 0 && this.markerDarurat.length == 0)
+                return
+
+            if(data.jenis_induk == 'kejadian') {
+                if(data.induk.selesai != 0 || data.induk.follow_me == 0) { return }
+                this.relokasiKejadian(data)
+            } else {
+                if(data.induk.selesai != 0) { return }
+                this.relokasiDarurat(data)
+            }
+        },
+        relokasiKejadian (data) {
+            var masyarakat = data
+            var indexKejadian = this.markerSingle.findIndex((o) => o.data.id == masyarakat.induk.id )
+            var indexMasyarakat = this.markerMasyarakatKejadian.findIndex((o) => o.user.id == masyarakat.user.id )
+            var indexKejadianMasyarakat = this.markerMasyarakatKejadian.findIndex((o) => o.induk.id == masyarakat.induk.id )
+
+            masyarakat.position = {
+                lat: parseFloat(masyarakat.lat),
+                lng: parseFloat(masyarakat.lng)
+            }
+
+            if (indexKejadian != -1) {
+                if(indexMasyarakat == -1 && indexKejadianMasyarakat == -1) {
+                    this.$set(this.markerMasyarakatKejadian, this.markerMasyarakatKejadian.length, masyarakat)
+                } else {
+                    this.$set(this.markerMasyarakatKejadian, indexMasyarakat, masyarakat)
+                }
+            }
+        },
+
+        relokasiDarurat (data) {
+            var masyarakat = data
+            var indexDarurat = this.markerSingle.findIndex((o) => o.data.id == masyarakat.induk.id )
+            var indexMasyarakat = this.markerMasyarakatDarurat.findIndex((o) => o.user.id == masyarakat.user.id )
+            var indexDaruratMasyarakat = this.markerMasyarakatDarurat.findIndex((o) => o.induk.id == masyarakat.induk.id )
+
+            masyarakat.position = {
+                lat: parseFloat(masyarakat.lat),
+                lng: parseFloat(masyarakat.lng)
+            }
+
+            if (indexDarurat != -1) {
+                if(indexMasyarakat == -1 && indexDaruratMasyarakat == -1) {
+                    this.$set(this.markerMasyarakatDarurat, this.markerMasyarakatDarurat.length, masyarakat)
+                } else {
+                    this.$set(this.markerMasyarakatDarurat, indexMasyarakat, masyarakat)
+                }
+            }
+        },
+        kejadianBaru ({data : {data}}) {
+            if(data.id_darurat == null) {
+                if(this.call == false) {
+                    data.audio == 'kejadian' ? this.$refs.audioKejadian.play() : this.$refs.audioKejadianCustom.playAudio(data.audio)
+                }
+                this.$toast.open({
+                    message: data.user.nama + ' mengirim darurat baru!',
+                    type: 'error',
+                    duration: 0,
+                    onDismiss: function() {
+                        self.$refs.emergency.pause()
+                        this.$refs.audioKejadian.pause()
+						this.$refs.audioKejadianCustom.stopAudio()
+                        this.$refs.audioKejadian.currentTime = 0
+                    },
+                })
+            }
+            this.$refs.topbar.refreshData()
+        },
+        personilLogout ({data : {data}}) {
+            var self = this
+            var indexMarkerPersonil = this.markerPersonil.findIndex((o) => o.id === data.id );
+            if(indexMarkerPersonil >= 0)
+                this.markerPersonil.splice(indexMarkerPersonil, 1)
+
+            var indexLogPatroliPengawalan = self.logPatroliPengawalan.findIndex((o) => o.id === data.id)
+            if (indexLogPatroliPengawalan >= 0) {
+                self.logPatroliPengawalan[indexLogPatroliPengawalan].polyline.setMap(null)
+                self.logPatroliPengawalan.splice(indexLogPatroliPengawalan, 1)
+            }
         },
     },
     mounted () {

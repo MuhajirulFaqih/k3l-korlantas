@@ -152,7 +152,8 @@
                     <b-row>
                         <b-col cols="1"> <ph-phone class="phospor"/> </b-col>
                         <b-col cols="10">
-                            <span>{{ single.user.no_telp  }}</span>
+                            <span v-if="single.user.no_telp != null">{{ single.user.no_telp  }}</span>
+                            <span v-else>-</span>
                         </b-col>
                     </b-row>
                 </b-col>
