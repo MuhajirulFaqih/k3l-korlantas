@@ -37,7 +37,8 @@ export default {
     data () {
         return {
             isBusy: false,
-            single: null
+            single: null,
+            call: false,
         }
     },
     methods : {
@@ -47,6 +48,9 @@ export default {
         },
         humanizeFormat (value) {
             return moment(value).fromNow()
+        },
+        callReady() {
+            console.log('Call Ready')
         },
         closeCall () {
             this.$refs.videoCall.hide()

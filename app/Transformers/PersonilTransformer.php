@@ -65,6 +65,7 @@ class PersonilTransformer extends TransformerAbstract
             'bhabin_kel' => $personil->bhabin ? $personil->bhabin->kelurahan->implode('nama', ', ') : null,
             'loginStatus' => $this->CheckLoginPersonil($personil),
             'activeStatus' => $this->CheckActivePersonil($personil),
+            'angle' => 0,
         ];
     }
 

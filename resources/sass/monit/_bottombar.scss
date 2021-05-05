@@ -16,9 +16,24 @@
     backdrop-filter: blur(4px);
     border-radius: 1em 1em 0 0;
     .bottombar-menu {
+        position: relative;
         display: inline-block;
         text-align: center;
         padding: 0 1em;
+        .bottombar-menu-info {
+            position: absolute;
+            width: 1.5rem;
+            height: 1.5rem;
+            font-size: .85rem;
+            font-family: $fontBody;
+            padding-top: .2rem;
+            border-radius: 50%;
+            background: $red;
+            color: $white;
+            top: -2.55em;
+            right: 1.5em;
+            z-index: 1;
+        }
         .bottombar-icon {
             display: inline-block;
             position: relative;

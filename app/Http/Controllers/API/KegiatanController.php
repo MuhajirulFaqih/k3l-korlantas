@@ -77,14 +77,16 @@ class KegiatanController extends Controller
             'tsk_bb' => $validatedData['tsk_bb'] ?? null,
             'dokumentasi' => $dokumentasi ?? null,
         ];
-
+        
         $kegiatan = Kegiatan::create($data);
 
         if (!$kegiatan)
             return response()->json(['error' => 'Terjadi kesalahan saat menyimpan data'], 500);
 
         // Send notifikasi
-        $this->broadcastNotifikasi($user, $kegiatan);
+        if(!env('APP_DEV')) {
+            $this->broadcastNotifikasi($user, $kegiatan);
+        }
         
 
         // Broadcast to monit

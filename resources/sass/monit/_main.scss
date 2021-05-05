@@ -75,6 +75,134 @@ div { outline: none !important; }
     }
 }
 
+.e-pulse-alert {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	z-index: 900;
+	background: rgb(255,255,255);
+	background: radial-gradient(circle, rgba(255, 255, 255, 0) 10%, rgba(255, 0, 0, 0.34) 100%);
+	-webkit-animation: pulse 1s infinite;
+   -moz-animation: pulse 1s infinite;
+   -o-animation: pulse 1s infinite;
+    animation: pulse 1s infinite;
+    pointer-events: none;
+    &-thin {
+        opacity: 0;
+        -webkit-animation: pulse-thin 1s infinite;
+        -moz-animation: pulse-thin 1s infinite;
+        -o-animation: pulse-thin 1s infinite;
+            animation: pulse-thin 1s infinite;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+@-o-keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+@-moz-keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+@-webkit-keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse-thin {
+    0% {
+        opacity: 1;
+    }
+    30% {
+        opacity: 0;
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@-o-keyframes pulse-thin {
+    0% {
+        opacity: 1;
+    }
+    30% {
+        opacity: 0;
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@-moz-keyframes pulse-thin {
+    0% {
+        opacity: 1;
+    }
+    30% {
+        opacity: 0;
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@-webkit-keyframes pulse-thin {
+    0% {
+        opacity: 1;
+    }
+    30% {
+        opacity: 0;
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+// .v-toast {
+//     z-index: 1000 !important;
+// }
+
 ul.timeline {
     list-style-type: none;
     position: relative;

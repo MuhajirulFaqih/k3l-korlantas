@@ -2,6 +2,7 @@
     <div class="bottombar-outline">
         <div class="bottombar">
             <a href="javascript:void(0);" @click="showKegiatan" class="bottombar-menu">
+                <!-- <span class="bottombar-menu-info">1</span> -->
                 <div class="bottombar-icon">
                     <ph-shield-chevron class="phospor"/>
                 </div>

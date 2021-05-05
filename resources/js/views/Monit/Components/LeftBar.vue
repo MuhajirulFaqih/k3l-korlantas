@@ -447,25 +447,25 @@ export default {
         },
         showDataTracking () {
             this.$parent.markerPersonil = []
-            this.$parent.markerPatroli = []
-            this.$parent.markerPengawalan = []
+            // this.$parent.markerPatroli = []
+            // this.$parent.markerPengawalan = []
             this.trackingPage = 1
             this.fetchDataTracking()
             var maps = this.$parent.$refs.maps
             var self = this
-            if(this.trackingType == 'lepas_dinas') {
-                maps.$mapPromise.then((map) => {
-                    self.$parent.logPatroliPengawalan.forEach(function(key) {
-                        key.polyline.setVisible(false)
-                    })
-                })
-            } else {
-                maps.$mapPromise.then((map) => {
-                    self.$parent.logPatroliPengawalan.forEach(function(key) {
-                        key.polyline.setVisible(true)
-                    })
-                })
-            }
+            // if(this.trackingType == 'lepas_dinas') {
+            //     maps.$mapPromise.then((map) => {
+            //         self.$parent.logPatroliPengawalan.forEach(function(key) {
+            //             key.polyline.setVisible(false)
+            //         })
+            //     })
+            // } else {
+            //     maps.$mapPromise.then((map) => {
+            //         self.$parent.logPatroliPengawalan.forEach(function(key) {
+            //             key.polyline.setVisible(true)
+            //         })
+            //     })
+            // }
         },
         fetchDataTracking () {
             var self = this
@@ -480,15 +480,15 @@ export default {
                     personil.data.forEach(function(key) {
                         var tempPersonil = key
                         tempPersonil.angle = 0
-                        if (tempPersonil.dinas.kegiatan == 'Patroli') {
-                            var angle = google.maps.geometry.spherical.computeHeading(new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng), new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng))
-                            self.$set(self.$parent.markerPatroli, self.$parent.markerPatroli.length, tempPersonil)
-                        } else if (tempPersonil.dinas.kegiatan == 'Pengawalan') {
-                            var angle = google.maps.geometry.spherical.computeHeading(new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng), new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng))
-                            self.$set(self.$parent.markerPengawalan, self.$parent.markerPengawalan.length, tempPersonil)
-                        } else {
+                        // if (tempPersonil.dinas.kegiatan == 'Patroli') {
+                        //     var angle = google.maps.geometry.spherical.computeHeading(new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng), new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng))
+                        //     self.$set(self.$parent.markerPatroli, self.$parent.markerPatroli.length, tempPersonil)
+                        // } else if (tempPersonil.dinas.kegiatan == 'Pengawalan') {
+                        //     var angle = google.maps.geometry.spherical.computeHeading(new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng), new google.maps.LatLng(tempPersonil.lat, tempPersonil.lng))
+                        //     self.$set(self.$parent.markerPengawalan, self.$parent.markerPengawalan.length, tempPersonil)
+                        // } else {
                             self.$set(self.$parent.markerPersonil, self.$parent.markerPersonil.length, tempPersonil)
-                        }
+                        // }
                     })
                 })
                 if(personil.meta.pagination.total != 0) {

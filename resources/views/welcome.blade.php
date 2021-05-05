@@ -6,8 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="base-url" content="{{ url('/') }}">
         <meta name="wss-vc" content="{{ env('VC_WSS_URL') }}">
-        <meta name="echo" content="{{ env('SOCKET_URL').':'.env('SOCKET_PORT') }}">
+        <meta name="echo" content="{{ env('SOCKET_URL') }}">
         <meta name="token" content="{{ csrf_token() }}">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="app-name" content="{{ ENV('APP_NAME') }}">
         <meta name="instansi" content="{{ ENV('APP_INSTANSI') }}">
         <meta name="default-lat" content="{{ ENV('DEFAULT_LAT') }}">
