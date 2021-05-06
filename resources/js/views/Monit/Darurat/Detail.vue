@@ -27,7 +27,7 @@
                     <b-row class="mb-2">
                         <b-col cols="12" colspan="2">
                             <center v-if="single.user.jenis_pemilik == 'personil' || single.user.jenis_pemilik == 'bhabin'">
-                                <button class="btn e-btn e-btn-primary btn-lg mt-3" @click="detailPersonilDirect(single.user.id_personil)">
+                                <button class="btn e-btn e-btn-primary btn-lg mt-3" @click="$parent.$parent.$refs.personil.$refs.detail.videoCallById(single.user.id_personil)">
                                     <ph-video-camera class="phospor"/> Panggilan Video
                                 </button>
                             </center>
@@ -109,6 +109,9 @@
                                     <b-col cols="3">{{ td.distance }} meter</b-col>
                                 </b-row>
                             </b-list-group-item>
+                            <b-list-group-item v-if="single.nearby.length == 0" class="mt-2 text-center">
+                                <span>Tidak ditemukan data personil terdekat</span>
+                            </b-list-group-item>
                         </b-list-group>
                         <br/>
                         <center>
@@ -173,19 +176,6 @@ export default {
         showModal (item) {
             this.single = item
             this.$refs.detail.show()
-        },
-        detailPersonilDirect (id) {
-            axios.get('personil/' + id)
-            .then(({ data : { data } }) => {
-                if(data.lat == null && data.lng == null) {
-                    this.$toast.error('Lokasi terbaru personil tidak dapat di lacak', { layout: 'topRight' })
-                } else {
-                    let self = this
-                    setTimeout(function() {
-                        self.$refs.videoCall.showModal(data)
-                    }, 500)
-                }
-            })
         },
         ubahStatusDarurat (data) {
             this.$parent.$parent.$parent.$refs.maps.$mapPromise.then((map) => {

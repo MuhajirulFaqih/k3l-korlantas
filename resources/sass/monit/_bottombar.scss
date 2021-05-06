@@ -6,6 +6,10 @@
     align-items: center;
     width: 100%;
     letter-spacing: 1.5px;
+    transition: all .85s;
+    &.offset {
+        bottom: -18em;
+    }
 }
 
 .bottombar {

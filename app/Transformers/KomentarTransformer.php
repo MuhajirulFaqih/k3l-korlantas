@@ -23,7 +23,7 @@ class KomentarTransformer extends TransformerAbstract
             'komentar' => $komentar->komentar,
             'id_user'  => $komentar->id_user,
             'w_komentar' => $komentar->created_at->toDateTimeString(),
-            'induk' => $komentar->induk->judul ?? $komentar->induk->kejadian,
+            'induk' => $komentar->induk->judul ?? str_limit($komentar->induk->keterangan, 20),
         ];
     }
 

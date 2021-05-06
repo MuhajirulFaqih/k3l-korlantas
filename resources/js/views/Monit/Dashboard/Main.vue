@@ -47,6 +47,7 @@
                     :icon="require('@/assets/pengaduan.png').default" @click="$refs.bottombar.$refs.pengaduan.detail(indexMarkerPengaduan)"/>
             </div>
             
+            <!-- have not been used -->
             <div id="marker-tps" v-if="!markerSingleShow">
                 <GmapMarker v-for="(indexMarkerTps, keyMarkerTps) in markerTps" :key="`hotspot-${keyMarkerTps}`" 
                     :position="{ lat: parseFloat(indexMarkerTps.lat), lng: parseFloat(indexMarkerTps.lng) }"
@@ -54,9 +55,12 @@
             </div>
             
             <div id="marker-personil" v-if="markerPersonilShow && !markerSingleShow">
-                <GmapMarker v-for="(indexMarkerPersonil, keyMarkerPersonil) in markerPersonil" :key="`personil-${keyMarkerPersonil}`" 
-                    :position="{ lat: parseFloat(indexMarkerPersonil.lat), lng: parseFloat(indexMarkerPersonil.lng) }"
-                    :icon="{ url: indexMarkerPersonil.icon, rotation: indexMarkerPersonil.angle }" @click="$refs.bottombar.$refs.personil.detail(indexMarkerPersonil)"/>
+                <gmap-custom-marker v-for="(indexMarkerPersonil, keyMarkerPersonil) in markerPersonil" :key="`personil-${keyMarkerPersonil}`"
+                    :marker="{ lat: parseFloat(indexMarkerPersonil.lat), lng: parseFloat(indexMarkerPersonil.lng) }"
+                    :item="indexMarkerPersonil"
+                    alignment="center">
+                    <img :src="indexMarkerPersonil.icon" :style="indexMarkerPersonil.style" @click="$refs.bottombar.$refs.personil.detail(indexMarkerPersonil)" class="cursor-pointer"/>
+                </gmap-custom-marker>
             </div>
 
             <div id="marker-patroli" v-if="markerPersonilShow && !markerSingleShow">
@@ -76,12 +80,27 @@
                     :position="{ lat: parseFloat(indexMarkerLokasiVital.lat), lng: parseFloat(indexMarkerLokasiVital.lng) }"
                     :icon="indexMarkerLokasiVital.jenis.icon" @click="$refs.lokasiVital.detail(indexMarkerLokasiVital)"/>
             </div>
+
+            <div id="marker-masyarakat-kejadian">
+                <GmapMarker v-for="(indexMarkerMasyarakatKejadian, keyMarkerMasyarakatKejadian) in markerMasyarakatKejadian" 
+                    :key="`masyarakat-kejadian-${keyMarkerMasyarakatKejadian}`" 
+                    :position="{ lat: parseFloat(indexMarkerMasyarakatKejadian.lat), lng: parseFloat(indexMarkerMasyarakatKejadian.lng) }"
+                    :icon="require('@/assets/masyarakat-kejadian.png').default" @click="$refs.masyarakat.detail(indexMarkerMasyarakatKejadian)"/>
+            </div>
+            
+            <div id="marker-masyarakat-darurat">
+                <GmapMarker v-for="(indexMarkerMasyarakatDarurat, keyMarkerMasyarakatDarurat) in markerMasyarakatDarurat" 
+                    :key="`masyarakat-darurat-${keyMarkerMasyarakatDarurat}`" 
+                    :position="{ lat: parseFloat(indexMarkerMasyarakatDarurat.lat), lng: parseFloat(indexMarkerMasyarakatDarurat.lng) }"
+                    :icon="require('@/assets/masyarakat-darurat.png').default" @click="$refs.masyarakat.detail(indexMarkerMasyarakatDarurat)"/>
+            </div>
         </GmapMap>
         <RightBar ref="rightbar"/>
         <BottomBar ref="bottombar"/>
 
         <Hotspot ref="hotspot" />
         <LokasiVital ref="lokasiVital" />
+        <Masyarakat ref="masyarakat" />
         <Tps ref="tps" />
 
         <audio :src="audioEmergency" ref="emergency" loop></audio>
@@ -100,8 +119,10 @@ import TopBar from '@/views/Monit/Components/TopBar'
 
 import Hotspot from '@/views/Monit/Hotspot/Main'
 import LokasiVital from '@/views/Monit/LokasiVital/Main'
+import Masyarakat from '@/views/Monit/Masyarakat/Main'
 import Tps from '@/views/Monit/Tps/Main'
 import AudioKejadian from "@/views/Monit/Dashboard/AudioKejadian"
+import CustomMarker from "@/views/Monit/Dashboard/CustomMarker"
 
 import kurentoUtils from 'kurento-utils'
 import LaravelEcho from "laravel-echo"
@@ -111,9 +132,8 @@ export default {
     name: 'dashboard',
     components: { 
         BottomBar, LeftBar, 
-        RightBar, TopBar,
-        Hotspot, LokasiVital, Tps, AudioKejadian,
-
+        RightBar, TopBar, 'gmap-custom-marker' : CustomMarker,
+        Hotspot, LokasiVital, Masyarakat, Tps, AudioKejadian,
     },
     data () {
         return {
@@ -134,8 +154,10 @@ export default {
             markerPatroli: [],
             markerPengawalan: [],
             markerLokasiVital: [],
+            markerMasyarakatKejadian: [],
+            markerMasyarakatDarurat: [],
             markerTps: [],
-            markerPersonilShow: true,
+            markerPersonilShow: false,
             markerSingleShow: false,
             kegiatanStatus: true, //Belongs to leftbar
             pengaduanStatus: true, //Belongs to leftbar
@@ -251,6 +273,8 @@ export default {
             this.zoom = 15
             this.center = { lat: Number(defaultLat), lng: Number(defaultLng) }
             this.markerSingle = []
+            this.markerMasyarakatDarurat = []
+			this.markerMasyarakatKejadian = []
             this.markerSingleShow = false
             this.resetRadius()
         },
@@ -290,7 +314,9 @@ export default {
                     .listen('.kegiatan-baru', this.kegiatanBaru)
                     .listen('.kegiatan-komentar', this.kegiatanKomentar)
                     .listen('.pengaduan-baru', this.pengaduanBaru)
+                    .listen('.pengaduan-komentar', this.pengaduanKomentar)
                     .listen('.kejadian-baru', this.kejadianBaru)
+                    .listen('.kejadian-tindaklanjut', this.kejadianTindaklanjut)
                     .listen('.personil-relokasi', this.relokasiPersonil)
                     .listen('.masyarakat-relokasi', this.relokasiMasyarakat)
                     .listen('.personil-logout', this.personilLogout)
@@ -316,7 +342,7 @@ export default {
         detailDaruratBaru(data) {
             this.markerSingleShow = true
             this.socketDarurat = false
-            this.markerSingle.push({ type: 'darurat', data: data })
+            this.markerSingle = [{ type: 'darurat', data: data }]
             this.$refs.maps.$mapPromise.then((map) => {
                 var radius = new google.maps.Circle({
                     strokeColor: '#f44336',
@@ -334,13 +360,25 @@ export default {
             this.center = { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
         },
         kegiatanBaru(data){
-            this.$toast.info(data.data.user.nama + ' menambah kegiatan baru', { layout: 'topRight' })
+            this.$toast.info(data.data.user.nama + ' menambah kegiatan baru')
+            this.$refs.rightbar.isReload(data.data)
+            this.$refs.bottombar.kegiatan++
         },
-        kegiatanKomentar(data){
-            this.$toast.info(data.data.user.nama + ' mengomentari kegiatan ' + data.data.induk, { layout: 'topRight' })
+        kegiatanKomentar({ data }){
+            if(data.user.id != this.user.id) {
+                this.$toast.info(data.user.nama + ' mengomentari kegiatan ' + data.induk)
+                this.$refs.bottombar.$refs.kegiatan.$refs.detail.isReloadKomentar(data)
+            }
         },
         pengaduanBaru(data){
-            this.$toast.info(data.data.user.nama + ' menambah pengaduan baru', { layout: 'topRight' })
+            this.$toast.info(data.data.user.nama + ' menambah pengaduan baru')
+            this.$refs.bottombar.kegiatan++
+        },
+        pengaduanKomentar({ data }){
+            if(data.user.id != this.user.id) {
+                this.$toast.info(data.user.nama + ' mengomentari pengaduan ' + data.induk)
+                this.$refs.bottombar.$refs.pengaduan.$refs.detail.isReloadKomentar(data)
+            }
         },
         kejadianBaru ({data : {data}}) {
             if(data.id_darurat == null) {
@@ -362,16 +400,23 @@ export default {
                     data.audio == 'kejadian' ? this.$refs.audioKejadian.play() : this.$refs.audioKejadianCustom.playAudio(data.audio)
                 }
             }
-            this.$refs.topbar.refreshData()
+            this.$refs.topbar.isReload()
         },
         detailKejadianBaru(data) {
             this.markerSingleShow = true
             this.socketKejadian = false
-            this.markerSingle.push({ type: 'kejadian', data: data })
+            this.markerSingle = [{ type: 'kejadian', data: data }]
             this.zoom = 20
             this.center = { lat: parseFloat(data.lat), lng: parseFloat(data.lng) }
         },
-        relokasiPersonil({data : { data }}){
+        kejadianTindaklanjut({ data }) {
+            if(data.user.id != this.user.id) {
+                this.$toast.info(data.user.nama + ' menindaklanjuti kejadian ' + data.judul)
+                this.$refs.topbar.isReload()
+                this.$refs.bottombar.$refs.kejadian.$refs.detail.isReloadTindakLanjut(data)
+            }
+        },
+        relokasiPersonil({data : { data }}) {
             var self = this
             console.log("Personil")
             if (this.markerSingle.type == 'personil' && this.markerSingle.data.id == data.id) {
@@ -400,7 +445,10 @@ export default {
 
                 if (personil.dinas.kegiatan === 'Patroli' || personil.dinas.kegiatan === 'Pengawalan') {
                     var angle = indexMarkerPersonil >= 0 ? google.maps.geometry.spherical.computeHeading(new google.maps.LatLng(self.markerPersonil[indexMarkerPersonil].lat, self.markerPersonil[indexMarkerPersonil].lng), new google.maps.LatLng(personil.position.lat, personil.position.lng)) : 0
-                    personil.rotation = angle
+                    personil.style = {
+                        'transform' : "rotate("+ angle +"deg)",
+                        'transform-origin' : "center"
+                    }
                     var indexLogPatroliPengawalan = self.logPatroliPengawalan.findIndex((o) => o.id === personil.id)
                     if (indexLogPatroliPengawalan < 0 ){
                         var color = this.randomColor()
@@ -441,6 +489,15 @@ export default {
             this.markerPersonil.splice(indexPers, 1)
             this.logPatroliPengawalan.splice(indexPatwal, 1)
         },
+        hideLogPatroliPengawalan () {
+            console.log("Hide patwal")
+            this.$refs.maps.$mapPromise.then((map) => {
+                console.log(this.logPatroliPengawalan)
+                this.logPatroliPengawalan.forEach(function(key) {
+                    key.polyline.setVisible(false)
+                })
+            })
+        },
         relokasiMasyarakat ({data: { data } }) {
             var singleKejadian = this.markerSingle.findIndex((o) => o.tipe == 'kejadian')
             var singleDarurat = this.markerSingle.findIndex((o) => o.tipe == 'darurat')
@@ -461,11 +518,6 @@ export default {
             var indexMasyarakat = this.markerMasyarakatKejadian.findIndex((o) => o.user.id == masyarakat.user.id )
             var indexKejadianMasyarakat = this.markerMasyarakatKejadian.findIndex((o) => o.induk.id == masyarakat.induk.id )
 
-            masyarakat.position = {
-                lat: parseFloat(masyarakat.lat),
-                lng: parseFloat(masyarakat.lng)
-            }
-
             if (indexKejadian != -1) {
                 if(indexMasyarakat == -1 && indexKejadianMasyarakat == -1) {
                     this.$set(this.markerMasyarakatKejadian, this.markerMasyarakatKejadian.length, masyarakat)
@@ -480,11 +532,6 @@ export default {
             var indexDarurat = this.markerSingle.findIndex((o) => o.data.id == masyarakat.induk.id )
             var indexMasyarakat = this.markerMasyarakatDarurat.findIndex((o) => o.user.id == masyarakat.user.id )
             var indexDaruratMasyarakat = this.markerMasyarakatDarurat.findIndex((o) => o.induk.id == masyarakat.induk.id )
-
-            masyarakat.position = {
-                lat: parseFloat(masyarakat.lat),
-                lng: parseFloat(masyarakat.lng)
-            }
 
             if (indexDarurat != -1) {
                 if(indexMasyarakat == -1 && indexDaruratMasyarakat == -1) {

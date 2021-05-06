@@ -11,7 +11,7 @@
             </li>
             <perfect-scrollbar class="h-100" @ps-y-reach-end="onScroll" ref="kegiatan">
                 <li v-for="(v, i) in kegiatan" :key="`kegiatan-${i}`">
-                    <div class="rightbar-widget">
+                    <div class="rightbar-widget cursor-pointer" @click="$parent.$refs.bottombar.$refs.kegiatan.$refs.detail.showModal(v)">
                         <b-img v-if="v.dokumentasi == null" src="/assets/sample-kegiatan.png" class="w-100" alt=""/>
                         <b-img v-else :src="v.dokumentasi" class="w-100" alt=""/>
                         <div>{{ v.user.nama }}</div>
@@ -137,6 +137,14 @@ export default {
             this.tinggi = '-'
             this.$parent.markerHotspot = []
         },
+        isReload(data) {
+            var kegiatan = data
+            if(!(this.totalRows !== 0 && (this.totalRows == this.kegiatan.length))) {
+                this.kegiatan.pop()
+            }
+            this.totalRows++
+            this.kegiatan.unshift(kegiatan)
+        }
     },
     mounted() {
         this.getKegiatan('master')

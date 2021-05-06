@@ -1,14 +1,15 @@
 <template>
-    <div class="bottombar-outline">
+    <div :class="['bottombar-outline', markerSingleClass]">
         <div class="bottombar">
             <a href="javascript:void(0);" @click="showKegiatan" class="bottombar-menu">
-                <!-- <span class="bottombar-menu-info">1</span> -->
+                <span class="bottombar-menu-info" v-if="kegiatan != 0">{{ kegiatan }}</span>
                 <div class="bottombar-icon">
                     <ph-shield-chevron class="phospor"/>
                 </div>
                 <span>Kegiatan</span>
             </a>
             <a href="javascript:void(0);"  @click="showPengaduan" class="bottombar-menu">
+                <span class="bottombar-menu-info" v-if="pengaduan != 0">{{ pengaduan }}</span>
                 <div class="bottombar-icon">
                     <ph-newspaper-clipping class="phospor"/>
                 </div>
@@ -60,14 +61,22 @@ export default {
     components: { Kegiatan, Pengaduan, Kejadian, History, Personil, Darurat },
     data () {
         return {
-
+            kegiatan: 0,
+            pengaduan: 0
+        }
+    },
+    computed: {
+        markerSingleClass () {
+            return this.$parent.markerSingleShow ? 'offset' : ''
         }
     },
     methods: {
         showKegiatan () {
+            this.kegiatan = 0
             this.$refs.kegiatan.showModal()
         },
         showPengaduan () {
+            this.pengaduan = 0
             this.$refs.pengaduan.showModal()
         },
         showKejadian () {

@@ -446,26 +446,25 @@ export default {
             this.trafficLayer.setMap(null);
         },
         showDataTracking () {
+            this.$parent.markerPersonilShow = true
             this.$parent.markerPersonil = []
-            // this.$parent.markerPatroli = []
-            // this.$parent.markerPengawalan = []
             this.trackingPage = 1
             this.fetchDataTracking()
             var maps = this.$parent.$refs.maps
             var self = this
-            // if(this.trackingType == 'lepas_dinas') {
-            //     maps.$mapPromise.then((map) => {
-            //         self.$parent.logPatroliPengawalan.forEach(function(key) {
-            //             key.polyline.setVisible(false)
-            //         })
-            //     })
-            // } else {
-            //     maps.$mapPromise.then((map) => {
-            //         self.$parent.logPatroliPengawalan.forEach(function(key) {
-            //             key.polyline.setVisible(true)
-            //         })
-            //     })
-            // }
+            if(this.trackingType == 'lepas_dinas') {
+                maps.$mapPromise.then((map) => {
+                    self.$parent.logPatroliPengawalan.forEach(function(key) {
+                        key.polyline.setVisible(false)
+                    })
+                })
+            } else {
+                maps.$mapPromise.then((map) => {
+                    self.$parent.logPatroliPengawalan.forEach(function(key) {
+                        key.polyline.setVisible(true)
+                    })
+                })
+            }
         },
         fetchDataTracking () {
             var self = this
@@ -503,6 +502,7 @@ export default {
             })
         },
         hideDataTracking () {
+            this.$parent.hideLogPatroliPengawalan()
             this.$parent.markerPersonilShow = false
         },
         fetchJenisLokasi () {

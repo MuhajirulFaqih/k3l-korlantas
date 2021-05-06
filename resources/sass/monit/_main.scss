@@ -199,9 +199,9 @@ div { outline: none !important; }
 }
 
 
-// .v-toast {
-//     z-index: 1000 !important;
-// }
+.v-toast__text {
+    max-width: 30em !important;
+}
 
 ul.timeline {
     list-style-type: none;
@@ -245,4 +245,24 @@ ul.timeline {
             background: #cdd1d8;
         }
     }
+}
+
+.e-reload-button {
+    display: inline-block;
+    padding: .65em .85em;
+    background: rgba(38, 48, 64, 0.46);
+    backdrop-filter: blur(6px);
+    border-radius: .5rem;
+    color: $white;
+    border: 1px solid $content;
+    font-family: $fontHeader;
+    cursor: pointer;
+}
+.e-reload-icon {
+    display: inline-block;
+    padding: .65em;
+    border-radius: 50%;
+    background: $white;
+    color: $red;
+    cursor: pointer;
 }

@@ -31,7 +31,7 @@
                 </b-col>
                 <b-col cols="6">
                     <div class="e-comment">
-                        <perfect-scrollbar class="e-comment-body" ref="comment">
+                        <perfect-scrollbar class="e-comment-body" ref="comment" id="complaint-comment">
                             <p class="text-sm-left py-2" v-if="showCommentPage">
                                 <span><b-link class="e-text-content" @click="getComment('pagination', single.id)">Lihat komentar sebelumnya...</b-link></span>
                             </p>
@@ -115,7 +115,7 @@
             </b-row>
             <hr/>
             <center v-if="single.user.jenis_pemilik == 'personil' || single.user.jenis_pemilik == 'bhabin'">
-                <button circle class="btn e-btn e-btn-primary">
+                <button circle class="btn e-btn e-btn-primary" @click="$parent.$parent.$refs.personil.$refs.detail.videoCallById(single.user.id_personil)">
                     <ph-video-camera class="phospor"/>
                 </button>
             </center>
@@ -209,7 +209,6 @@ export default {
                 komentar: this.commentText,
                 kegiatan: id,
             }
-            this.$nextTick(() => self.scrollToEnd())
             axios.post('pengaduan/' + id + '/komentar', body)
             .then(({ data }) => {
                 var comment = data.data
@@ -220,6 +219,7 @@ export default {
                 this.totalRows++
                 this.comment.push(comment)
                 this.isBusyCreate = false
+                this.$nextTick(() => self.scrollToEnd())
             })
             .catch(({ response: { status, data: { errors }}}) => {
                 if (status === 422) {
@@ -229,7 +229,20 @@ export default {
             })
         },
         scrollToEnd: function () {
-            this.$refs.comment.$el.scrollTop = 0;
+            let commentBox = document.getElementById('complaint-comment')
+            this.$refs.comment.$el.scrollTop = commentBox.scrollHeight
+        },
+        isReloadKomentar (data) {
+            if(this.single != null) {
+                if(this.single.id == data.id_induk) {
+                    var comment = data
+                    if(!(this.totalRows !== 0 && (this.totalRows == this.comment.length))) {
+                        this.comment.shift()
+                    }
+                    this.totalRows++
+                    this.comment.push(comment)
+                }
+            }
         },
         hideModal() {
             this.single = null

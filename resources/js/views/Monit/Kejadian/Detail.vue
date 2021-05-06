@@ -46,6 +46,14 @@
                                                 <small><b>Jabatan : </b>{{ t.user.jabatan }}</small> <br/>
                                                 <small><b>Telepon : </b>{{ t.user.no_telp }}</small> <br/>
                                             </p>
+                                            <div v-if="t.user.jenis_pemilik == 'personil' || t.user.jenis_pemilik == 'bhabin'">
+                                                <hr/>
+                                                <center>
+                                                    <button circle class="btn e-btn e-btn-primary" @click="$parent.$parent.$refs.personil.$refs.detail.videoCallById(t.single.user.id_personil)">
+                                                        <ph-video-camera class="phospor"/>
+                                                    </button>
+                                                </center>
+                                            </div>
                                         </li>
                                     </ul>
                                 </perfect-scrollbar>
@@ -129,6 +137,9 @@
 								<b-col cols="3">{{ t.distance }} meter</b-col>
 							</b-row>
 				    	</b-list-group-item>
+                        <b-list-group-item v-if="single.nearby.length == 0" class="mt-2 text-center">
+                            <span>Tidak ditemukan data personil terdekat</span>
+                        </b-list-group-item>
 				    </b-list-group>
                 </b-col>
             </b-row>
@@ -179,7 +190,7 @@
             <div v-if="single.user.jenis_pemilik == 'personil' || single.user.jenis_pemilik == 'bhabin'">
                 <hr/>
                 <center>
-                    <button circle class="btn e-btn e-btn-primary">
+                    <button circle class="btn e-btn e-btn-primary" @click="$parent.$parent.$refs.personil.$refs.detail.videoCallById(single.user.id_personil)">
                         <ph-video-camera class="phospor"/>
                     </button>
                 </center>
@@ -319,6 +330,7 @@ export default {
                 this.singleTindakLanjut.status = ''
                 this.singleTindakLanjut.keterangan = ''
                 this.singleTindakLanjut.foto = ''
+                this.$parent.$parent.$parent.$refs.topbar.isReload()
             })
             .catch(({ response: { status, data: { errors }}}) => {
                 if (status === 422)
@@ -347,7 +359,7 @@ export default {
             })
         },
         pilihPersonil (data) {
-            var maps = this.$parent.$parent.$refs.maps.$mapPromise
+            var maps = this.$parent.$parent.$parent.$refs.maps.$mapPromise
             maps.then((map) => {
                 var a = new google.maps.LatLng(data.lat, data.lng)
                 data.nearby.forEach(function(value, index) {
@@ -371,6 +383,15 @@ export default {
                     return {value: val.id, text: val.kesatuan}
                 })
             })
+        },
+        isReloadTindakLanjut (data) {
+            if(this.single != null) {
+                if(this.single.id == data.id_kejadian) {
+                    var tindak_lanjut = data
+                    this.single.tindak_lanjut.push(tindak_lanjut)
+                    if(tindak_lanjut.status == 'selesai') { this.single.selesai }
+                }
+            }
         },
         hidePilihPersonil () { this.personilKejadian = false },
         hideModal() {

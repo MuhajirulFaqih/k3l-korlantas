@@ -47,7 +47,7 @@ class UserTransformer extends TransformerAbstract
                     'id_pemilik' => $user->id_pemilik,
                     'jenis_pemilik' => $user->jenis_pemilik,
                     'nama'     => $user->pemilik->nama,
-                    'nrp'  => null,
+                    'nrp'  => $user->pemilik->nik,
                     'jabatan'  => 'Masyarakat',
                     'alamat' => $user->pemilik->alamat,
                     'no_telp' => $user->pemilik->no_telp,

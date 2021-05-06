@@ -19,6 +19,11 @@
             transform: rotate(180deg);
         }
     }
+    .topbar-reload {
+        position: absolute;
+        top: 2em;
+        z-index: 101;
+    }
     &.close {
         .topbar {
             margin-top: -15em;

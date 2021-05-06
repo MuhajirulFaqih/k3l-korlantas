@@ -26,64 +26,64 @@
                                     </b-col>
                                 </b-row>
                                 <b-row v-if="single.tipe.tipe != null">
-                                    <b-col cols="3">Tipe</b-col>
+                                    <b-col cols="4">Tipe</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.tipe.tipe }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.tipe.tipe }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.sasaran != null">
-                                    <b-col cols="3">Sasaran</b-col>
+                                    <b-col cols="4">Sasaran</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.sasaran }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.sasaran }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.lokasi != null">
-                                    <b-col cols="3">Lokasi</b-col>
+                                    <b-col cols="4">Lokasi</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.lokasi }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.lokasi }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.kuat_pers != null">
-                                    <b-col cols="3">Kuat pers</b-col>
+                                    <b-col cols="4">Kuat pers</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.kuat_pers }} Personil</b></b-col>
+                                    <b-col cols="7"><b>{{ single.kuat_pers }} Personil</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.hasil != null">
-                                    <b-col cols="3">Hasil</b-col>
+                                    <b-col cols="4">Hasil</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.hasil }} Personil</b></b-col>
+                                    <b-col cols="7"><b>{{ single.hasil }} Personil</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.jml_giat != null">
-                                    <b-col cols="3">Jumlah giat</b-col>
+                                    <b-col cols="4">Jumlah giat</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.jml_giat }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.jml_giat }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.jml_tsk != null">
-                                    <b-col cols="3">Jumlah tsk</b-col>
+                                    <b-col cols="4">Jumlah tsk</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.jml_tsk }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.jml_tsk }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.bb != null">
-                                    <b-col cols="3">Jumlah bb</b-col>
+                                    <b-col cols="4">Jumlah bb</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.jml_bb }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.jml_bb }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.perkembangan != null">
-                                    <b-col cols="3">Perkembangan</b-col>
+                                    <b-col cols="4">Perkembangan</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.perkembangan }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.perkembangan }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.dasar != null">
-                                    <b-col cols="3">Dasar</b-col>
+                                    <b-col cols="4">Dasar</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.dasar }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.dasar }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.modus != null">
-                                    <b-col cols="3">Modus</b-col>
+                                    <b-col cols="4">Modus</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.modus }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.modus }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.tsk_bb != null">
-                                    <b-col cols="3">Tsk BB</b-col>
+                                    <b-col cols="4">Tsk BB</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="8"><b>{{ single.tsk_bb }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.tsk_bb }}</b></b-col>
                                 </b-row>
                             </perfect-scrollbar>
                         </b-col>
@@ -91,7 +91,7 @@
                 </b-col>
                 <b-col cols="6">
                     <div class="e-comment">
-                        <perfect-scrollbar class="e-comment-body" ref="comment">
+                        <perfect-scrollbar class="e-comment-body" ref="comment" id="activity-comment">
                             <p class="text-sm-left py-2" v-if="showCommentPage">
                                 <span><b-link class="e-text-content" @click="getComment('pagination', single.id)">Lihat komentar sebelumnya...</b-link></span>
                             </p>
@@ -175,7 +175,7 @@
             </b-row>
             <hr/>
             <center v-if="single.user.jenis_pemilik == 'personil' || single.user.jenis_pemilik == 'bhabin'">
-                <button circle class="btn e-btn e-btn-primary">
+                <button circle class="btn e-btn e-btn-primary" @click="$parent.$parent.$refs.personil.$refs.detail.videoCallById(single.user.id_personil)">
                     <ph-video-camera class="phospor"/>
                 </button>
             </center>
@@ -201,6 +201,7 @@ export default {
             single: null,
             commentText: null,
             comment: [],
+            newComment: false,
         }
     },
     computed: {
@@ -269,7 +270,6 @@ export default {
                 komentar: this.commentText,
                 kegiatan: id,
             }
-            this.$nextTick(() => self.scrollToEnd())
             axios.post('kegiatan/' + id + '/komentar', body)
             .then(({ data }) => {
                 var comment = data.data
@@ -280,6 +280,7 @@ export default {
                 this.totalRows++
                 this.comment.push(comment)
                 this.isBusyCreate = false
+                this.$nextTick(() => self.scrollToEnd())
             })
             .catch(({ response: { status, data: { errors }}}) => {
                 if (status === 422) {
@@ -289,7 +290,20 @@ export default {
             })
         },
         scrollToEnd: function () {
-            this.$refs.comment.$el.scrollTop = 0;
+            let commentBox = document.getElementById('activity-comment')
+            this.$refs.comment.$el.scrollTop = commentBox.scrollHeight
+        },
+        isReloadKomentar (data) {
+            if(this.single != null) {
+                if(this.single.id == data.id_induk) {
+                    var comment = data
+                    if(!(this.totalRows !== 0 && (this.totalRows == this.comment.length))) {
+                        this.comment.shift()
+                    }
+                    this.totalRows++
+                    this.comment.push(comment)
+                }
+            }
         },
         hideModal() {
             this.single = null

@@ -1,5 +1,9 @@
 <template>
     <div :class="`topbar-outline ${topClass ? 'close' : ''}`">
+        <div class="topbar-reload" v-if="dataChange">
+            <div class="e-reload-button" @click="refreshData">Refresh data top bar</div>
+            <span class="e-reload-icon" @click="dataChange = false"><ph-x class="phospor"/></span>
+        </div>
         <div class="topbar">
             <div class="topbar-widget topbar-widget-purple">
                 <div class="topbar-widget-icon">
@@ -60,6 +64,7 @@ export default {
             belum: '-',
             selesai: '-',
             prosesPenanganan: '-',
+            dataChange: false,
         }
     },
     methods: {
@@ -70,7 +75,11 @@ export default {
                 this.prosesPenanganan = data[0].proses
                 this.selesai = data[0].selesai
                 this.belum = data[0].belum
+                this.dataChange = false
             })
+        },
+        isReload () {
+            this.dataChange = true
         }
     },
     mounted () {

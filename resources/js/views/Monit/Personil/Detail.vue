@@ -3,6 +3,9 @@
         <b-modal ref="detail"
             hide-footer centered
             modal-class="e-modal e-modal-lg"
+            :no-close-on-backdrop="isBusy"
+            :no-close-on-esc="isBusy"
+            :hide-header-close="isBusy"
             title-tag="h4"
             @hide="hideModal"
             title="Detail Personil">
@@ -48,7 +51,7 @@
                 </b-row>
                 <b-row>
                     <b-col cols="12 text-right">
-                        <button class="btn e-btn e-btn-primary btn-lg" @click="videoCall"><ph-video-camera class="phospor"/> Panggilan Video</button>
+                        <button class="btn e-btn e-btn-primary btn-lg" @click="videoCall(single)"><ph-video-camera class="phospor"/> Panggilan Video</button>
                     </b-col>
                 </b-row>
             </div>
@@ -81,10 +84,18 @@ export default {
         humanizeFormat (value) {
             return moment(value).fromNow()
         },
-        videoCall () {
-            let self = this
+        videoCallById(id_personil) {
+            this.isBusy = true
+            axios.get('personil' + id_personil)
+            .then(({ data : { data } }) => {
+                this.isBusy = false
+                this.videoCall(data)
+            })
+        },
+        videoCall (single) {
+            var self = this
             setTimeout(function() {
-                self.$refs.videoCall.showModal(self.single)
+                self.$refs.videoCall.showModal(single)
             }, 500)
         },
         hideModal() {

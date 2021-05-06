@@ -9,6 +9,7 @@ use App\Transformers\KomentarTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Events\PengaduanEvent;
+use App\Events\KomentarPengaduanEvent;
 use App\Models\Komentar;
 use App\Models\Pengaduan;
 
@@ -106,6 +107,11 @@ class PengaduanController extends Controller
             ->item($komentar)
             ->transformWith(KomentarTransformer::class)
             ->serializeWith(DataArraySansIncludeSerializer::class);
+        // Broadcast to monit
+        $data = $fractal->toArray();
+
+        if ($user->jenis_pemilik !== 'admin')
+            event(new KomentarPengaduanEvent($data['data']));
 
         return $fractal->respond();
     }
