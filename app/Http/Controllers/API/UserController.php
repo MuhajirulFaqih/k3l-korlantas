@@ -404,6 +404,18 @@ class UserController extends Controller
         return response()->json(['success' => true], 200);
     }
 
+    public function logoutAdmin(Request $request) {
+        $user = $request->user();
+        $user->fcm_id = null;
+
+        DB::table('oauth_access_tokens')->where('user_id', $user->id)->update(['revoked' => 1]);
+
+        if(!$user->save())
+            return response()->json(['errors' => 'Terjadi kesalahan'], 500);
+
+        return response()->json(['success' => true], 200);
+    }
+
     public function resetPassword(Request $request){
         if (filter_var($request->username, FILTER_VALIDATE_EMAIL)){
             $user = User::where('username', $request->username)->first();

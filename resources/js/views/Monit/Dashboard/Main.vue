@@ -23,25 +23,25 @@
                     :icon="loadMarkerHotspot(indexMarkerHotspot.tk)" @click="$refs.hotspot.detail(indexMarkerHotspot)"/>
             </div>
             
-            <div id="marker-darurat" v-if="!markerSingleShow">
+            <div id="marker-darurat" v-if="!markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <GmapMarker v-for="(indexMarkerDarurat, keyMarkerDarurat) in markerDarurat" :key="`darurat-${keyMarkerDarurat}`" 
                     :position="{ lat: parseFloat(indexMarkerDarurat.lat), lng: parseFloat(indexMarkerDarurat.lng) }"
                     :icon="require('@/assets/darurat.png').default" @click="$refs.bottombar.$refs.darurat.detail(indexMarkerDarurat)"/>
             </div>
 
-            <div id="marker-kegiatan" v-if="kegiatanStatus && !markerSingleShow">
+            <div id="marker-kegiatan" v-if="kegiatanStatus && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <GmapMarker v-for="(indexMarkerKegiatan, keyMarkerKegiatan) in markerKegiatan" :key="`kegiatan-${keyMarkerKegiatan}`" 
                     :position="{ lat: parseFloat(indexMarkerKegiatan.lat), lng: parseFloat(indexMarkerKegiatan.lng) }"
                     :icon="require('@/assets/kegiatan.png').default" @click="$refs.bottombar.$refs.kegiatan.detail(indexMarkerKegiatan)"/>
             </div>
             
-            <div id="marker-kejadian" v-if="kejadianStatus && !markerSingleShow">
+            <div id="marker-kejadian" v-if="kejadianStatus && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <GmapMarker v-for="(indexMarkerKejadian, keyMarkerKejadian) in markerKejadian" :key="`kegiatan-${keyMarkerKejadian}`" 
                     :position="{ lat: parseFloat(indexMarkerKejadian.lat), lng: parseFloat(indexMarkerKejadian.lng) }"
                     :icon="require('@/assets/kejadian.png').default" @click="$refs.bottombar.$refs.kejadian.detail(indexMarkerKejadian)"/>
             </div>
 
-            <div id="marker-pengaduan" v-if="pengaduanStatus && !markerSingleShow">
+            <div id="marker-pengaduan" v-if="pengaduanStatus && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <GmapMarker v-for="(indexMarkerPengaduan, keyMarkerPengaduan) in markerPengaduan" :key="`kegiatan-${keyMarkerPengaduan}`" 
                     :position="{ lat: parseFloat(indexMarkerPengaduan.lat), lng: parseFloat(indexMarkerPengaduan.lng) }"
                     :icon="require('@/assets/pengaduan.png').default" @click="$refs.bottombar.$refs.pengaduan.detail(indexMarkerPengaduan)"/>
@@ -54,7 +54,7 @@
                     :icon="require('@/assets/tps.png').default" @click="$refs.tps.detail(indexMarkerTps)"/>
             </div>
             
-            <div id="marker-personil" v-if="markerPersonilShow && !markerSingleShow">
+            <div id="marker-personil" v-if="markerPersonilShow && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <gmap-custom-marker v-for="(indexMarkerPersonil, keyMarkerPersonil) in markerPersonil" :key="`personil-${keyMarkerPersonil}`"
                     :marker="{ lat: parseFloat(indexMarkerPersonil.lat), lng: parseFloat(indexMarkerPersonil.lng) }"
                     :item="indexMarkerPersonil"
@@ -63,19 +63,7 @@
                 </gmap-custom-marker>
             </div>
 
-            <div id="marker-patroli" v-if="markerPersonilShow && !markerSingleShow">
-                <GmapMarker v-for="(indexMarkerPatroli, keyMarkerPatroli) in markerPatroli" :key="`pengawalan-${keyMarkerPatroli}`" 
-                    :position="{ lat: parseFloat(indexMarkerPatroli.lat), lng: parseFloat(indexMarkerPatroli.lng) }"
-                    :icon="require('@/assets/patroli.png').default" @click="$refs.personil.detail(indexMarkerPatroli)"/>
-            </div>
-           
-            <div id="marker-pengawalan" v-if="markerPersonilShow && !markerSingleShow">
-                <GmapMarker v-for="(indexMarkerPengawalan, keyMarkerPengawalan) in markerPengawalan" :key="`pengawalan-${keyMarkerPengawalan}`" 
-                    :position="{ lat: parseFloat(indexMarkerPengawalan.lat), lng: parseFloat(indexMarkerPengawalan.lng) }"
-                    :icon="require('@/assets/pengawalan.png').default" @click="$refs.personil.detail(indexMarkerPengawalan)"/>
-            </div>
-            
-            <div id="marker-lokasi-vital">
+            <div id="marker-lokasi-vital" v-if="!markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <GmapMarker v-for="(indexMarkerLokasiVital, keyMarkerLokasiVital) in markerLokasiVital" :key="`lokasivital-${keyMarkerLokasiVital}`" 
                     :position="{ lat: parseFloat(indexMarkerLokasiVital.lat), lng: parseFloat(indexMarkerLokasiVital.lng) }"
                     :icon="indexMarkerLokasiVital.jenis.icon" @click="$refs.lokasiVital.detail(indexMarkerLokasiVital)"/>
@@ -94,6 +82,16 @@
                     :position="{ lat: parseFloat(indexMarkerMasyarakatDarurat.lat), lng: parseFloat(indexMarkerMasyarakatDarurat.lng) }"
                     :icon="require('@/assets/masyarakat-darurat.png').default" @click="$refs.masyarakat.detail(indexMarkerMasyarakatDarurat)"/>
             </div>
+
+            <div v-if="polyPatroli != null">
+				<GmapMarker key="markerPatroliStart" :position="patroliStart" :icon="require('@/assets/patroli-mulai.png').default" />
+                <GmapMarker key="markerPatroliEnd" :position="patroliEnd" :icon="require('@/assets/patroli-selesai.png').default" />
+			</div>
+            
+            <div v-if="polyPengawalan != null">
+				<GmapMarker key="markerPengawalanStart" :position="pengawalanStart" :icon="require('@/assets/pengawalan-mulai.png').default" />
+                <GmapMarker key="markerPengawalanEnd" :position="pengawalanEnd" :icon="require('@/assets/pengawalan-selesai.png').default" />
+			</div>
         </GmapMap>
         <RightBar ref="rightbar"/>
         <BottomBar ref="bottombar"/>
@@ -151,8 +149,14 @@ export default {
             markerPersonil: [],
             markerMasyarakat: [],
             logPatroliPengawalan: [],
-            markerPatroli: [],
-            markerPengawalan: [],
+            polyPatroli: null,
+            pathPatroli:[],
+            patroliStart: {},
+            patroliEnd: {},
+            polyPengawalan: null,
+            pathPengawalan:[],
+            pengawalanStart: {},
+            pengawalanEnd: {},
             markerLokasiVital: [],
             markerMasyarakatKejadian: [],
             markerMasyarakatDarurat: [],
@@ -278,6 +282,24 @@ export default {
             this.markerSingleShow = false
             this.resetRadius()
         },
+        resetPatroli () {
+            if (this.polyPatroli != null)
+                this.polyPatroli.setMap(null)
+
+            this.polyPatroli = null;
+            this.patroliStart = {};
+            this.patroliEnd = {};
+            this.pathPatroli = []
+        },
+        resetPengawalan () {
+            if (this.polyPengawalan != null)
+                this.polyPengawalan.setMap(null)
+
+            this.polyPengawalan = null;
+            this.pengawalanStart = {};
+            this.pengawalanEnd = {};
+            this.pathPengawalan = []
+        },
         resetRadius() {
             this.$refs.maps.$mapPromise.then((map) => {
                 var radius = this.socketDaruratRadius
@@ -309,7 +331,7 @@ export default {
                 })
                 
                 Echo.private(socketPrefix + ':Monit')
-                    .listen('.CallReady', this.$refs.bottombar.$refs.personil.$refs.detail.$refs.videoCall.callReady())
+                    .listen('.call-ready', this.callReady)
                     .listen('.darurat-baru', this.daruratBaru)
                     .listen('.kegiatan-baru', this.kegiatanBaru)
                     .listen('.kegiatan-komentar', this.kegiatanKomentar)
@@ -321,6 +343,9 @@ export default {
                     .listen('.masyarakat-relokasi', this.relokasiMasyarakat)
                     .listen('.personil-logout', this.personilLogout)
             }
+        },
+        callReady (data) {
+            this.$refs.bottombar.$refs.personil.$refs.detail.$refs.videoCall.callReady()
         },
         daruratBaru({ data }) {
             this.socketDarurat = true
@@ -418,7 +443,6 @@ export default {
         },
         relokasiPersonil({data : { data }}) {
             var self = this
-            console.log("Personil")
             if (this.markerSingle.type == 'personil' && this.markerSingle.data.id == data.id) {
                 this.markerSingle.data = data
             }
@@ -553,6 +577,64 @@ export default {
                 self.logPatroliPengawalan.splice(indexLogPatroliPengawalan, 1)
             }
         },
+        logPatroli (item) {
+            var self = this
+            this.$refs.maps.$mapPromise.then((map) => {
+                var mapLatLng = []
+                var path = []
+                var bounds = new google.maps.LatLngBounds()
+                item.patroliPengawalan.forEach(function(key) {
+                    var lat = parseFloat(key.lat)
+                    var lng = parseFloat(key.lng)
+                    var pos = new google.maps.LatLng(lat, lng)
+                    mapLatLng.push(pos)
+                    path.push({lat: lat, lng: lng})
+                    bounds.extend(pos)
+                })
+
+                map.fitBounds(bounds)
+
+                var poly = new google.maps.Polyline({
+                    map: map,
+                    strokeColor: '#f14444',
+                    path: path
+                })
+
+                self.polyPatroli = poly
+                self.patroliStart = path[0]
+                self.patroliEnd = path[path.length - 1]
+                self.pathPatroli = path
+            })
+        },
+        logPengawalan (item) {
+            var self = this
+            this.$refs.maps.$mapPromise.then((map) => {
+                var mapLatLng = []
+                var path = []
+                var bounds = new google.maps.LatLngBounds()
+                item.patroliPengawalan.forEach(function(key) {
+                    var lat = parseFloat(key.lat)
+                    var lng = parseFloat(key.lng)
+                    var pos = new google.maps.LatLng(lat, lng)
+                    mapLatLng.push(pos)
+                    path.push({lat: lat, lng: lng})
+                    bounds.extend(pos)
+                })
+
+                map.fitBounds(bounds)
+
+                var poly = new google.maps.Polyline({
+                    map: map,
+                    strokeColor: '#00897b',
+                    path: path
+                })
+
+                self.polyPengawalan = poly
+                self.pengawalanStart = path[0]
+                self.pengawalanEnd = path[path.length - 1]
+                self.pathPengawalan = path
+            })
+        }
     },
     mounted () {
         this.mapsOptions.styles = this.darkStyle

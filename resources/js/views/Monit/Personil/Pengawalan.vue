@@ -60,7 +60,7 @@
                                     <b-dropdown-item @click="detail(data.item.personil)">
                                         <ph-note class="phospor"/> Detail
                                     </b-dropdown-item>
-                                    <b-dropdown-item @click="lokasi(data.item.personil)">
+                                    <b-dropdown-item @click="lokasi(data.item)">
                                         <ph-path class="phospor"/> Lihat rute
                                     </b-dropdown-item>
                                 </b-dropdown>
@@ -100,12 +100,12 @@ export default {
                 { key: 'personil.kesatuan', label: 'Kesatuan', sortable: true },
                 { 
                     key: 'waktu_mulai_dinas', label: 'Waktu mulai dinas', 
-                    formatter: v => format(parseISO(v), 'd MMMM yyyy HH:mm:ss', {locale: id}) ,
+                    formatter: v => (v !== null ? format(parseISO(v), 'd MMMM yyyy HH:mm:ss', {locale: id}) : ''),
                     sortable: true,
                 },
                 { 
                     key: 'waktu_selesai_dinas', label: 'Waktu selesai dinas', 
-                    formatter: v => format(parseISO(v), 'd MMMM yyyy HH:mm:ss', {locale: id}) ,
+                    formatter: v => (v !== null ? format(parseISO(v), 'd MMMM yyyy HH:mm:ss', {locale: id}) : ''),
                     sortable: true,
                 },
                 { key: 'aksi', label: 'Aksi' },
@@ -157,6 +157,16 @@ export default {
                 this.search()
             }
         },
+        lokasi (item) {
+            if(item.patroliPengawalan.length == 0) {
+                this.$toast.error('Lokasi belum dapat di tracking')
+                return
+            }
+            var self = this
+            this.$parent.$parent.$parent.logPengawalan(item)
+            this.$refs.pengawalan.hide()
+            this.$parent.$refs.personil.hide()
+        }
     },
 }
 </script>

@@ -22,7 +22,7 @@ export default {
     methods: {
         logout () {
             this.$router.push({ name: 'Login' })
-            // axios.get('user/logout')
+            // axios.get('user/logout-admin')
             // .then(({ data }) => {
             //     this.$store.commit('removeUser')
             //     delete axios.defaults.headers.common['Authorization']

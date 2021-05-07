@@ -307,6 +307,12 @@
             <div v-if="$parent.markerSingleShow">
                 <button class="e-btn e-btn-warning btn btn-block" @click="$parent.resetDefaultMarker">Refresh Data</button>
             </div>
+            <div v-if="$parent.polyPatroli != null">
+                <button class="e-btn e-btn-warning btn btn-block" @click="$parent.resetPatroli">Refresh Data</button>
+            </div>
+            <div v-if="$parent.polyPengawalan != null">
+                <button class="e-btn e-btn-warning btn btn-block" @click="$parent.resetPengawalan">Refresh Data</button>
+            </div>
             <div>
                 <b-row>
                     <b-col cols="6 pr-lg-0">

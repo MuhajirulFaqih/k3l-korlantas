@@ -19,32 +19,32 @@
                     <b-col cols="8" class="pt-4">
                         <perfect-scrollbar class="e-data-body">
                             <b-row class="my-2">
-                                <b-col cols="3" class="font-weight-bold">NRP</b-col>
-                                <b-col cols="9">{{ single.nrp }}</b-col>
+                                <b-col cols="4" class="font-weight-bold">NRP</b-col>
+                                <b-col cols="8">{{ single.nrp }}</b-col>
                             </b-row>
                             <b-row class="my-2">
-                                <b-col cols="3" class="font-weight-bold">Nama</b-col>
-                                <b-col cols="9">{{ single.pangkat }} {{ single.nama }}</b-col>
+                                <b-col cols="4" class="font-weight-bold">Nama</b-col>
+                                <b-col cols="8">{{ single.pangkat }} {{ single.nama }}</b-col>
                             </b-row>
                             <b-row class="my-2">
-                                <b-col cols="3" class="font-weight-bold">Jabatan</b-col>
-                                <b-col cols="9">{{ single.jabatan }}</b-col>
+                                <b-col cols="4" class="font-weight-bold">Jabatan</b-col>
+                                <b-col cols="8">{{ single.jabatan }}</b-col>
                             </b-row>
                             <b-row class="my-2">
-                                <b-col cols="3" class="font-weight-bold">Kesatuan</b-col>
-                                <b-col cols="9">{{ single.kesatuan }}</b-col>
+                                <b-col cols="4" class="font-weight-bold">Kesatuan</b-col>
+                                <b-col cols="8">{{ single.kesatuan }}</b-col>
                             </b-row>
                             <b-row class="my-2">
-                                <b-col cols="3" class="font-weight-bold">Alamat</b-col>
-                                <b-col cols="9">{{ single.alamat }}</b-col>
+                                <b-col cols="4" class="font-weight-bold">Alamat</b-col>
+                                <b-col cols="8">{{ single.alamat }}</b-col>
                             </b-row>
                             <b-row class="my-2">
-                                <b-col cols="3" class="font-weight-bold">Status</b-col>
-                                <b-col cols="9">{{ single.dinas.kegiatan }}</b-col>
+                                <b-col cols="4" class="font-weight-bold">Status</b-col>
+                                <b-col cols="8">{{ single.dinas.kegiatan }}</b-col>
                             </b-row>
                             <b-row class="my-2">
-                                <b-col cols="3" class="font-weight-bold">Terakhir di update</b-col>
-                                <b-col cols="9">{{ humanizeFormat(single.terakhir_diupdate) }}</b-col>
+                                <b-col cols="4" class="font-weight-bold">Terakhir di update</b-col>
+                                <b-col cols="8">{{ humanizeFormat(single.terakhir_diupdate) }}</b-col>
                             </b-row>
                         </perfect-scrollbar>
                     </b-col>

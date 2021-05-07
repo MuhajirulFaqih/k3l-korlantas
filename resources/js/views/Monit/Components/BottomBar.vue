@@ -67,7 +67,7 @@ export default {
     },
     computed: {
         markerSingleClass () {
-            return this.$parent.markerSingleShow ? 'offset' : ''
+            return this.$parent.markerSingleShow || this.$parent.polyPatroli != null || this.$parent.polyPengawalan != null ? 'offset' : ''
         }
     },
     methods: {

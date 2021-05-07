@@ -36,6 +36,6 @@ class CallReady implements ShouldBroadcast
     }
 
     public function broadcastAs(){
-        return 'CallReady';
+        return 'call-ready';
     }
 }

@@ -2,6 +2,27 @@
     position: relative;
     height: 65vh;
     padding: 1em .5em;
+    .e-call-waiting {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(38, 48, 64, 0.46);
+        backdrop-filter: blur(6px);
+        border-radius: .5rem;
+        color: $white;
+        border: 1px solid $content;
+        font-family: $fontHeader;
+        z-index: 100;
+        padding: .65em 1em;
+        div {
+            -webkit-animation: rotating 2s linear infinite;
+            -moz-animation: rotating 2s linear infinite;
+            -ms-animation: rotating 2s linear infinite;
+            -o-animation: rotating 2s linear infinite;
+            animation: rotating 2s linear infinite;
+        }
+    }
     .e-person {
         position: absolute;
         top: 0;
