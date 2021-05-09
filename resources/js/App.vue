@@ -21,14 +21,14 @@ export default {
     },
     methods: {
         logout () {
-            this.$router.push({ name: 'Login' })
-            // axios.get('user/logout-admin')
-            // .then(({ data }) => {
-            //     this.$store.commit('removeUser')
-            //     delete axios.defaults.headers.common['Authorization']
-            //     localStorage.removeItem('token')
-            //     location.reload()
-            // })
+            // this.$router.push({ name: 'Login' })
+            axios.get('user/logout-admin')
+            .then(({ data }) => {
+                this.$store.commit('removeUser')
+                delete axios.defaults.headers.common['Authorization']
+                localStorage.removeItem('token')
+                location.reload()
+            })
         },
     },
 }

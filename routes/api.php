@@ -1003,9 +1003,12 @@ Route::group([
         $mime = Storage::mimeType($path);
         $allowedMime = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'image/svg+xml'];
 
-        if (!in_array($mime, $allowedMime))
+        if (!in_array($mime, $allowedMime)) {
             return response()->json(['error' => 'Tidak terpenuhi.'], 400);
-        else
+        } elseif (!Storage::exists($path)) {
+            return "https://e-lamin.id/api/upload/{$path}";
+        } else {
             return response()->file(storage_path("app/{$path}"));
+        }
     });
 });

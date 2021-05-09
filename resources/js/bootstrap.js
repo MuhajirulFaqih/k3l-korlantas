@@ -76,16 +76,15 @@ window.io = require("socket.io-client");
 if (typeof io != "undefined") {
     window.Echo = null
 }
-// axios.interceptors.response.use(
-// function(response) { return response; },
-// function(error) {
-//     if (error.response) {
-//         if(error.response.status == 401) {
-//         	axios.get(baseUrl + '/auth/logout')
-// 		    .then(({ data }) => {
-// 				location.reload()
-// 			})
-//         }
-//         return Promise.reject(error);
-//     }
-// });
+
+axios.interceptors.response.use(
+    function(response) { return response; }, 
+    function(error) {
+    if (error.response) {
+        if(error.response.status == 401) {
+            localStorage.removeItem('token')
+            location.reload()
+        }
+        return Promise.reject(error);
+    }
+});
