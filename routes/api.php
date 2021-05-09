@@ -1001,7 +1001,7 @@ Route::group([
         $path = "{$pathA}/{$pathB}";
         if ($pathC !== null) $path .= "/{$pathC}";
         if (!Storage::exists($path)) {
-            return "https://e-lamin.id/api/upload/{$path}";
+            return response()->file(public_path("assets/sample-kegiatan.png"));
         } else {
             $mime = Storage::mimeType($path);
             $allowedMime = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'image/svg+xml'];
