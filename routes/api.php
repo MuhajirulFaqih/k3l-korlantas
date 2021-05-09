@@ -1000,15 +1000,17 @@ Route::group([
     Route::get('upload/{pathA}/{pathB}/{pathC?}', function ($pathA, $pathB, $pathC = null) {
         $path = "{$pathA}/{$pathB}";
         if ($pathC !== null) $path .= "/{$pathC}";
-        $mime = Storage::mimeType($path);
-        $allowedMime = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'image/svg+xml'];
-
-        if (!in_array($mime, $allowedMime)) {
-            return response()->json(['error' => 'Tidak terpenuhi.'], 400);
-        } elseif (!Storage::exists($path)) {
+        if (!Storage::exists($path)) {
             return "https://e-lamin.id/api/upload/{$path}";
         } else {
-            return response()->file(storage_path("app/{$path}"));
+            $mime = Storage::mimeType($path);
+            $allowedMime = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'image/svg+xml'];
+    
+            if (!in_array($mime, $allowedMime)) {
+                return response()->json(['error' => 'Tidak terpenuhi.'], 400);
+            } else {
+                return response()->file(storage_path("app/{$path}"));
+            }
         }
     });
 });

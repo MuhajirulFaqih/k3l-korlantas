@@ -62,8 +62,11 @@ export default {
     methods : {
         showModal (item) {
             this.single = item
-            this.outGoing(item)
-            this.$refs.videoCall.show()
+            let self = this
+            setTimeout(function() {
+                self.outGoing(item)
+                self.$refs.videoCall.show()
+            }, 500)
         },
         humanizeFormat (value) {
             return moment(value).fromNow()
@@ -82,7 +85,7 @@ export default {
         outGoing (personil) {
             this.call = true
             this.videoCall.calling = personil
-            this.initVideoCall()
+            this.initVideoCall(personil)
             this.$refs.rbt.play()
             var self = this
             setTimeout(function() {
@@ -113,7 +116,7 @@ export default {
             })
             //this.callPersonil(personil)
         },
-        initVideoCall(){
+        initVideoCall(personil){
             this.videoCall.ws = new WebSocket(wssVc)
             this.videoCall.ws.onmessage = this.onWsMessage
             this.videoCall.ws.onopen = this.onWsOpen

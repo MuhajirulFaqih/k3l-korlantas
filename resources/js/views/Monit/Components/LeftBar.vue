@@ -380,7 +380,7 @@ export default {
     },
     computed:{
         jumlahPersonil() {
-            return (Number(this.$parent.markerPersonil.length) + Number(this.$parent.markerPatroli.length) + Number(this.$parent.markerPengawalan.length))
+            return (Number(this.$parent.markerPersonil.length))
         },
         jumlahTotalPersonil() {
             return this.trackingLimit !== 'semua' ? this.trackingLimit : this.trackingTotal
