@@ -7,6 +7,9 @@
             title="Detail Lokasi">
 	  	<div class="d-block" v-if="single !== null">
             <b-row class="mt-4">
+                <b-col cols="12"><h3>{{ single.nama_tempat }}</h3></b-col>
+            </b-row>
+            <b-row class="mt-4">
                 <b-col cols="4">Lokasi</b-col>
                 <b-col cols="8">{{ single.lokasi }}</b-col>
             </b-row>
