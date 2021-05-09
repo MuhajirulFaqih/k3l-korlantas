@@ -4,6 +4,7 @@
             <!-- <spinner :speed=".8" :size="30" /> -->
         </div>
         <router-view></router-view>
+        <div class="screen"><span>Aplikasi hanya diperuntukkan untuk desktop yang lebih besar</span></div>
     </div>
 </template>
 

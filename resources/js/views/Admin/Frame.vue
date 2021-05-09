@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper admin">
     <Sidebar ref="sidebar"/>
     <div id="content">
         <div class="top">
