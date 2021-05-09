@@ -26,7 +26,7 @@
                                     class="e-form"
                                     @keyup="whenSearch"
                                     v-model="filterDebounced"
-                                    placeholder="Cari judul, tipe, waktu kegiatan..."/>
+                                    placeholder="Cari nama, waktu panggilan..."/>
                                 <b-input-group-append>
                                     <button class="btn e-btn e-btn-primary" type="submit">
                                         <ph-magnifying-glass class="phospor"/>
