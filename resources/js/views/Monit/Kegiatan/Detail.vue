@@ -15,7 +15,7 @@
                     <b-row>
                         <b-col cols="12">
                             <perfect-scrollbar class="e-data-body">
-                                <b-row v-if="single.dokumentasi !== null">
+                                <b-row v-if="single.dokumentasi !== null" class="mb-3">
                                     <b-col cols="12">
                                         <b-img :src="single.dokumentasi" alt="" class="w-100"/>
                                     </b-col>
