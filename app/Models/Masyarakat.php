@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class Masyarakat extends Model
 {
-    use SoftDeletes;
-    
+    use HasFactory, SoftDeletes;
+
     protected $table = "masyarakat";
 
     protected $fillable = ['id_kel', 'nik', 'nama', 'foto', 'alamat', 'no_telp', 'provider', 'provider_id'];
@@ -63,6 +64,6 @@ class Masyarakat extends Model
                     IFNULL(m.nik, ''), '||', m.nama, '||', m.alamat, '||', m.no_telp
                 )) LIKE ?", ['%' . addcslashes(strtolower($filter), '%_') . '%'])
                 ->get()->pluck('id')->all()
-            );
+        );
     }
 }

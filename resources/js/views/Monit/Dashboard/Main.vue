@@ -47,13 +47,6 @@
                     :icon="require('@/assets/pengaduan.png').default" @click="$refs.bottombar.$refs.pengaduan.detail(indexMarkerPengaduan)"/>
             </div>
             
-            <!-- have not been used -->
-            <div id="marker-tps" v-if="!markerSingleShow">
-                <GmapMarker v-for="(indexMarkerTps, keyMarkerTps) in markerTps" :key="`hotspot-${keyMarkerTps}`" 
-                    :position="{ lat: parseFloat(indexMarkerTps.lat), lng: parseFloat(indexMarkerTps.lng) }"
-                    :icon="require('@/assets/tps.png').default" @click="$refs.tps.detail(indexMarkerTps)"/>
-            </div>
-            
             <div id="marker-personil" v-if="markerPersonilShow && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <gmap-custom-marker v-for="(indexMarkerPersonil, keyMarkerPersonil) in markerPersonil" :key="`personil-${keyMarkerPersonil}`"
                     :marker="{ lat: parseFloat(indexMarkerPersonil.lat), lng: parseFloat(indexMarkerPersonil.lng) }"
@@ -99,7 +92,6 @@
         <Hotspot ref="hotspot" />
         <LokasiVital ref="lokasiVital" />
         <Masyarakat ref="masyarakat" />
-        <Tps ref="tps" />
 
         <audio :src="audioEmergency" ref="emergency" loop></audio>
 	    <audio :src="audioKejadian" ref="audioKejadian" loop></audio>
@@ -118,7 +110,6 @@ import TopBar from '@/views/Monit/Components/TopBar'
 import Hotspot from '@/views/Monit/Hotspot/Main'
 import LokasiVital from '@/views/Monit/LokasiVital/Main'
 import Masyarakat from '@/views/Monit/Masyarakat/Main'
-import Tps from '@/views/Monit/Tps/Main'
 import AudioKejadian from "@/views/Monit/Dashboard/AudioKejadian"
 import CustomMarker from "@/views/Monit/Dashboard/CustomMarker"
 
@@ -131,7 +122,7 @@ export default {
     components: { 
         BottomBar, LeftBar, 
         RightBar, TopBar, 'gmap-custom-marker' : CustomMarker,
-        Hotspot, LokasiVital, Masyarakat, Tps, AudioKejadian,
+        Hotspot, LokasiVital, Masyarakat, AudioKejadian,
     },
     data () {
         return {
@@ -160,7 +151,6 @@ export default {
             markerLokasiVital: [],
             markerMasyarakatKejadian: [],
             markerMasyarakatDarurat: [],
-            markerTps: [],
             markerPersonilShow: false,
             markerSingleShow: false,
             kegiatanStatus: true, //Belongs to leftbar

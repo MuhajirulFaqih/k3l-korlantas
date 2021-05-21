@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\Admin;
-use App\Models\Bhabin;
 use App\Models\Darurat;
 use App\Models\Kegiatan;
 use App\Models\Kejadian;
@@ -33,7 +32,6 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             'admin' => Admin::class,
             'personil' => Personil::class,
-            'bhabin' => Bhabin::class,
             'masyarakat' => Masyarakat::class,
             'kegiatan' => Kegiatan::class,
             'kejadian' => Kejadian::class,

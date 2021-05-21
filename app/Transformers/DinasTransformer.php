@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Dinas;
+use League\Fractal\TransformerAbstract;
 
 class DinasTransformer extends TransformerAbstract
 {
@@ -17,7 +17,8 @@ class DinasTransformer extends TransformerAbstract
         return [
             'id'       => $dinas->id,
             'kegiatan' => $dinas->kegiatan,
-            'icon'     => $dinas->icon ? url('api/upload/'.$dinas->icon) : null
+            'icon'     => $dinas->icon ? url('api/upload/'.$dinas->icon) : null,
+            'image' => $dinas->image ? url('api/upload/'.$dinas->image) : null
         ];
     }
 }

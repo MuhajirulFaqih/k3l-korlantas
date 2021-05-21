@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Transformers\PengaduanTransformer;
-use App\Transformers\KomentarTransformer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use App\Serializers\DataArraySansIncludeSerializer;
-use App\Events\PengaduanEvent;
-use App\Events\KomentarPengaduanEvent;
-use App\Models\Komentar;
 use App\Models\Pengaduan;
+use App\Serializers\DataArraySansIncludeSerializer;
+use App\Transformers\KomentarTransformer;
+use App\Transformers\PengaduanTransformer;
+use App\Events\KomentarPengaduanEvent;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class PengaduanController extends Controller
 {
@@ -22,24 +21,24 @@ class PengaduanController extends Controller
             return response()->json(['error' => 'Terlarang'], 403);
 
         list($orderBy, $dir) = explode(':', $request->sort);
-        
+
         $limit = $request->limit != '' ? $request->limit : 10;
         if($limit == 0)
             return null;
         if ($user->jenis_pemilik == 'admin')
-            $paginate = $request->filter == '' ? 
-                        Pengaduan::orderBy($orderBy, $dir)->paginate($limit):
-                        Pengaduan::filter($request->filter)
-                                ->orderBy($orderBy, $dir)->paginate($limit);
-        else 
-            $paginate = $request->filter == '' ? 
-                        Pengaduan::where('id_user', $user->id)
-                                    ->orderBy($orderBy, $dir)
-                                    ->paginate($limit):
-                        Pengaduan::filter($request->filter)
-                                ->where('id_user', $user->id)
-                                ->orderBy($orderBy, $dir)->paginate($limit);
-        
+            $paginate = $request->filter == '' ?
+                Pengaduan::orderBy($orderBy, $dir)->paginate($limit):
+                Pengaduan::filter($request->filter)
+                    ->orderBy($orderBy, $dir)->paginate($limit);
+        else
+            $paginate = $request->filter == '' ?
+                Pengaduan::where('id_user', $user->id)
+                    ->orderBy($orderBy, $dir)
+                    ->paginate($limit):
+                Pengaduan::filter($request->filter)
+                    ->where('id_user', $user->id)
+                    ->orderBy($orderBy, $dir)->paginate($limit);
+
         $collection = $paginate->getCollection();
 
         return fractal()
@@ -81,7 +80,7 @@ class PengaduanController extends Controller
             ->respond();
     }
 
-    public function buatKomentar(Request $request, Pengaduan $pengaduan) {
+    public function buatKomentar(Request $request, Pengaduan $pengaduan){
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['admin', 'masyarakat']) || ($user->jenis_pemilik == 'masyarakat' && $pengaduan->id_user != $user->id))
@@ -98,11 +97,9 @@ class PengaduanController extends Controller
 
         if (!$komentar)
             return response()->json(['error' => 'Terjadi kesalahan'], 500);
-        
-        if(!env('APP_DEV')) {
-            $this->broadcastNotifikasi($user, $komentar);
-        }
 
+        $this->broadcastNotifikasi($user, $komentar);
+        
         $fractal = fractal()
             ->item($komentar)
             ->transformWith(KomentarTransformer::class)
@@ -132,7 +129,7 @@ class PengaduanController extends Controller
 
         $foto = $validateData['foto']->storeAs(
             'pengaduan',
-            str_random(40).'.'.$validateData['foto']->extension()
+            Str::random(40).'.'.$validateData['foto']->extension()
         );
 
         $pengaduan = Pengaduan::create([
@@ -150,10 +147,10 @@ class PengaduanController extends Controller
         //$this->broadcastNotifikasi($user, $pengaduan);
 
         $data = fractal()
-                ->item($pengaduan)
-                ->transformWith(PengaduanTransformer::class)
-                ->serializeWith(DataArraySansIncludeSerializer::class)
-                ->toArray();
+            ->item($pengaduan)
+            ->transformWith(PengaduanTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->toArray();
 
         event(new PengaduanEvent($data['data']));
 

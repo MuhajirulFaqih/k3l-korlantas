@@ -2,29 +2,26 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Laravel\Scout\Searchable;
 
 class Kejadian extends Model
 {
-    // use Searchable;
-    protected $table = "kejadian";
+    use HasFactory;
 
+    protected $table = 'kejadian';
     protected $fillable = [
-        'id_user','kejadian','w_kejadian','lokasi','keterangan','lat','lng','id_darurat','verifikasi', 'selesai', 'follow_me'
+        'id_user', 'kejadian', 'w_kejadian', 'lokasi', 'keterangan', 'lat', 'lng', 'id_darurat', 'verifikasi'
     ];
 
-    protected $casts = ['follow_me' => 'boolean'];
+    protected $casts = ['w_kejadian' => 'datetime'];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_user')->withTrashed();
+    public function user(){
+        return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function komentar()
-    {
+    public function komentar(){
         return $this->morphMany(Komentar::class, 'komentar', 'jenis_induk', 'id_induk');
     }
 
@@ -32,14 +29,30 @@ class Kejadian extends Model
         return $this->hasMany(TindakLanjut::class, 'id_kejadian');
     }
 
-    public function logmasyarakat(){
-        return $this->morphMany(LogPosisiMasyarakat::class, 'posisi_masyarakat', 'jenis_induk', 'id_induk');
+    public function nearby(){
+        return $this->morphMany(PersonilTerdekat::class, 'personil_terdekat', 'jenis_induk', 'id_induk');
     }
 
-    public function scopeBulan($query){
-        $query->whereMonth('w_kejadian', Carbon::now()->month)
-            ->whereYear('w_kejadian', Carbon::now()->year);
-        return $query;
+    public function scopeFiltered($query, $filter, $status)
+    {
+        if($filter == null && ($status == null || $status == 'semua'))
+            return $query;
+
+        $idBulan = array ('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
+        $enBulan = array ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+        $filter = str_ireplace($idBulan, $enBulan, $filter);
+
+        return $query->whereIn('id',
+            DB::table('kejadian as k')
+                ->select('k.id')
+                ->where(function($sub) use ($status) {
+                    $this->queryStatus($sub, $status);
+                })
+                ->whereRaw("CONCAT(
+                        k.kejadian, '||', k.lokasi, '||', DATE_FORMAT(LEFT(k.w_kejadian, 10), '%d %M %Y'), '||', LEFT(k.w_kejadian, 10)
+                    ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%'])
+                ->get()->pluck('id')->all()
+        );
     }
 
     public function scopeFilteredUser($query, User $user){
@@ -49,15 +62,22 @@ class Kejadian extends Model
         return $query;
     }
 
-    public function nearby(){
-        return $this->morphMany(PersonilTerdekat::class, 'personil_tedekat', 'jenis_induk', 'id_induk');
-    }
-    
-    public function toSearchableArray()
-    {
-        $array = $this->toArray();
-        $array['waktu_kejadian'] = \Carbon\Carbon::parse($this->w_kejadian)->format('d F Y');
-        return $array;
+
+    public function scopeFilteredCetak($query, $type, $range) {
+        if($type == '' || ($type == '2' && $range == '')):
+            return $query->whereNull('id');
+        elseif($type == 1):
+            return $query;
+        elseif($type == 2):
+            list($mulai, $selesai) = $range;
+            $mulai = date('Y-m-d', strtotime($mulai));
+            $selesai = date('Y-m-d', strtotime($selesai));
+            if(substr($mulai, 0, 10) == substr($selesai, 0, 10)):
+                return $query->whereDate('created_at', substr($selesai, 0, 10));
+            else:
+                return $query->whereBetween('created_at', [substr($mulai, 0, 10), substr($selesai, 0, 10)]);
+            endif;
+        endif;
     }
 
     public function scopeFilterProsesPenanganan($query)
@@ -87,28 +107,6 @@ class Kejadian extends Model
                             order by created_at desc)');
         
         return $query;
-    }
-
-    public function scopeFiltered($query, $filter, $status)
-    {
-        if($filter == null && ($status == null || $status == 'semua'))
-            return $query;
-
-        $idBulan = array ('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
-        $enBulan = array ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-        $filter = str_ireplace($idBulan, $enBulan, $filter);
-
-        return $query->whereIn('id', 
-                DB::table('kejadian as k')
-                    ->select('k.id')
-                    ->where(function($sub) use ($status) {
-                        $this->queryStatus($sub, $status);
-                    })
-                   ->whereRaw("CONCAT(
-                        k.kejadian, '||', k.lokasi, '||', DATE_FORMAT(LEFT(k.w_kejadian, 10), '%d %M %Y'), '||', LEFT(k.w_kejadian, 10)
-                    ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%'])
-                    ->get()->pluck('id')->all()
-                );
     }
 
     public function queryStatus($sub, $status)

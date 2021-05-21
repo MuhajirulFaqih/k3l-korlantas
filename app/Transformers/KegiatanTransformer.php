@@ -1,20 +1,11 @@
 <?php
 
-/**
- * @Author: Alan
- * @Date:   2018-09-25 10:23:03
- * @Last Modified by:   Alan
- * @Last Modified time: 2018-09-27 10:44:48
- */
-
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
-use App\Models\Kegiatan;
-use App\Models\Komentar;
-use App\Models\Personil;
-use App\Models\TipeLaporan;
 use App\Models\JenisKegiatan;
+use App\Models\Kegiatan;
+use Illuminate\Support\Str;
+use League\Fractal\TransformerAbstract;
 
 class KegiatanTransformer extends TransformerAbstract
 {
@@ -24,8 +15,7 @@ class KegiatanTransformer extends TransformerAbstract
      * @return array
      */
     protected $defaultIncludes = ['user'];
-
-    protected $availableIncludes = ['tipe', 'jenis'];
+    protected $availableIncludes = ['jenis', 'kelurahan'];
 
     protected $prev = false;
 
@@ -34,48 +24,35 @@ class KegiatanTransformer extends TransformerAbstract
         $this->$prev = $prev;
     }
 
-    public function transform(Kegiatan $kegiatan)
+    public function transform($kegiatan)
     {
         return [
             'id' => $kegiatan->id,
             'w_kegiatan' => $kegiatan->waktu_kegiatan->toDateTimeString(),
-            'judul' => $kegiatan->judul,
-            // 'tipe'          => $kegiatan->tipe->tipe,
-            // 'jenis'         => optional($kegiatan->jenis)->jenis,
+            'daftar_rekan' => $kegiatan->daftar_rekan,
+            'nomor_polisi' => $kegiatan->nomor_polisi,
+            'detail' => $this->prev ? Str::limit($kegiatan->detail) : $kegiatan->detail,
+            'rute_patroli' => $kegiatan->rute_patroli,
             'lat' => $kegiatan->lat,
             'lng' => $kegiatan->lng,
-            'lokasi' => $kegiatan->lokasi,
-            'sasaran' => $kegiatan->sasaran,
-            'kuat_pers' => $kegiatan->kuat_pers,
-            'hasil' => $kegiatan->hasil,
-            'jml_giat' => $kegiatan->jml_giat,
-            'jml_tsk' => $kegiatan->jml_tsk,
-            'bb' => $kegiatan->jml_tsk,
-            'perkembangan' => $kegiatan->perkembangan,
-            'dasar' => $kegiatan->dasar,
-            'keterangan' => $this->prev ? str_limit($kegiatan->keterangan) : $kegiatan->keterangan,
+            'is_quick_response' => $kegiatan->is_quick_response,
             'dokumentasi' => $kegiatan->dokumentasi ? url('api/upload/' . $kegiatan->dokumentasi) : null,
         ];
     }
 
-    public function includeUser(Kegiatan $kegiatan)
+    public function includeUser($kegiatan)
     {
         return $this->item($kegiatan->user, new UserTransformer());
     }
 
-    public function includeTipe(Kegiatan $kegiatan)
-    {
-        return $this->item($kegiatan->tipe, function (TipeLaporan $tipeLaporan) {
-            return $tipeLaporan->toArray();
-        });
+    public function includeJenis($kegiatan){
+        if($kegiatan->jenis)
+            return $this->collection($kegiatan->jenis, new KegiatanJenisKegiatanTransformer());
     }
-
-    public function includeJenis(Kegiatan $kegiatan)
-    {
-        if ($kegiatan->jenis)
-            return $this->item($kegiatan->jenis, function (JenisKegiatan $jenisKegiatan) {
-            return $jenisKegiatan->toArray();
-        });
+    
+    public function includeKelurahan($kegiatan){
+        if($kegiatan->kelurahan)
+            return $this->item($kegiatan->kelurahan, new KelurahanTransformer());
     }
 
 }

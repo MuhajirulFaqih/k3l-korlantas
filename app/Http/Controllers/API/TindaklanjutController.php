@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\API;
 
 
-use App\Models\TindakLanjut;
-use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
-use App\Serializers\DataArraySansIncludeSerializer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TindaklanjutController extends Controller
 {
@@ -17,8 +17,8 @@ class TindaklanjutController extends Controller
             'foto'        => 'required|image',
             'id_kejadian' => 'required',
         ]);
-        
-        $name = str_random(10);
+
+        $name = Str::random(10);
         $foto = $request->file('foto')
                                    ->storeAs('Tindaklanjut',$name. '.' . $request->file('foto')
                                    ->extension());

@@ -3,14 +3,11 @@
 namespace App\Transformers;
 
 use App\Models\Kejadian;
-use App\Models\Komentar;
-use App\Models\TindakLanjut;
-use App\Traits\AudioKejadian;
+use Illuminate\Support\Str;
 use League\Fractal\TransformerAbstract;
 
 class KejadianTransformer extends TransformerAbstract
 {
-    use AudioKejadian;
     /**
      * A Fractal transformer.
      *
@@ -31,21 +28,25 @@ class KejadianTransformer extends TransformerAbstract
 
     public function transform(Kejadian $kejadian)
     {
+        $tindakLanjutStatus = [
+            'tkp' => 'Menuju ke TKP',
+            'proses_penanganan' => 'Prosess Penanganan',
+            'selesai' => 'Selesai'
+        ];
         return [
             'id'             => $kejadian->id,
-            'w_kejadian'     => $kejadian->w_kejadian,
+            'w_kejadian'     => $kejadian->w_kejadian->toDateTimeString(),
             'kejadian'       => $kejadian->kejadian,
             'lokasi'         => $kejadian->lokasi,
-            'keterangan'     => $this->prev ? str_limit($kejadian->keterangan, 70, '...') : $kejadian->keterangan,
+            'keterangan'     => $this->prev ? Str::limit($kejadian->keterangan, 70, '...') : $kejadian->keterangan,
             'lat'            => $kejadian->lat,
             'lng'            => $kejadian->lng,
-            'gambar'         => $kejadian->gambar ? url('upload/'.$kejadian->gambar) : null,
-            'status'         => $kejadian->tindak_lanjut->count() ? str_replace('_', ' ', title_case($kejadian->tindak_lanjut->sortByDesc('created_at')->first()->status)) : ($kejadian->verifikasi == '1' ? 'Laporan Baru' : 'Belum Diverifikasi'),
+            'gambar'         => $kejadian->gambar ? url('api/upload/'.$kejadian->gambar) : null,
+            'status'         => $kejadian->tindak_lanjut->count() ? $tindakLanjutStatus[$kejadian->tindak_lanjut->sortByDesc('created_at')->first()->status] : ($kejadian->verifikasi == '1' ? 'Laporan Baru' : 'Belum Diverifikasi'),
             'verifikasi'     => $kejadian->verifikasi,
             'id_darurat'     => $kejadian->id_darurat,
             'follow_me'      => $kejadian->follow_me,
-            'selesai'        => $kejadian->selesai,
-            'audio'        => $this->audioKejadian($kejadian->kejadian),
+            'selesai'        => $kejadian->selesai
         ];
     }
 

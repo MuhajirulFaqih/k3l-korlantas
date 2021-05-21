@@ -13,9 +13,9 @@ class TempatVitalController extends Controller
     public function getByJenis($id)
     {
     	$user = request()->user();
-    	if (!in_array($user->jenis_pemilik, ['admin']))
+    	if (!in_array($user->jenis_pemilik, ['admin', 'masyarakat']))
             return response()->json(['error' => 'Anda tidak memiliki akses '], 403);
-        
+
         $tempat = TempatVital::where('id_jenis', $id)->get();
 
         if (count($tempat) === 0)
@@ -33,7 +33,7 @@ class TempatVitalController extends Controller
         $user = request()->user();
         if (!in_array($user->jenis_pemilik, ['admin']))
             return response()->json(['error' => 'Anda tidak memiliki akses '], 403);
-        
+
         $tempat = TempatVital::whereIn('id_jenis', $request->jenis)->get();
 
         if (count($tempat) === 0)

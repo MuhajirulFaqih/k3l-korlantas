@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Kabupaten extends Model
 {
+    use HasFactory;
+
     /**
      * Nama tabel yang dipakai oleh model.
      *
@@ -39,6 +42,4 @@ class Kabupaten extends Model
     {
         return $this->hasMany(Kecamatan::class, 'id_kab', 'id_kab');
     }
-
-
 }

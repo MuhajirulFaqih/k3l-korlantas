@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Admin extends Model
 {
-	use SoftDeletes;
-    protected $table = "admin";
+    use HasFactory, SoftDeletes;
+    protected $table = 'admin';
 
-    protected $fillable = ['nama', 'visible', 'status'];
+    protected $fillable = ['nama', 'status', 'in_call', 'visibility'];
 
     public function auth(){
         return $this->morphOne(User::class, 'auth', 'jenis_pemilik', 'id_pemilik');

@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Admin;
+use League\Fractal\TransformerAbstract;
 
 class AdminTransformer extends TransformerAbstract
 {
@@ -18,7 +18,7 @@ class AdminTransformer extends TransformerAbstract
         return [
             'id' => $admin->id,
             'nama' => $admin->nama,
-            'visiblity' => $admin->visible,
+            'visibility' => $admin->visible,
             'online' => $admin->status
         ];
     }

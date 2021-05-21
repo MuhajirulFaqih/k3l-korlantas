@@ -2,76 +2,85 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Laravel\Scout\Searchable;
 
 class Kegiatan extends Model
 {
-    // use Searchable;
+    use HasFactory;
 
     protected $table = 'kegiatan';
-
-    protected $fillable = ['id_user', 'tipe_laporan', 'waktu_kegiatan', 'lat', 'lng', 'jenis_kegiatan', 'judul', 'sasaran', 'lokasi', 'kuat_pers', 'hasil', 'jml_giat', 'jml_tsk', 'bb', 'perkembangan', 'dasar', 'tsk_bb', 'modus', 'keterangan', 'dokumentasi'];
+    protected $guarded = [];
 
     protected $casts = ['waktu_kegiatan' => 'datetime'];
 
-    public function tipe()
-    {
-        return $this->belongsTo(TipeLaporan::class, 'tipe_laporan');
+    public function jenis(){
+        return $this->hasMany(KegiatanJenisKegiatan::class, 'id_kegiatan');
     }
 
-    public function jenis()
-    {
-        return $this->belongsTo(JenisKegiatan::class, 'jenis_kegiatan');
+    public function user(){
+        return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_user')->withTrashed();
-    }
-
-    public function komen()
-    {
-        return $this->belongsTo(Komentar::class, 'id');
-    }
-
-    public function komentar()
-    {
+    public function komentar(){
         return $this->morphMany(Komentar::class, 'komentar', 'jenis_induk', 'id_induk');
     }
 
-    public function toSearchableArray()
-    {
-        $array = $this->toArray();
-        $array['pangkat'] = $this->user->pemilik->pangkat->pangkat['pangkat'] ?? null;
-        $array['tipe'] = $this->tipe['tipe'];
-        $array['waktu_dibuat'] = \Carbon\Carbon::parse($this->waktu_kegiatan)->format('d F Y');
-        return $array;
+
+    public function scopeLaporan($query, $filter, $rentang, $id_jenis){
+        if ($filter){
+            $query->whereIn('id',
+                DB::table('kegiatan')
+                    ->selectRaw('kegiatan.id as id')
+                    ->leftJoin('kegiatan_jenis_kegiatan', 'kegiatan_jenis_kegiatan.id_kegiatan', '=', 'kegiatan.id')
+                    ->leftJoin('jenis_kegiatan', 'jenis_kegiatan.id', '=', 'kegiatan_jenis_kegiatan.id_jenis_kegiatan')
+                    ->join('user', 'user.id', '=', 'kegiatan.id_user')
+                    ->join('personil', 'personil.id', '=', 'user.id_pemilik', 'left')
+                    ->whereRaw('CONCAT (kegiatan.detail,\'||\', jenis_kegiatan.jenis, \'||\', personil.nama, \'||\', personil.nrp)')
+                    ->get()
+                    ->groupBy('kegiatan.id')
+                    ->pluck('id')
+                    ->all()
+            );
+        }
+
+        if ($rentang){
+            list($mulai, $selesai) = $rentang;
+            $query->whereBetween('waktu_kegiatan', [substr($mulai, 0, 10), substr($selesai, 0, 10)]);
+        }
+
+        // if ($id_jenis){
+        //     $query->where('id_jenis', $id_jenis);
+        // }
+
+        return $query;
+    }
+    
+    public function scopeFilter($query, $filter){
+        if ($filter){
+            $query->whereIn('id',
+                DB::table('kegiatan')
+                    ->select('kegiatan.id')
+                    ->leftJoin('kegiatan_jenis_kegiatan', 'kegiatan_jenis_kegiatan.id_kegiatan', '=', 'kegiatan.id')
+                    ->leftJoin('jenis_kegiatan', 'jenis_kegiatan.id', '=', 'kegiatan_jenis_kegiatan.id_jenis_kegiatan')
+                    ->leftJoin('user', 'user.id', '=', 'kegiatan.id_user')
+                    ->leftJoin('personil', 'personil.id', '=', 'user.id_pemilik')
+                    ->where(function($sub) use ($filter) {
+                        $sub->whereRaw("CONCAT_WS(
+                                kegiatan.detail,'||', jenis_kegiatan.jenis, '||', personil.nama, '||', personil.nrp
+                            ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%']);
+                    })
+                    ->get()
+                    ->pluck('id')
+                    ->all()
+            );
+        }
+
+        return $query;
     }
 
-    public function scopeFilter($query, $filter)
-    {
-        if ($filter == null) {
-            return $query;
-        }
-        $idBulan = array ('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
-        $enBulan = array ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-        $filter = str_ireplace($idBulan, $enBulan, $filter);
-
-        return $query->whereIn(
-            'id',
-            DB::table('kegiatan as k')
-                ->select('k.id')
-                ->leftJoin('tipe_laporan as t', 'k.tipe_laporan', '=', 't.id')
-                ->leftJoin('kegiatan_jenis as j', 'k.jenis_kegiatan', '=', 'j.id')
-                ->where(function($sub) use ($filter) {
-                    $sub->whereRaw("CONCAT_WS(
-                            k.judul, '||', k.lokasi, '||', CONCAT(k.kuat_pers, ' Personil'), '||', 
-                            k.keterangan, '||', t.tipe, '||', DATE_FORMAT(LEFT(k.waktu_kegiatan, 10), '%d %M %Y'), '||', LEFT(k.waktu_kegiatan, 10)
-                        ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%']);
-                })
-                ->get()->pluck('id')->all()
-            );
+    public function kelurahan(){
+        return $this->belongsTo(Kelurahan::class, 'id_kelurahan_binmas');
     }
 }

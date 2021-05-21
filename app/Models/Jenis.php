@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\TempatVital;
 use Illuminate\Database\Eloquent\Model;
 
 class Jenis extends Model

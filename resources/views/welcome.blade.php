@@ -16,21 +16,12 @@
         <meta name="emergency-audio-url" content="{{ url('/audio/emergency.mp3') }}">
         <meta name="kejadian-audio-url" content="{{ url('/audio/kejadian.mp3') }}">
         <meta name="ringbacktone-audio-url" content="{{ url('/audio/ringbacktone.mp3') }}">
-        <meta name="marine-url" content="{{ env('MARINE_TRAFFIC_URL') }}">
-        <meta name="radar-url" content="{{ env('FLIGHT_RADAR_URL') }}">
         <meta name="dana-desa" content="{{ env('DANA_DESA') }}">
         <meta name="mastumapel" content="{{ env('MASTUMAPEL') }}">
         <meta name="socket-prefix" content="{{ env('SOCKET_PREFIX') }}">
         <meta name="has-vc" content="{{ env('HAS_VC', true) }}">
-        <meta name="cid" content="{{ env('API_CLIENT_ID') }}">
-        <meta name="csc" content="{{ env('API_CLIENT_SECRET') }}">
         <meta name="app-name" content="{{ env('APP_NAME') }}">
         <meta name="induk" content="{{ env('INDUK') }}">
-        <meta name="penerangan-satuan" content="{{ env('PENERANGAN_SATUAN', 0) }}">
-        <meta name="visi-misi" content="{{ env('VISI_MISI', 0) }}">
-        <meta name="kegiatan-bhabin" content="{{ env('KEGIATAN_BHABIN') }}">
-        <meta name="personil-kegiatan" content="{{ env('PERSONIL_KEGIATAN') }}">
-        <meta name="edisposisi" content="{{ env('HAS_EDISPOSISI', 0) }}">
 
         <title>{{ ENV('APP_NAME') }}</title>
 

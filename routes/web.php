@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,9 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('resource/auth', [UserController::class, 'requestAdminToken']);
+
 Route::get('/', function () {
     return view('welcome');
 });
+
 
 Route::get('/{vue_capture?}', function (Request $request) {
     return view('welcome');

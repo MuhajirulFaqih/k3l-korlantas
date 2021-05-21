@@ -18,7 +18,7 @@ class NewsController extends Controller
 
         return fractal()
             ->collection($collection)
-            ->transformWith(NewsTransformer::class)
+            ->transformWith(new NewsTransformer(true))
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->paginateWith(new IlluminatePaginatorAdapter($paginator))
             ->respond();
@@ -77,16 +77,8 @@ class NewsController extends Controller
 
         $penerima = $this->masyarakat->ambilToken();
         $penerima = $penerima->merge($this->personil->ambilToken());
-        $penerima = $penerima->merge($this->bhabin->ambilToken())->all();
 
         $this->kirimNotifikasiViaGcm('berita-baru', $data, $penerima);
-
-        if (env('USE_ONESIGNAL', false)){
-            $penerimaOneSignal = $this->masyarakat->ambilId();
-            $penerimaOneSignal = $penerimaOneSignal->merge($this->personil->ambilId());
-            $penerimaOneSignal = $penerimaOneSignal->merge($this->bhabin->ambilId());
-            $this->kirimNotifikasiViaOnesignal('berita-baru', $data, $penerimaOneSignal);
-        }
 
         return response()->json(['success' => true]);
     }
@@ -114,7 +106,7 @@ class NewsController extends Controller
 
         return fractal()
             ->collection($news)
-            ->transformWith(NewsTransformer::class)
+            ->transformWith(new NewsTransformer(true))
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->respond();
     }

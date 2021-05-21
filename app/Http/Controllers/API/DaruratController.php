@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Events\DaruratSelesaiEvent;
+use App\Models\Darurat;
 use App\Models\Personil;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -10,7 +11,6 @@ use App\Events\DaruratEvent;
 use App\Transformers\DaruratTransformer;
 use App\Serializers\DataArraySansIncludeSerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use App\Models\Darurat;
 
 class DaruratController extends Controller
 {
@@ -44,14 +44,14 @@ class DaruratController extends Controller
                 'lng' => $row['lng']
             ]);
         }
-        
+
         //Broadcast to monit
         $data = fractal()
                 ->item($darurat)
                 ->transformWith(DaruratTransformer::class)
                 ->serializeWith(DataArraySansIncludeSerializer::class)
                 ->toArray();
-        
+
         broadcast(new DaruratEvent($data['data']));
 
         return response()->json(['success' => true, 'id' => $darurat->id]);
@@ -73,11 +73,8 @@ class DaruratController extends Controller
 
         if ($user->jenis_pemilik == 'admin')
             broadcast(new DaruratSelesaiEvent($darurat));
-        else{
-            if (env('USE_ONESIGNAL', false))
-                $this->kirimNotifikasiViaOnesignal('darurat-selesai', $darurat->toArray(), [$darurat->user->id]);
+        else
             $this->kirimNotifikasiViaGcm('darurat-selesai', $darurat->toArray(), [$darurat->user->fcm_id]);
-        }
 
         return response()->json(['success' => true]);
     }
@@ -86,17 +83,17 @@ class DaruratController extends Controller
         if($request->sort)
             list($orderBy, $direction) = explode(':', $request->sort);
         $user = $request->user();
-        
-        if (!in_array($user->jenis_pemilik, ['admin', 'personil', 'bhabin', 'masyarakat']))
+
+        if (!in_array($user->jenis_pemilik, ['admin', 'personil', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         if($request->filter != '') {
-            $darurat = $user->jenis_pemilik == 'masyarakat' ? 
-                        Darurat::search($request->filter)->where('id_user', $user->id) : 
-                        ($user->jenis_pemilik == 'admin' ? 
-                        Darurat::filtered($request->filter, $request->status, $request->statusKejadian)->orderBy($orderBy, $direction) : 
+            $darurat = $user->jenis_pemilik == 'masyarakat' ?
+                        Darurat::search($request->filter)->where('id_user', $user->id) :
+                        ($user->jenis_pemilik == 'admin' ?
+                        Darurat::filtered($request->filter, $request->status, $request->statusKejadian)->orderBy($orderBy, $direction) :
                         Darurat::filtered($request->filter, $request->status, $request->statusKejadian));
-        } 
+        }
         else {
             $darurat = $user->jenis_pemilik == 'masyarakat' ? Darurat::where('id_user', $user->id) : ($user->jenis_pemilik == 'admin' ? Darurat::filtered($request->filter, $request->status, $request->statusKejadian)->orderBy($orderBy, $direction) : Darurat::semua());
         }
@@ -115,7 +112,7 @@ class DaruratController extends Controller
     public function lihat(Request $request, Darurat $darurat){
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['admin', 'personil', 'bhabin', 'masyarakat']))
+        if(!in_array($user->jenis_pemilik, ['admin', 'personil', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         if ($user->jenis_pemilik == 'masyarakat' && $user->id !== $darurat->id_user)

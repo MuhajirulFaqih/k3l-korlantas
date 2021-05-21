@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Kabupaten;
-use App\Models\Kelurahan;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class JenisWilayah extends Model
 {
+    use HasFactory;
 
     /**
      * Nama tabel yang dipakai oleh model.
@@ -23,7 +23,7 @@ class JenisWilayah extends Model
      */
     public function kabupaten()
     {
-        return $this->hasMany(Kabupaten::app, 'id_jenis', 'id_jenis');
+        return $this->hasMany(Kabupaten::class, 'id_jenis', 'id_jenis');
     }
 
     /**
@@ -33,6 +33,6 @@ class JenisWilayah extends Model
      */
     public function kelurahan()
     {
-        return $this->hasMany(Kelurahan::app, 'id_jenis', 'id_jenis');
+        return $this->hasMany(Kelurahan::class, 'id_jenis', 'id_jenis');
     }
 }

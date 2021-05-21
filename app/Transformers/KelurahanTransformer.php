@@ -2,14 +2,14 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Kelurahan;
+use League\Fractal\TransformerAbstract;
 
 class KelurahanTransformer extends TransformerAbstract
 {
     //protected $defaultIncludes = ['kecamatan'];
 
-    protected $availableIncludes = ['profil', 'kecamatan'];
+    protected $availableIncludes = ['kecamatan'];
     /**
      * A Fractal transformer.
      *
@@ -29,10 +29,10 @@ class KelurahanTransformer extends TransformerAbstract
         return $this->item($itemKelurahan->kecamatan, new KecamatanTransformer());
     }
 
-    public function includeProfil(Kelurahan $itemKelurahan){
+    /*public function includeProfil(Kelurahan $itemKelurahan){
         if($itemKelurahan->profil) {
             return $this->item($itemKelurahan->profil, new ProfileDesaTransformer());
         }
         return null;
-    }
+    }*/
 }

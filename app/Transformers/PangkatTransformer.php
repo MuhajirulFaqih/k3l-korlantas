@@ -4,7 +4,6 @@ namespace App\Transformers;
 
 use App\Models\Pangkat;
 use League\Fractal\TransformerAbstract;
-use App\Models\User;
 
 class PangkatTransformer extends TransformerAbstract
 {

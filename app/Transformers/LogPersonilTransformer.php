@@ -1,10 +1,7 @@
 <?php
 
 namespace App\Transformers;
-
 use App\Models\LogPersonil;
-use App\Transformers\DinasTransformer;
-use App\Transformers\PersonilTransformer;
 use League\Fractal\TransformerAbstract;
 
 class LogPersonilTransformer extends TransformerAbstract

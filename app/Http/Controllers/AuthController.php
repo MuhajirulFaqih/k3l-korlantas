@@ -39,7 +39,7 @@ class AuthController extends AccessTokenController
         if($user->jenis_pemilik == 'admin')
             return $response;
         
-        return response()->json(['message' => 'Username dan password salah'], 500);
+        return response()->json(['message' => 'Username dan password salah'], 403);
 
     }
 }

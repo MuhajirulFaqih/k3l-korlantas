@@ -2,22 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class LogPersonil extends Model
 {
+    use HasFactory;
     protected $table = 'log_status_personil';
     protected $fillable = ['id_personil', 'status_dinas', 'waktu_mulai_dinas', 'waktu_selesai_dinas'];
 
     public function personil()
     {
-    	return $this->belongsTo(Personil::class, 'id_personil')->withTrashed();
+        return $this->belongsTo(Personil::class, 'id_personil');
     }
 
     public function status()
     {
-    	return $this->belongsTo(Dinas::class, 'status_dinas');
+        return $this->belongsTo(Dinas::class, 'status_dinas');
     }
 
     public function logpatroli(){
@@ -43,7 +45,7 @@ class LogPersonil extends Model
                     p.nrp, '||', p.nama, '||', pg.pangkat, '||', pg.pangkat_lengkap, '||', j.jabatan, '||', k.kesatuan, '||', k.induk, '||', d.kegiatan, '||', DATE_FORMAT(l.created_at, '%d %M %Y')
                 ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%'])
                 ->get()->pluck('id')->all()
-            );
+        );
     }
 
     public function scopeSearchStatus($query, $filter, $status)
@@ -66,6 +68,6 @@ class LogPersonil extends Model
                     p.nrp, '||', p.nama, '||', pg.pangkat, '||', pg.pangkat_lengkap, '||', j.jabatan, '||', k.kesatuan, '||', k.induk, '||', d.kegiatan, '||', DATE_FORMAT(l.created_at, '%d %M %Y')
                 ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%'])
                 ->get()->pluck('id')->all()
-            );
+        );
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Transformers;
 
 use App\Models\Absensi;
-use App\Transformers\PersonilTransformer;
 use League\Fractal\TransformerAbstract;
 
 class AbsensiTransformer extends TransformerAbstract

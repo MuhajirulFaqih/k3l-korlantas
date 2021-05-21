@@ -3,7 +3,6 @@
 namespace App\Transformers;
 
 use App\Models\TempatVital;
-use App\Transformers\JenisTransformer;
 use League\Fractal\TransformerAbstract;
 
 class TempatVitalTransformer extends TransformerAbstract

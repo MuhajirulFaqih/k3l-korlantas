@@ -71,12 +71,9 @@
         methods: {
             login () {
                 this.isBusy = true
-                axios.post('user/auth-admin', {
+                axios.post(baseUrl + '/resource/auth', {
 					username: this.username,
 					password: this.password,
-					client_id: clientId,
-					client_secret: clientSecret,
-					grant_type: 'password'
 				})
 				.then(({data}) => {
                     this.isBusy = false

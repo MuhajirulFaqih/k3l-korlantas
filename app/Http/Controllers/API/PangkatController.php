@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Pangkat;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Pangkat;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\PangkatTransformer;
 

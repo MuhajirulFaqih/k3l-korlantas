@@ -2,39 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bhabin;
 use App\Models\Kegiatan;
 use App\Models\Kejadian;
 use App\Models\Komentar;
 use App\Models\Masyarakat;
+use App\Models\Pengaduan;
 use App\Models\Personil;
 use App\Models\TindakLanjut;
 use App\Models\User;
-use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use LaravelFCM\Message\OptionsPriorities;
-use Route;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use LaravelFCM\Facades\FCM;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Token\Parser;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected $personil, $bhabin, $masyarakat, $kegiatan, $komentar, $tindaklanjut;
+    protected $personil, $masyarakat, $kegiatan, $komentar, $tindaklanjut;
 
     public function __construct()
     {
         $this->personil = new Personil();
-        $this->bhabin = new Bhabin();
         $this->masyarakat = new Masyarakat();
         $this->komentar = new Komentar();
         $this->kegiatan = new Kegiatan();
@@ -43,37 +42,30 @@ class Controller extends BaseController
 
 
     public static function userAccessTokenId($access_token){
-        $auth_header = explode(' ', $access_token);
-        $token = $auth_header[sizeof($auth_header) - 1];
-        $token_parts = explode('.', $token);
-        $token_header = $token_parts[1];
-        $token_header_json = base64_decode($token_header);
-        $token_header_array = json_decode($token_header_json, true);
-        $user_token = $token_header_array['jti'];
-        $user = DB::table('oauth_access_tokens')->where('id', $user_token)->first();
-        return $user;
+        $user_token = (new Parser(new JoseEncoder()))->parse($access_token)->claims()->all()['jti'];
+        return DB::table('oauth_access_tokens')->where('id', $user_token)->first();
     }
+
 
     public function broadcastNotifikasi(User $user, Model $model){
         if ($model instanceOf Komentar){
             $event = "{$model->jenis_induk}-komentar";
-
             $this->kirimNotifikasiViaGcm($event, [
                 'id' => $model->id_induk,
                 'pesan' => $model->user->nama.' mengomentari kiriman Anda.',
                 'nama' => $model->user->nama
             ], $this->komentar->ambilTokenPemilik($model)->all());
-
             if (env('USE_ONESIGNAL', false)){
-                $this->kirimNotifikasiViaOnesignal($event, [
-                    'id' => $model->id_induk,
-                    'pesan' => $model->user->nama . ' mengomentari kiriman Anda',
-                    'nama' => $model->user->nama
-                ], $this->komentar->ambilIdPemilikOneSignal($model)->all());
-
+                $penerimaOneSignal = $this->komentar->ambilIdPemilikOneSignal($model)->all();
+                if (count($penerimaOneSignal)){
+                    $this->kirimNotifikasiViaOnesignal($event, [
+                        'id' => $model->id_induk,
+                        'pesan' => $model->user->nama . ' mengomentari kiriman Anda',
+                        'nama' => $model->user->nama
+                    ], $this->komentar->ambilIdPemilikOneSignal($model)->all());
+                }
 
                 $penerimaOneSignal = $this->komentar->ambilIdOneSignal($model)->all();
-
                 if (count($penerimaOneSignal)){
                     $this->kirimNotifikasiViaOnesignal($event, [
                         'id' => $model->id_induk,
@@ -82,10 +74,7 @@ class Controller extends BaseController
                     ], $penerimaOneSignal);
                 }
             }
-
             $penerima = $this->komentar->ambilToken($model)->all();
-
-
             if (count($penerima)) {
                 $this->kirimNotifikasiViaGcm($event, [
                     'id' => $model->id_induk,
@@ -95,52 +84,38 @@ class Controller extends BaseController
             }
         } else if ($model instanceOf TindakLanjut) {
             $event = "kejadian-tindaklanjut";
-
             $data = [
                 'id' => $model->id_kejadian,
                 'pesan' => "Tindak lanjut baru",
                 'status' => $model->status,
                 'nama' => $model->user->nama
             ];
-            
+
             $penerima = $this->tindaklanjut->ambilTokenPemilik($model);
             $penerima = $penerima->merge($this->tindaklanjut->ambilToken($model))->all();
-
             $this->kirimNotifikasiViaGcm($event, $data, $penerima);
-
             if (env('USE_ONESIGNAL', false)){
                 $penerimaOneSignal = $this->tindaklanjut->ambilIdPemilik($model);
                 $penerimaOneSignal = $penerimaOneSignal->merge($this->tindaklanjut->ambilId($model))->all();
-
                 $this->kirimNotifikasiViaOnesignal($event, $data, $penerimaOneSignal);
             }
         } else {
             $jenisModel = $model instanceOf Kejadian ? 'kejadian' : ($model instanceOf Pengaduan ? 'pengaduan' : ($model instanceOf Kegiatan ? 'kegiatan' : 'tr'));
-
             $event = "{$jenisModel}-baru";
-
             $data = [
                 'id' => $model->id,
                 'nama' => $model->user->nama
             ];
-
             if ($jenisModel === 'pengaduan') {
                 $data['pesan'] = 'Pengaduan baru';
             } else if ($jenisModel === 'kegiatan'){
                 $data['pesan'] = 'Kegiatan baru';
-
                 if ($user->jenis_pemilik === 'personil') {
-                    $penerimaOneSignal = $this->personil->ambilIdLain($user->pemilik->id);
-                    $penerimaOneSignal = $penerimaOneSignal->merge($this->bhabin->ambilId())->all();
-
-                    $penerima = $this->personil->ambilTokenLain($user->pemilik->id);
-                    $penerima = $penerima->merge($this->bhabin->ambilToken())->all();
+                    $penerimaOneSignal = $this->personil->ambilIdLain($user->pemilik->id)->all();
+                    $penerima = $this->personil->ambilTokenLain($user->pemilik->id)->all();
                 } else {
-                    $penerimaOneSignal = $this->bhabin->ambilIdLain($user->pemilik->personil->id);
-                    $penerimaOneSignal = $penerimaOneSignal->merge($this->personil->ambilId())->all();
-
-                    $penerima = $this->bhabin->ambilTokenLain($user->pemilik->personil->id);
-                    $penerima = $penerima->merge($this->personil->ambilToken())->all();
+                    $penerimaOneSignal = $this->personil->ambilId()->all();
+                    $penerima = $this->personil->ambilToken()->all();
                 }
             } else {
                 $data = [
@@ -154,29 +129,18 @@ class Controller extends BaseController
                     'lat' => $model->lat,
                     'lng' => $model->lng
                 ];
-
-                if ($user->jenis_pemilik === 'personil' || $user->jenis_pemilik === 'bhabin'){
-                    $penerimaOneSignal = $this->personil->ambilIdLain($user->pemilik->id);
-                    $penerimaOneSignal = $penerimaOneSignal->merge($this->bhabin->ambilId())->all();
-
-                    $penerima = $this->personil->ambilTokenLain($user->pemilik->id);
-                    $penerima = $penerima->merge($this->bhabin->ambilToken())->all();
-                } else if ($user->jenis_pemilik === 'instansi' || $user->jenis_pemilik === 'masyarakat'){
-                    $penerimaOneSignal = $this->bhabin->ambilId();
-                    $penerimaOneSignal = $penerimaOneSignal->merge($this->personil->ambilId());
-
-                    $penerima = $this->bhabin->ambilToken();
-                    $penerima = $penerima->merge($this->personil->ambilToken()); 
+                if ($user->jenis_pemilik === 'personil'){
+                    $penerimaOneSignal = $this->personil->ambilIdLain($user->pemilik->id)->all();
+                    $penerima = $this->personil->ambilTokenLain($user->pemilik->id)->all();
+                } else if ($user->jenis_pemilik === 'masyarakat'){
+                    $penerimaOneSignal = $this->personil->ambilId()->all();
+                    $penerima = $this->personil->ambilToken()->all();
                 } else { // Admin
-                    $penerimaOneSignal = $this->bhabin->ambilId();
-                    $penerimaOneSignal = $penerimaOneSignal->merge($this->personil->ambilId())->all();
-
-                    $penerima = $this->personil->ambilToken();
-                    $penerima = $penerima->merge($this->bhabin->ambilToken())->all();
+                    $penerimaOneSignal = $this->personil->ambilId()->all();
+                    $penerima = $this->personil->ambilToken()->all();
                 }
             }
-
-            if (env('USE_ONESIGNAL', false))
+            if (env('USE_ONESIGNAL'))
                 $this->kirimNotifikasiViaOnesignal($event, $data, $penerimaOneSignal);
 
             $this->kirimNotifikasiViaGcm($event, $data, $penerima);
@@ -184,6 +148,8 @@ class Controller extends BaseController
     }
 
     public function kirimNotifikasiViaOnesignal($event, $data, $penerima){
+        $penerimaCollection = collect($penerima);
+        $penerima = $penerimaCollection->map(function ($item){ return (string) $item;})->all();
         \OneSignal::sendNotificationToExternalUser(
             $data['pesan'],
             $penerima,
@@ -192,25 +158,77 @@ class Controller extends BaseController
         );
     }
 
+    public function checkPlayerAndUpdateIfExists($id, $userId){
+        $checkPlayer = \OneSignal::sendPlayer([], 'GET', \OneSignal::ENDPOINT_PLAYERS.'/'.$id);
+
+        if ($checkPlayer){
+            \OneSignal::editPlayer([
+                'id' => $id,
+                'external_user_id' => $userId
+            ]);
+        }
+    }
+
+    public function sendNotificationToExternalUser($message, $userId, $url = null, $data = null, $buttons = null, $schedule = null, $headings = null, $subtitle = null) {
+        $contents = array(
+            "en" => $message
+        );
+
+        $params = array(
+            'app_id' => env('ONESIGNAL_ID'),
+            'contents' => $contents,
+            'include_external_user_ids' => is_array($userId) ? $userId : array($userId)
+        );
+
+        if (isset($url)) {
+            $params['url'] = $url;
+        }
+
+        if (isset($data)) {
+            $params['data'] = $data;
+        }
+
+        if (isset($buttons)) {
+            $params['buttons'] = $buttons;
+        }
+
+        if(isset($schedule)){
+            $params['send_after'] = $schedule;
+        }
+
+        if(isset($headings)){
+            $params['headings'] = array(
+                "en" => $headings
+            );
+        }
+
+        if(isset($subtitle)){
+            $params['subtitle'] = array(
+                "en" => $subtitle
+            );
+        }
+
+        $oSignal = \OneSignal::sendNotificationCustom($params);
+        $oSignalResponse = $oSignal->getBody();
+        return json_decode($oSignalResponse);
+    }
+
     public function kirimNotifikasiViaGcm ($event, $data, $penerima){
-        $optionBuilder = (new OptionsBuilder())->setTimeToLive(60*20);
+        $optionBuilder = (new OptionsBuilder())->setTimeToLive(60*30);
 
-        $notificationBuilder = (new PayloadNotificationBuilder())
-                            ->setBody($data)
-                            ->setTitle($event);
+        $notificationBuilder = (new PayloadNotificationBuilder("FCM"))
+            ->setBody($data)
+            ->setTitle($event);
         $dataBuilder = (new PayloadDataBuilder())
-                    ->addData(["event" => $event, 'data' => $data]);
+            ->addData(["event" => $event, 'data' => $data]);
 
-        $option = $optionBuilder
-                ->setPriority(OptionsPriorities::high)
-                ->build();
+        $option = $optionBuilder->build();
         $notification = $notificationBuilder->build();
         $data = $dataBuilder->build();
 
         if(count($penerima)){
             $downstreamResponse = FCM::sendTo($penerima, $option, null, $data);
-
-            $tokenToDelete = [];
+            $tokenToDelete = null;
             if ($downstreamResponse->numberFailure() > 0 || $downstreamResponse->numberModification() > 0) {
                 $tokenToDelete = collect($downstreamResponse->tokensToDelete());
                 $tokenToDelete = $tokenToDelete->merge(collect($downstreamResponse->tokensWithError())->map(function ($key, $value){ return $key; }));
@@ -228,9 +246,11 @@ class Controller extends BaseController
     }
 
     public function sendSms($to, $message, $phone=null){
-        $client = new GuzzleClient(['timeout' => 5.0]);
-
-        $response = $client->request('POST', env('SMS_URL'), ['headers' => ['Authorization' => env('SMS_TOKEN'), 'Accept' => 'application/json'],'form_params' => ['to' => $to, 'message' => $message, 'phone' => $phone]]);
+        $response = Http::timeout(5)->withToken(env('SMS_TOKEN'))->post(env('SMS_URL'), [
+            'to' => $to,
+            'message' => $message,
+            'phone' => $phone
+        ]);
 
         return $response;
     }
@@ -253,8 +273,19 @@ class Controller extends BaseController
 
         if($jenis == 'kesatuan') {
             $penerima = $this->personil->ambilTokenByKesatuan($kesatuan);
-        } else {
+            $penerimaOneSignal = $this->personil->ambilIdUserByKesatuan($kesatuan);
+        } else if($jenis == 'terdekat'){
             $penerima = $this->personil->ambilTokenById($personil);
+            $penerimaOneSignal = $this->personil->ambilIdUserById($personil);
+        } else {
+            $penerimaOneSignal = $this->personil->ambilId();
+            $penerima = $this->personil->ambilToken();
+        }
+
+        if (env('USE_ONESIGNAL')){
+            Log::info('jenis', [$jenis]);
+            Log::info("Penerima", $penerimaOneSignal->all());
+            $this->kirimNotifikasiViaOnesignal($event, $data, $penerimaOneSignal->all());
         }
 
         $this->kirimNotifikasiViaGcm($event, $data, $penerima->all());

@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Kalnoy\Nestedset\NodeTrait;
 
 class JenisKegiatan extends Model
 {
-    protected $table = 'kegiatan_jenis';
+    use HasFactory, NodeTrait;
 
-    const CREATED_AT = 'w_tambah';
+    protected $table = 'jenis_kegiatan';
 
-    const UPDATED_AT = 'w_ubah';
+    protected $fillable = ['jenis', 'jenis_singkat', 'keterangan', 'id_parent'];
 
-    protected $fillable = ['jenis', 'jenis_singkat'];
-
+    public function kesatuan() {
+        return $this->hasMany(JenisKegiatanKesatuan::class, 'id_jenis_kegiatan');
+    }
 }

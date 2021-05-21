@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Komentar extends Model
 {
+    use HasFactory;
     protected $table = 'komentar';
 
     protected $fillable = [
@@ -18,60 +19,62 @@ class Komentar extends Model
         return $this->morphTo(null, 'jenis_induk', 'id_induk');
     }
 
-     public function user()
-     {
-         return $this->belongsTo(User::class,'id_user')->withTrashed();
-     }
+    public function user()
+    {
+        return $this->belongsTo(User::class,'id_user');
+    }
 
-     public function ambilIdOneSignal(Komentar $komentar){
+    public function ambilIdPemilikOneSignal(Komentar $komentar){
         $induk = $komentar->induk;
         $idPemilikKiriman = $induk->id_user;
         $idPengirimKomentar = $komentar->id_user;
 
-        $ids = [];
-        foreach ($induk->komentar as $row){
+        if ($idPemilikKiriman != $idPengirimKomentar)
+            return collect($idPemilikKiriman);
+
+        return collect();
+    }
+
+    public function ambilIdOneSignal(Komentar $komentar){
+        $induk = $komentar->induk;
+        $idPemilikKiriman = $induk->id_user;
+        $idPengirimKomentar = $komentar->id_user;
+
+        $tokens = [];
+        foreach($induk->komentar as $row){
             $kondisi = $row->id_user !== $idPemilikKiriman &&
                 $row->id_user !== $idPengirimKomentar;
 
             if ($kondisi) {
-                $ids[] = $row->user->id;
+                $tokens[] = $row->user->id;
             }
         }
 
-        $collection = collect($ids);
+        return collect(array_values(array_unique($tokens)));
+    }
 
-        return $collection->unique();
-     }
-
-     public function ambilIdPemilikOneSignal(Komentar $komentar){
+    public function ambilToken(Komentar $komentar){
         $induk = $komentar->induk;
-        if ($komentar->id_user != $induk->user->id)
-            return collect($induk->user->id);
-        else return collect();
-     }
+        $idPemilikKiriman = $induk->id_user;
+        $idPengirimKomentar = $komentar->id_user;
 
-     public function ambilToken(Komentar $komentar){
-         $induk = $komentar->induk;
-         $idPemilikKiriman = $induk->id_user;
-         $idPengirimKomentar = $komentar->id_user;
+        $tokens = [];
+        foreach($induk->komentar as $row){
+            $kondisi = $row->id_user !== $idPemilikKiriman &&
+                $row->id_user !== $idPengirimKomentar &&
+                !empty($row->user->fcm_id);
 
-         $tokens = [];
-         foreach($induk->komentar as $row){
-             $kondisi = $row->id_user !== $idPemilikKiriman && 
-                    $row->id_user !== $idPengirimKomentar &&
-                    !empty($row->user->fcm_id);
-             
             if ($kondisi) {
                 $tokens[] = $row->user->fcm_id;
             }
-         }
+        }
 
-         $collection = collect($tokens);
-         return $collection->unique();
-     }
+        $collection = collect($tokens);
+        return $collection->unique();
+    }
 
-     public function ambilTokenPemilik(Komentar $komentar){
-         $induk = $komentar->induk;
-         return collect($induk->user->fcm_id);
-     }
+    public function ambilTokenPemilik(Komentar $komentar){
+        $induk = $komentar->induk;
+        return collect($induk->user->fcm_id);
+    }
 }

@@ -35,6 +35,8 @@ import AdminKegiatan from '@/views/Admin/LaporanBhabin/Kegiatan'
 import AdminDeteksiDini from '@/views/Admin/LaporanBhabin/DeteksiDini'
 import AdminPeneranganSatuan from '@/views/Admin/PeneranganSatuan/Main'
 
+import DemoKegiatan from '@/views/Demo/Kegiatan'
+
 Vue.use(Router);
 
 const router = new Router({
@@ -168,6 +170,11 @@ const router = new Router({
 			path: '/login',
 			name: 'Login',
 			component: Login,
+        },
+        {
+			path: '/demo-kegiatan',
+			name: 'Demo',
+			component: DemoKegiatan,
 		}
     ]
 });

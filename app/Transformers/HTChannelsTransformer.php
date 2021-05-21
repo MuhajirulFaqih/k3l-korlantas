@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\HTChannels;
+use League\Fractal\TransformerAbstract;
 
 class HTChannelsTransformer extends TransformerAbstract
 {

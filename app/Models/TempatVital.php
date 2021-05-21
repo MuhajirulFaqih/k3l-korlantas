@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Jenis;
-use App\Models\Kesatuan;
-use App\Models\TempatVital;
 use Illuminate\Database\Eloquent\Model;
 
 class TempatVital extends Model

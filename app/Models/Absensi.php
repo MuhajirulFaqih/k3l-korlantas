@@ -2,24 +2,24 @@
 
 namespace App\Models;
 
-use App\Models\Personil;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Absensi extends Model
 {
+    use HasFactory;
+
     protected $table = 'absensi_personil';
-    protected $fillable = [ 'id_personil', 'waktu_mulai', 'waktu_selesai', 
-                        'lat_datang', 'lng_datang', 'lat_pulang', 'lng_pulang'];
+    protected $fillable = [ 'id_personil', 'waktu_mulai', 'waktu_selesai',
+        'lat_datang', 'lng_datang', 'lat_pulang', 'lng_pulang'];
     protected $date = ['waktu_mulai', 'waktu_selesai'];
 
-    public function personil()
-    {
-    	return $this->belongsTo(Personil::class, 'id_personil')->withTrashed();
+    public function personil(){
+        return $this->belongsTo(Personil::class, 'id_personil');
     }
 
-    public function scopeFiltered($query, $kesatuan, $tanggal, $nrp)
-    {
+    public function scopeFiltered($query, $kesatuan, $tanggal, $nrp){
         if ($kesatuan == null && $tanggal[0] == null && $nrp == null) {
             return $query;
         }
@@ -33,21 +33,21 @@ class Absensi extends Model
                 ->join('pers_jabatan as j', 'j.id', '=', 'p.id_jabatan')
                 ->join('pers_kesatuan as k', 'k.id', '=', 'p.id_kesatuan')
                 ->where(function($query) use ($kesatuan, $tanggal, $nrp) {
-                	if($kesatuan != '') { 
-                		$query->where('p.id_kesatuan', '=', $kesatuan); 
-                	}
-					if($tanggal[0] != null) { 
-						list($mulai, $selesai) = $tanggal;
-						$mulai = date('Y-m-d', strtotime($mulai));
-						$selesai = date('Y-m-d', strtotime($selesai));
+                    if($kesatuan != '') {
+                        $query->where('p.id_kesatuan', '=', $kesatuan);
+                    }
+                    if($tanggal[0] != null) {
+                        list($mulai, $selesai) = $tanggal;
+                        $mulai = date('Y-m-d', strtotime($mulai));
+                        $selesai = date('Y-m-d', strtotime($selesai));
 
-						$query->whereBetween(DB::raw('DATE(a.created_at)'), [ $mulai, $selesai ]); 
-					}
-					if($nrp != '') { 
-						$query->where('p.nrp', 'LIKE', '%'.$nrp.'%'); 
-					}
+                        $query->whereBetween(DB::raw('DATE(a.created_at)'), [ $mulai, $selesai ]);
+                    }
+                    if($nrp != '') {
+                        $query->where('p.nrp', 'LIKE', '%'.$nrp.'%');
+                    }
                 })
                 ->get()->pluck('id')->all()
-            );
+        );
     }
 }

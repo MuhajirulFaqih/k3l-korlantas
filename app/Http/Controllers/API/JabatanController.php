@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Jabatan;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\JabatanTransformer;
 

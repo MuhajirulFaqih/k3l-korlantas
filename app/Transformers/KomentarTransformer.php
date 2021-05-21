@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Komentar;
+use League\Fractal\TransformerAbstract;
 
 class KomentarTransformer extends TransformerAbstract
 {
@@ -14,7 +14,7 @@ class KomentarTransformer extends TransformerAbstract
      * @return array
      */
     // protected $defaultIncludes = ['user'];
-    
+
     public function transform(Komentar $komentar)
     {
         return [
@@ -23,7 +23,7 @@ class KomentarTransformer extends TransformerAbstract
             'komentar' => $komentar->komentar,
             'id_user'  => $komentar->id_user,
             'w_komentar' => $komentar->created_at->toDateTimeString(),
-            'induk' => $komentar->induk->judul ?? str_limit($komentar->induk->keterangan, 20),
+            'induk' => $komentar->induk->detail ?? $komentar->induk->keterangan,
         ];
     }
 

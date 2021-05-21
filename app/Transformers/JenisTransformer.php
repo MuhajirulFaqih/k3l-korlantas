@@ -18,7 +18,8 @@ class JenisTransformer extends TransformerAbstract
         return [
             'value' => $jenis->id,
             'text' => $jenis->jenis,
-            'icon' => url('api/upload/'.$jenis->icon)
+            'icon' => url('api/upload/'.$jenis->icon),
+            'icon_monit' => $jenis->icon
         ];
     }
 }

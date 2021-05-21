@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Informasi extends Model
 {
-    use SoftDeletes;
+    use HasFactory;
     protected $table = 'informasi';
     protected $fillable = ['informasi', 'aktif'];
 
-    protected $dates = ['deleted_at'];
     protected $casts = ['aktif' => 'boolean'];
 
     public function scopeActive($query){

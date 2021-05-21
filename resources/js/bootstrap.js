@@ -9,24 +9,11 @@ window.audioEmergency = document.head.querySelector('meta[name="emergency-audio-
 window.audioKejadian = document.head.querySelector('meta[name="kejadian-audio-url"]').content;
 window.ringBackTone = document.head.querySelector('meta[name="ringbacktone-audio-url"]').content;
 window.wssVc = document.head.querySelector('meta[name="wss-vc"]').content;
-window.instansi = document.head.querySelector('meta[name="instansi"]').content;
 window.defaultLat = document.head.querySelector('meta[name="default-lat"]').content;
 window.defaultLng = document.head.querySelector('meta[name="default-lng"]').content;
-window.marineUrl = document.head.querySelector('meta[name="marine-url"]').content;
-window.radarUrl = document.head.querySelector('meta[name="radar-url"]').content;
-window.danaDesa = document.head.querySelector('meta[name="dana-desa"]').content;
-window.mastumapel = document.head.querySelector('meta[name="mastumapel"]').content;
 window.socketPrefix = document.head.querySelector('meta[name="socket-prefix"]').content;
-window.hasVc = document.head.querySelector('meta[name="has-vc"]').content;
-window.clientId = document.head.querySelector('meta[name="cid"]').content;
-window.clientSecret = document.head.querySelector('meta[name="csc"]').content;
 window.induk = document.head.querySelector('meta[name="induk"]').content;
-window.danaDesa = document.head.querySelector('meta[name="dana-desa"]').content;
-window.peneranganSatuan = document.head.querySelector('meta[name="penerangan-satuan"]').content;
-window.visiMisi = document.head.querySelector('meta[name="visi-misi"]').content;
-window.kegiatanBhabin = document.head.querySelector('meta[name="kegiatan-bhabin"]').content;
-window.personilKegiatan = document.head.querySelector('meta[name="personil-kegiatan"]').content;
-window.hasEdisposisi = document.head.querySelector('meta[name="edisposisi"]').content;
+window.instansi = document.head.querySelector('meta[name="instansi"]').content;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support

@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Absensi;
 use App\Events\LacakPersonilEvent;
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
 use App\Models\Jabatan;
 use App\Models\LogPersonil;
 use App\Models\Pengaturan;
 use App\Models\Personil;
 use App\Serializers\DataArraySansIncludeSerializer;
-use App\Transformers\PersonilTransformer;
+use App\Services\PersonilService;
 use App\Transformers\LogPersonilTransformer;
+use App\Transformers\PersonilTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use Spatie\Fractalistic\ArraySerializer;
 
 class PersonilController extends Controller
 {
@@ -28,17 +29,16 @@ class PersonilController extends Controller
         if (!in_array($user->jenis_pemilik, ['admin']))
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
 
-        $paginator = Personil::search($request->filter)
+        $paginator = Personil::with('pangkat','kesatuan','jabatan','kesatuan.parent')->search($request->filter)
             ->orderBy($orderBy, $direction)
             ->paginate(10);
 
         $collection = $paginator->getCollection();
 
         return fractal()
-            ->collection($collection)
-            ->parseIncludes('bhabin')
+            ->collection($collection->all())
             ->transformWith(new PersonilTransformer())
-            ->serializeWith(new DataArraySansIncludeSerializer)
+            ->serializeWith(new DataArraySansIncludeSerializer())
             ->paginateWith(new IlluminatePaginatorAdapter($paginator))
             ->respond();
     }
@@ -55,13 +55,12 @@ class PersonilController extends Controller
         ]);
 
         /* $personil = Personil::find($validData['id_personil']);
-
         if (!$personil)
             return response()->json(['error', 'Personil tidak ditemukan'], 404); */
 
         $foto = $validData['foto']->storeAs(
             'personil',
-            str_random(40) . '.jpg'
+            Str::random(40) . '.jpg'
         );
 
         if (!$foto)
@@ -93,36 +92,35 @@ class PersonilController extends Controller
 
         $validData = $request->validate([
             'nama' => 'required|min:3',
-            'nrp' => 'required|min:8|max:18|unique:personil',
-            'alamat' => 'required|min:6',
+            'nrp' => 'required|digits:8|unique:personil',
+            'alamat' => 'nullable|min:6',
             'id_jabatan' => 'required|numeric',
             'id_pangkat' => 'required|numeric',
             'id_kesatuan' => 'required|numeric',
             'foto' => 'nullable',
-            'isBhabin' => 'required|boolean',
             'id_kelurahan' => 'array'
         ]);
 
-        $personil = Personil::create($validData);
+        $exists = Personil::where('nrp', $validData['nrp'])->first();
 
-        if (!$personil)
-            return response()->json(['error' => 'Terjadi kesalahan'], 500);
-
-        if ($validData['foto'])
-            \Storage::move($validData['foto'], 'personil/' . $personil->nrp . '.jpg');
-
-        $pengaturan = Pengaturan::getByKey('default_password')->first();
-        $password = bcrypt($pengaturan->nilai);
-
-        if ($validData['isBhabin']) {
-            if (!count($validData['id_kelurahan']))
-                return response(['errors' => ['id_kelurahan' => 'Kelurahan tidak boleh kosong']], 422);
-
-            $bhabin = $personil->bhabin()->create();
-            $bhabin->kelurahan()->attach($validData['id_kelurahan']);
-
-            $bhabin->auth()->create(['username' => $personil->nrp, 'password' => $password]);
+        if ($exists){
+            $exists->update($validData);
         } else {
+            $personil = Personil::create($validData);
+
+            if (!$personil)
+                return response()->json(['error' => 'Terjadi kesalahan'], 500);
+
+            if ($request->file('foto'))
+                Storage::move($validData['foto'], 'personil/' . $personil->nrp . '.jpg');
+            else if($request->has('foto') && $request->foto){
+                $foto = file_get_contents($request->foto);
+                file_put_contents(storage_path('app/personil/'.$personil->nrp.'.jpg'), $foto);
+            }
+
+            $pengaturan = Pengaturan::getByKey('default_password')->first();
+            $password = bcrypt($pengaturan->nilai);
+
             $personil->auth()->create(['username' => $personil->nrp, 'password' => $password]);
         }
 
@@ -131,7 +129,7 @@ class PersonilController extends Controller
 
     public function lihat(Request $request, $id)
     {
-        $personil = Personil::withTrashed()->find($id);
+        $personil = Personil::find($id);
         $user = $request->user();
 
         if ($user->jenis_pemilik !== 'admin')
@@ -167,48 +165,18 @@ class PersonilController extends Controller
 
         $validData = $request->validate([
             'nama' => 'required|min:3',
-            'nrp' => 'required|min:8|max:18',
-            'alamat' => 'required|min:6',
+            'nrp' => 'required|digits:8',
+            'alamat' => 'nullable|min:6',
             'id_jabatan' => 'required|numeric',
             'id_pangkat' => 'required|numeric',
             'id_kesatuan' => 'required|numeric',
+            'no_telp' => 'nullable',
             'foto' => 'nullable',
-            'isBhabin' => 'required|boolean'
         ]);
 
-        $user = $personil->bhabin ? $personil->bhabin->auth : $personil->auth;
-
-        // Jika personil merupakan bhabin
-        if ($personil->bhabin) {
-            $bhabin = $personil->bhabin;
-            // Check apakah akan di update menjadi bukan bhabin
-            if (!$validData['isBhabin']) {
-                // Bersihkan data kelurahan dan hapus data bhabin
-                $bhabin->kelurahan()->detach();
-                $bhabin->forceDelete();
-
-                // Dapatkan user dari bhabin dan pindah pemilik dari bhabin ke personil
-                $user->pemilik()->associate($personil)->save();
-            } else {
-                if (!count($request->id_kelurahan))
-                    return response()->json(['errors' => ['id_kelurahan' => 'Bhabin harus minimal memiliki 1 kelurahan']], 422);
-                $bhabin->kelurahan()->detach();
-                foreach ($request->id_kelurahan as $id_kelurahan)
-                    $bhabin->kelurahan()->attach($id_kelurahan);
-            }
-        } else if (!$personil->bhabin && $validData['isBhabin']) { // Jika personil bukan bhabin dan akan menjadi bhabin
-            if (!count($request->id_kelurahan))
-                return response()->json(['errors' => ['id_kelurahan' => 'Bhabin harus minimal memiliki 1 kelurahan']], 422);
-
-            $bhabin = $personil->bhabin()->create();
-            foreach ($request->id_kelurahan as $id_kelurahan)
-                $bhabin->kelurahan()->attach($id_kelurahan);
-            $user->pemilik()->associate($bhabin)->save();
-        }
+        $user = $personil->auth;
 
         $personil = Personil::find($personil->id);
-
-        $user = $personil->bhabin ? $personil->bhabin->auth : $personil->auth;
 
         if ($personil->nrp != $request->nrp)
             $user->update(['username' => $request->nrp]);
@@ -229,10 +197,16 @@ class PersonilController extends Controller
         //dd($personil);
 
         // Update foto
-        if (isset($validData['foto']) && $validData['foto']) {
-            if (\Storage::exists('personil/' . $personil->nrp . '.jpg'))
-                \Storage::delete('personil/' . $personil->nrp . '.jpg');
-            \Storage::move($validData['foto'], 'personil/' . $personil->nrp . '.jpg');
+        if ($request->file('foto')){
+            if (Storage::exists('personil/' . $personil->nrp . '.jpg'))
+                Storage::delete('personil/' . $personil->nrp . '.jpg');
+            Storage::move($validData['foto'], 'personil/' . $personil->nrp . '.jpg');
+        }else if($request->has('foto') && $request->foto){
+            if (Storage::exists('personil/' . $personil->nrp . '.jpg'))
+                Storage::delete('personil/' . $personil->nrp . '.jpg');
+
+            $foto = file_get_contents($request->foto);
+            file_put_contents(storage_path('app/personil/'.$personil->nrp.'.jpg'), $foto);
         }
 
         return response()->json(['success' => true]);
@@ -243,7 +217,7 @@ class PersonilController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'bhabin']))
+        if (!in_array($user->jenis_pemilik, ['personil']))
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
 
         $validatedData = $request->validate([
@@ -316,20 +290,13 @@ class PersonilController extends Controller
         $pengaturan = Pengaturan::getByKey('default_password')->first();
         $personil = Personil::find($request->id);
 
-        $auth = $personil->auth ? $personil->auth : $personil->bhabin->auth;
-
-        if (!$auth)
-            return response()->json(['error' => 'Personil tidak memiliki akun'], 403);
-
-        $reset = $auth->update([
+        $personil->auth->update([
             'password' => bcrypt($pengaturan->nilai)
         ]);
 
-        if(!$reset) {
+        if(!$personil) {
             return response()->json(['error' => 'Terjadi kesalahan saat reset password'], 500);
         }
-
-        return response()->json(['success' => true]);
     }
 
     public function absenPersonil($personil, $request)
@@ -338,8 +305,8 @@ class PersonilController extends Controller
 
         //Cek jika hari baru
         $cekHariBaru = Absensi::whereDate('waktu_mulai', $tanggal)
-                                ->where('id_personil', $personil->id)
-                                ->count();
+            ->where('id_personil', $personil->id)
+            ->count();
         //Jika belum ditemukan, absen datang
         if($cekHariBaru == 0) {
             $this->absenDatang($personil, $request);
@@ -367,9 +334,9 @@ class PersonilController extends Controller
         $tanggal = date('Y-m-d');
 
         $absensi = Absensi::whereDate('waktu_mulai', $tanggal)
-                                ->where('id_personil', $personil->id)
-                                ->first();
-        
+            ->where('id_personil', $personil->id)
+            ->first();
+
         if($request['id_dinas'] == '9' && is_null($absensi->waktu_selesai)) {
             $absensi->update([
                 'lat_pulang' => $request['lat'],
@@ -388,12 +355,12 @@ class PersonilController extends Controller
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
         $paginator = $request->filter == '' ?
             LogPersonil::where('status_dinas', 2)
-            ->orderBy($orderBy, $direction)
-            ->paginate(10) :
+                ->orderBy($orderBy, $direction)
+                ->paginate(10) :
             LogPersonil::searchStatus($request->filter, 2)
-            ->where('status_dinas', 2)
-            ->orderBy($orderBy, $direction)
-            ->paginate(10);
+                ->where('status_dinas', 2)
+                ->orderBy($orderBy, $direction)
+                ->paginate(10);
 
         $collection = $paginator->getCollection();
 
@@ -414,12 +381,12 @@ class PersonilController extends Controller
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
         $paginator = $request->filter == '' ?
             LogPersonil::where('status_dinas', 3)
-            ->orderBy($orderBy, $direction)
-            ->paginate(10) :
+                ->orderBy($orderBy, $direction)
+                ->paginate(10) :
             LogPersonil::searchStatus($request->filter, 3)
-            ->where('status_dinas', 3)
-            ->orderBy($orderBy, $direction)
-            ->paginate(10);
+                ->where('status_dinas', 3)
+                ->orderBy($orderBy, $direction)
+                ->paginate(10);
 
         $collection = $paginator->getCollection();
 
@@ -431,15 +398,29 @@ class PersonilController extends Controller
             ->respond();
     }
 
+    public function fetchPerosonil(Request $request){
+        $user = $request->user();
+
+        if ($user->jenis_pemilik != 'admin')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $user = (new PersonilService())->fetchPersonil($request->nrp);
+
+        /*if (!$user)
+            return response()->json(['error' => 'Tidak ditemukan'], 404);*/
+
+        return response()->json(['data' => $user]);
+    }
+
     public function delete($id)
     {
         $personil = Personil::find($id);
-        $user = isset($personil->bhabin) ? $personil->bhabin->auth : $personil->auth;
+        $user = $personil->auth;
 
         if(!$personil->delete()) {
             return response()->json(['error' => 'terjadi kesalahan saat menghapus data'], 500);
         }
-        
+
         if($user) { $user->delete(); }
     }
 }

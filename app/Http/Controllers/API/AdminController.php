@@ -11,21 +11,22 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class AdminController extends Controller
 {
-    function getVisible(Request $request){
+    public function index(Request $request){
         $user = $request->user();
 
         if ($user->jenis_pemilik != 'personil')
-            return response()->json(['error' => 'Terlarang...'], 403);
+            return response()->json(['error' => 'Terlarang'], 403);
 
-        $paginator = Admin::where('visible', true)->paginate(10);
+        $paginator = Admin::visible()->paginate(10);
         $collection = $paginator->getCollection();
+
 
         return fractal()
             ->collection($collection)
             ->transformWith(AdminTransformer::class)
-            ->serializeWith(DataArraySansIncludeSerializer::class)
-            ->paginateWith(new IlluminatePaginatorAdapter($paginator))
             ->parseIncludes('auth')
+            ->paginateWith(new IlluminatePaginatorAdapter($paginator))
+            ->serializeWith(DataArraySansIncludeSerializer::class)
             ->respond();
     }
 }

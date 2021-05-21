@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class KesatuanHtChannel extends Model
+class KesatuanHTChannel extends Model
 {
+    use HasFactory;
 
     protected $table = 'kesatuan_ht_channel';
 

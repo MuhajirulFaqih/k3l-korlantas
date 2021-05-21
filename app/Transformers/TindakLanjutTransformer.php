@@ -3,6 +3,7 @@
 namespace App\Transformers;
 
 use App\Models\TindakLanjut;
+use Illuminate\Support\Str;
 use League\Fractal\TransformerAbstract;
 
 class TindakLanjutTransformer extends TransformerAbstract
@@ -17,12 +18,17 @@ class TindakLanjutTransformer extends TransformerAbstract
      */
     public function transform(TindakLanjut $itemTindakLanjut)
     {
+        $tindakLanjutStatus = [
+            'tkp' => 'Menuju ke TKP',
+            'proses_penanganan' => 'Prosess Penanganan',
+            'selesai' => 'Selesai'
+        ];
         return [
             'id' => $itemTindakLanjut->id,
             'id_kejadian' => $itemTindakLanjut->id_kejadian,
             'id_user' => $itemTindakLanjut->id_user,
             'status' => $itemTindakLanjut->status,
-            'status_readable' => str_replace('_', ' ', title_case($itemTindakLanjut->status)),
+            'status_readable' => $tindakLanjutStatus[$itemTindakLanjut->status],
             'keterangan' => $itemTindakLanjut->keterangan,
             'judul' => $itemTindakLanjut->kejadian->kejadian,
             'foto' => $itemTindakLanjut->foto ? url('api/upload/'.$itemTindakLanjut->foto): null,

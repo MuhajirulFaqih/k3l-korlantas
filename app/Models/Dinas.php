@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Dinas extends Model
 {
-    protected $table = "dinas";
-    protected $fillable = ["kegiatan"];
+    use HasFactory;
+
+    protected $table = 'dinas';
+    protected $fillable = ['kegiatan'];
 
     public function scopeGetByStatus($query, $pimpinan = false){
         if (!$pimpinan) {

@@ -2,9 +2,9 @@
 
 namespace App\Transformers;
 
-use App\Models\Personil;
-use League\Fractal\TransformerAbstract;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use League\Fractal\TransformerAbstract;
 
 class UserTransformer extends TransformerAbstract
 {
@@ -22,24 +22,13 @@ class UserTransformer extends TransformerAbstract
                     'id' => $user->id,
                     'id_pemilik' => $user->id_pemilik,
                     'jenis_pemilik' => $user->jenis_pemilik,
-                    'nama'     => $user->pemilik->pangkat->pangkat." ".$user->pemilik->nama,
+                    'nama'     => $user->pemilik->pangkat->pangkat." ".$user->pemilik->nama ?? null,
                     'nrp'  => $user->pemilik->nrp,
-                    'jabatan'  => $user->pemilik->jabatan->jabatan,
+                    'foto' => Storage::exists("personil/".$user->pemilik->nrp.".jpg") ? url('api/upload/personil/' . $user->pemilik->nrp . '.jpg').'?time='.Storage::lastModified('personil/'.$user->pemilik->nrp.'.jpg') : url('api/upload/personil/presisi.jpg'),
+                    'jabatan'  => $user->pemilik->jabatan->jabatan ?? null,
                     'alamat' => $user->pemilik->alamat,
                     'no_telp' => $user->pemilik->no_telp,
                     'id_personil'  => $user->pemilik->id,
-                ];
-            case 'bhabin':
-                return [
-                    'id' => $user->id,
-                    'id_pemilik' => $user->id_pemilik,
-                    'jenis_pemilik' => $user->jenis_pemilik,
-                    'nama'     => $user->pemilik->personil->pangkat->pangkat." ".$user->pemilik->personil->nama,
-                    'nrp'  => $user->pemilik->personil->nrp,
-                    'jabatan'  => $user->pemilik->personil->jabatan->jabatan,
-                    'alamat' => $user->pemilik->personil->alamat,
-                    'no_telp' => $user->pemilik->personil->no_telp,
-                    'id_personil'  => $user->pemilik->personil->id,
                 ];
             case 'masyarakat':
                 return [
@@ -47,7 +36,8 @@ class UserTransformer extends TransformerAbstract
                     'id_pemilik' => $user->id_pemilik,
                     'jenis_pemilik' => $user->jenis_pemilik,
                     'nama'     => $user->pemilik->nama,
-                    'nrp'  => $user->pemilik->nik,
+                    'foto'      => $user->pemilik->foto ? url('api/upload/'.$user->pemilik->foto): null,
+                    'nrp'  => null,
                     'jabatan'  => 'Masyarakat',
                     'alamat' => $user->pemilik->alamat,
                     'no_telp' => $user->pemilik->no_telp,
@@ -59,8 +49,9 @@ class UserTransformer extends TransformerAbstract
                     'id_pemilik' => $user->id_pemilik,
                     'jenis_pemilik' => $user->jenis_pemilik,
                     'nama'     => $user->pemilik->nama,
+                    'username' => $user->username,
                     'nrp'  => null,
-                    'jabatan'  => 'Root',
+                    'jabatan'  => 'Admin',
                     'alamat' => null,
                     'no_telp' => null,
                     'id_personil'  => null,

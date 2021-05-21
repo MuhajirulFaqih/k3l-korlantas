@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\HTChannels;
 use App\Http\Controllers\Controller;
+use App\Models\HTChannels;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\HTChannelsTransformer;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ class HTController extends Controller
     public function getAllChannels(Request $request){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'bhabin']))
+        if (!in_array($user->jenis_pemilik, ['personil']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $channels = HTChannels::getAll()->get();
@@ -25,7 +25,7 @@ class HTController extends Controller
     public function getByKesatuan(Request $request){
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['personil', 'bhabin']))
+        if(!in_array($user->jenis_pemilik, ['personil']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $personil = $user->jenis_pemilik == 'personil' ? $user->pemilik : $user->pemilik->personil;
@@ -54,7 +54,6 @@ class HTController extends Controller
 
         return fractal()
             ->collection($collection)
-            ->parseIncludes('bhabin')
             ->transformWith(new HTChannelsTransformer())
             ->serializeWith(new DataArraySansIncludeSerializer)
             ->paginateWith(new IlluminatePaginatorAdapter($paginator))
@@ -70,7 +69,7 @@ class HTController extends Controller
         $validatedData = $request->validate([
             'channel'      => 'required',
         ]);
-        
+
         $latestChannelId = HTChannels::orderBy('channel_id', 'DESC')->first();
 
         $channel = HTChannels::insert([
@@ -81,7 +80,7 @@ class HTController extends Controller
             'inheritacl' => 1,
             'used_in' => env('HT_INITIALIZATION', null),
         ]);
-                        
+
         if(!$channel) {
             return response()->json(['error' => 'terjadi kesalahan saat menyimpan data'], 500);
         }
@@ -97,11 +96,11 @@ class HTController extends Controller
             'channel_id'      => 'required',
             'channel'      => 'required',
         ]);
-        
+
         $channel = HTChannels::where('channel_id', $id)->update([
             'name' => $request->channel,
         ]);
-                        
+
         if(!$channel) {
             return response()->json(['error' => 'terjadi kesalahan saat menyimpan data'], 500);
         }
@@ -112,6 +111,6 @@ class HTController extends Controller
         $channel = HTChannels::where('channel_id', $id);
         if(!$channel->delete()) {
             return response()->json(['error' => 'terjadi kesalahan saat menghapus data'], 500);
-        }    
+        }
     }
 }

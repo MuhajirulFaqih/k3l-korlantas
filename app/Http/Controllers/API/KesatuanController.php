@@ -7,7 +7,6 @@ use App\Models\Kesatuan;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\KesatuanTransformer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class KesatuanController extends Controller
@@ -21,8 +20,8 @@ class KesatuanController extends Controller
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
 
         $paginator = $request->filter == '' ?
-            Kesatuan::orderBy($orderBy, $direction)->paginate(10) :
-            Kesatuan::filtered($request->filter)
+            Kesatuan::with('parent')->orderBy($orderBy, $direction)->paginate(10) :
+            Kesatuan::with('parent')->filtered($request->filter)
             ->orderBy($orderBy, $direction)
             ->paginate(10);
 
@@ -43,23 +42,25 @@ class KesatuanController extends Controller
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $validatedData = $request->validate([
-            'kesatuan' => 'required',
-            'email' => 'required|email',
-            'induk' => 'required',
-            'banner' => 'nullable|image',
+            'kesatuan'      => 'required',
+            // 'email'             => 'email:required',
+            'induk'               => 'required',
+            // 'banner'       => 'nullable|image',
         ]);
 
-        if (isset($validatedData['banner'])) {
-            $banner = $validatedData['banner']
-                                   ->storeAs('banner', $user->id. '_' . str_random(40).'.'.
-                                   $validatedData['banner']->extension());
-        }
+        // if (isset($validatedData['banner'])) {
+        //     $banner = $validatedData['banner']
+        //                            ->storeAs('banner', $user->id. '_' . str_random(40).'.'.
+        //                            $validatedData['banner']->extension());
+        // } else {
+        //     $banner = null;
+        // }
 
         $kesatuan = Kesatuan::create([
             'kesatuan' => $request->kesatuan,
-            'email_polri' => $request->email,
+            // 'email_polri' => $request->email,
             'induk' => $request->induk,
-            'banner_grid' => $banner,
+            // 'banner_grid' => $banner,
         ]);
 
         if(!$kesatuan) {
@@ -76,28 +77,28 @@ class KesatuanController extends Controller
 
         $validatedData = $request->validate([
             'kesatuan'      => 'required',
-            'email'         => 'required|email',
+            // 'email'         => 'email:required',
             'induk'         => 'required',
-            'banner'       => 'nullable|image',
+            // 'banner'       => 'nullable|image',
         ]);
 
         $kesatuan = Kesatuan::find($id);
-        
-        if (isset($validatedData['banner'])) {
-            $banner = $validatedData['banner']
-                                   ->storeAs('banner', $user->id. '_' . str_random(40).'.'.
-                                   $validatedData['banner']->extension());
-            Storage::delete($kesatuan->banner_grid);
-        }
-        else {
-            $banner = $kesatuan->banner_grid;
-        }
+
+        // if (isset($validatedData['banner'])) {
+        //     $banner = $validatedData['banner']
+        //                            ->storeAs('banner', $user->id. '_' . str_random(40).'.'.
+        //                            $validatedData['banner']->extension());
+        //     Storage::delete($kesatuan->banner_grid);
+        // }
+        // else {
+        //     $banner = $kesatuan->banner_grid;
+        // }
 
         $kesatuan->update([
             'kesatuan' => $request->kesatuan,
-            'email_polri' => $request->email,
+            // 'email_polri' => $request->email,
             'induk' => $request->induk,
-            'banner_grid' => $banner,
+            // 'banner_grid' => $banner,
         ]);
 
         if(!$kesatuan) {
@@ -110,16 +111,16 @@ class KesatuanController extends Controller
         $kesatuan = Kesatuan::find($id);
         if(!$kesatuan->delete()) {
             return response()->json(['error' => 'terjadi kesalahan saat menghapus data'], 500);
-        }    
+        }
     }
 
     public function ambilSemua(Request $request){
         $user = $request->user();
 
-        if($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin']))
             return response()->json(['error' => 'Terlarang'], 403);
 
-        $kesatuan = Kesatuan::get();
+        $kesatuan = Kesatuan::with('parent')->get();
         return fractal()
             ->collection($kesatuan)
             ->transformWith(KesatuanTransformer::class)

@@ -2,25 +2,36 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Kesatuan;
+use League\Fractal\TransformerAbstract;
 
 class KesatuanTransformer extends TransformerAbstract
 {
+    protected $defaultIncludes = [];
+    protected $availableIncludes = ['parent', 'children'];
     /**
      * A Fractal transformer.
      *
      * @return array
      */
-    public function transform(Kesatuan $itemKesatuan)
+    public function transform(object $itemKesatuan)
     {
         return [
             'id' => $itemKesatuan->id,
             'kesatuan' => $itemKesatuan->kesatuan,
-            'induk' => $itemKesatuan->induk,
-            'email' => $itemKesatuan->email_polri,
-            'icon' => $itemKesatuan->icon ? url('upload/' . $itemKesatuan->icon) : null,
-            'banner' => $itemKesatuan->banner_grid ? url('api/upload/'.$itemKesatuan->banner_grid) : null
+            'kesatuan_lengkap' => in_array($itemKesatuan->level, [1, 2]) ? $itemKesatuan->kesatuan : $itemKesatuan->kesatuan .' '.$itemKesatuan->parent->kesatuan
         ];
+    }
+
+    public function includeParent(object $itemKesatuan){
+        if ($itemKesatuan->parent)
+            return $this->item($itemKesatuan->parent, new KesatuanTransformer());
+        return null;
+    }
+
+    public function includeChildren(object $itemKesatuan){
+        if ($itemKesatuan->children)
+            return $this->collection($itemKesatuan->children, new KesatuanTransformer());
+        return collect();
     }
 }

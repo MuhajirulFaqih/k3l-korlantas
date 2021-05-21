@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Kecamatan;
+use League\Fractal\TransformerAbstract;
 
 class KecamatanTransformer extends TransformerAbstract
 {

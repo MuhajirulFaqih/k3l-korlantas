@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
-use DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Jabatan extends Model
 {
+    use HasFactory;
+
     protected $table = 'pers_jabatan';
+    protected $fillable = ['id_kesatuan', 'jabatan', 'status_pimpinan'];
 
-    protected $casts = ['status_pimpinan' => 'boolean', 'sispammako' => 'boolean', 'aksess_dana_desa' => 'boolean'];
-
-    public function Dinas()
-    {
-        return $this->belongsTo(Dinas::class,'id_dinas');
-    }
-
-    public function kesatuan(){
-        return $this->belongsTo(Kesatuan::class, 'id_kesatuan');
+    public function dinas(){
+        return $this->belongsTo(Dinas::class, 'id_dinas');
     }
 }

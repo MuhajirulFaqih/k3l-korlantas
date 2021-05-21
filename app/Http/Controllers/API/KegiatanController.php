@@ -1,18 +1,21 @@
 <?php
 namespace App\Http\Controllers\API;
 
-use App\Models\User;
-use App\Models\Kegiatan;
-use App\Models\Komentar;
-use App\Models\TipeLaporan;
 use App\Models\JenisKegiatan;
+use App\Models\JenisKegiatanKesatuan;
+use App\Models\KegiatanJenisKegiatan;
+use App\Models\Kegiatan;
+use App\Models\Kesatuan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use App\Http\Controllers\Controller;
 use App\Transformers\KomentarTransformer;
 use App\Transformers\KegiatanTransformer;
+use App\Transformers\KesatuanTransformer;
+use App\Transformers\KegiatanJenisTransformer;
 use App\Serializers\DataArraySansIncludeSerializer;
+use Illuminate\Support\Str;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Pagination\Cursor;
 use App\Events\KegiatanEvent;
@@ -23,77 +26,58 @@ class KegiatanController extends Controller
     public function upload_laporan(Request $request, Kegiatan $kegiatan)
     {
         $user = $request->user();
-        if (!in_array($user->jenis_pemilik, ['personil', 'bhabin']))
+        if (!in_array($user->jenis_pemilik, ['personil']))
             return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
 
         $validatedData = $request->validate([
-            'tipe_laporan' => 'required',
-            'judul' => 'nullable',
+            'id_jenis' => 'nullable',
+            'daftar_rekan' => 'nullable',
+            'nomor_polisi' => 'nullable',
+            'detail' => 'required|min:8',
+            'rute_patroli' => 'nullable',
+            'dokumentasi' => 'required|image',
             'lat' => 'required',
             'lng' => 'required',
-            'keterangan' => 'nullable',
-            'lokasi' => 'nullable',
-            'sasaran' => 'nullable',
-            'jenis_laporan' => 'nullable',
-            'jenis_kegiatan' => 'nullable',
-            'kuat_pers' => 'nullable',
-            'hasil' => 'nullable',
-            'jml_giat' => 'nullable',
-            'jml_tsk' => 'nullable',
-            'bb' => 'nullable',
-            'perkembangan' => 'nullable',
-            'dasar' => 'nullable',
-            'modus' => 'nullable',
-            'tsk_bb' => 'nullable',
-            'dokumentasi' => 'nullable|image',
+            'id_kelurahan_binmas' => 'nullable',
         ]);
 
         $dokumentasi = null;
 
         if (isset($validatedData['dokumentasi'])) {
             $dokumentasi = $validatedData['dokumentasi']
-                ->storeAs('dokumentasi', $user->id . '_' . str_random(40) . '.' .
+                ->storeAs('dokumentasi', $user->id . '_' . Str::random(40) . '.' .
                     $validatedData['dokumentasi']->extension());
         }
         $data = [
             'id_user' => $user->id,
-            'tipe_laporan' => $validatedData['tipe_laporan'],
+            'daftar_rekan' => $validatedData['daftar_rekan'],
+            'nomor_polisi' => $validatedData['nomor_polisi'],
+            'detail' => $validatedData['detail'],
+            'rute_patroli' => $validatedData['rute_patroli'],
+            'waktu_kegiatan' => Carbon::now(),
+            'dokumentasi' => $dokumentasi,
             'lat' => $validatedData['lat'],
             'lng' => $validatedData['lng'],
-            'lokasi' => $validatedData['lokasi'] ?? null,
-            'sasaran' => $validatedData['sasaran'] ?? null,
-            'jenis_kegiatan' => $validatedData['jenis_kegiatan'] ?? null,
-            'judul' => $validatedData['judul'] ?? null,
-            'kuat_pers' => $validatedData['kuat_pers'] ?? null,
-            'hasil' => $validatedData['hasil'] ?? null,
-            'jml_giat' => $validatedData['jml_giat'] ?? null,
-            'jml_tsk' => $validatedData['jml_tsk'] ?? null,
-            'bb' => $validatedData['bb'] ?? null,
-            'waktu_kegiatan' => Carbon::now(),
-            'perkembangan' => $validatedData['perkembangan'] ?? null,
-            'dasar' => $validatedData['dasar'] ?? null,
-            'keterangan' => $validatedData['keterangan'] ?? null,
-            'modus' => $validatedData['modus'] ?? null,
-            'tsk_bb' => $validatedData['tsk_bb'] ?? null,
-            'dokumentasi' => $dokumentasi ?? null,
+            'id_kelurahan_binmas' => $validatedData['id_kelurahan_binmas']
         ];
-        
+
         $kegiatan = Kegiatan::create($data);
+
+        foreach($request->id_jenis as $keyIdJenis => $valueIdJenis) {
+            KegiatanJenisKegiatan::create(['id_kegiatan' => $kegiatan->id, 'id_jenis_kegiatan' => $valueIdJenis]);
+        }
 
         if (!$kegiatan)
             return response()->json(['error' => 'Terjadi kesalahan saat menyimpan data'], 500);
 
         // Send notifikasi
-        if(!env('APP_DEV')) {
-            $this->broadcastNotifikasi($user, $kegiatan);
-        }
-        
+        $this->broadcastNotifikasi($user, $kegiatan);
+
 
         // Broadcast to monit
         $data = fractal()
             ->item($kegiatan)
             ->transformWith(KegiatanTransformer::class)
-            ->parseIncludes(['tipe', 'jenis'])
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->toArray();
 
@@ -106,8 +90,8 @@ class KegiatanController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'bhabin']))
-            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin']))
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         return fractal()
             ->item($kegiatan)
@@ -120,18 +104,15 @@ class KegiatanController extends Controller
     public function list_laporan(Request $request)
     {
         $user = $request->user();
-        list($orderBy, $direction) = explode(':', $request->sort);
+        list($orderBy, $direction) = explode(':', $request->sort ?? 'created_at:desc');
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'bhabin', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $kegiatan = $request->filter == '' ?
-            Kegiatan::orderBy($orderBy, $direction) :
-            Kegiatan::filter($request->filter)
-            ->orderBy($orderBy, $direction);
+            Kegiatan::with('user')->orderBy($orderBy, $direction) :
+            Kegiatan::with('user')->filter($request->filter)->orderBy($orderBy, $direction);
 
-        if (count($kegiatan->get()) === 0)
-            return response()->json(['message' => 'Tidak ada content.'], 204);
 
         $limit = $request->limit != '' ? $request->limit : 10;
         if($limit == 0)
@@ -142,7 +123,7 @@ class KegiatanController extends Controller
 
         return fractal()
             ->collection($collection)
-            ->parseIncludes(['tipe', 'jenis'])
+            ->parseIncludes(['jenis', 'jenis.parent.parent.parent', 'kelurahan'])
             ->transformWith(new KegiatanTransformer(true))
             ->serializeWith(new DataArraySansIncludeSerializer)
             ->paginateWith(new IlluminatePaginatorAdapter($paginator))
@@ -153,7 +134,10 @@ class KegiatanController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'bhabin', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
+            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+
+        if ($user->jenis_pemilik == 'masyarakat' && $user->id != $kegiatan->id_user)
             return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
 
         $komentar = $kegiatan->komentar();
@@ -173,7 +157,10 @@ class KegiatanController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'bhabin', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
+            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+
+        if ($user->jenis_pemilik == 'masyarakat' && $user->id != $kegiatan->id_user)
             return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
 
         $validatedData = $request->validate([
@@ -189,10 +176,9 @@ class KegiatanController extends Controller
             return response()->json(['error' => 'Terjadi kesalahan saat menyimpan data'], 500);
 
         // Send notifikasi
-        if(!env('APP_DEV')) {
-            $this->broadcastNotifikasi($user, $komentar);
-        }
+        $this->broadcastNotifikasi($user, $komentar);
 
+        // Broadcast to monit
         $fractal = fractal()
                 ->item($komentar)
                 ->transformWith(KomentarTransformer::class)
@@ -209,13 +195,34 @@ class KegiatanController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'bhabin']))
+        if (!in_array($user->jenis_pemilik, ['personil']))
             return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
 
-        $tipe = TipeLaporan::get();
-        $jenis = JenisKegiatan::orderBy('status', 'asc')->get();
+        $jenis = JenisKegiatan::whereNull('parent_id')->get();
 
-        return response()->json(compact('tipe', 'jenis'));
+        return fractal()
+            ->collection($jenis)
+            ->parseIncludes(['children.children.children.children', 'parent.parent.parent'])
+            ->transformWith(KegiatanJenisTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
+    }
+   
+    public function getJenisTipeByPersonil(Request $request)
+    {
+        $user = $request->user();
 
+        if (!in_array($user->jenis_pemilik, ['personil']))
+            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+        $id_kesatuan = $user->pemilik->kesatuan->id;
+        $id_jenis_kegiatan_by_kesatuan = JenisKegiatanKesatuan::where('id_kesatuan', $id_kesatuan)->pluck('id_jenis_kegiatan');
+        $jenis = JenisKegiatan::whereIn('id', $id_jenis_kegiatan_by_kesatuan)->get();
+
+        return fractal()
+            ->collection($jenis)
+            ->parseIncludes(['children.children.children.children'])
+            ->transformWith(KegiatanJenisTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
     }
 }

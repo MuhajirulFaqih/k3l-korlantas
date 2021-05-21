@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\RejectCallMasyarakatEvent;
 use App\Http\Controllers\Controller;
+use App\Models\CallLog;
 use App\Models\Masyarakat;
+use App\Models\User;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\MasyarakatTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class MasyarakatController extends Controller
@@ -62,10 +66,10 @@ class MasyarakatController extends Controller
         }
 
         $masyarakat = Masyarakat::find($id);
-        
+
         if (isset($validatedData['fotos'])) {
             $foto = $validatedData['fotos']
-                                   ->storeAs('fotos', $user->id. '_' . str_random(40).'.'.
+                                   ->storeAs('fotos', $user->id. '_' . Str::random(40).'.'.
                                    $validatedData['fotos']->extension());
             Storage::delete($masyarakat->foto);
         }
@@ -94,7 +98,95 @@ class MasyarakatController extends Controller
         if($user) { $user->delete(); }
         if(!$masyarakat->delete()) {
             return response()->json(['error' => 'terjadi kesalahan saat menghapus data'], 500);
-        }    
+        }
+    }
+
+    public function show(Request $request, Masyarakat $masyarakat){
+        $user = $request->user();
+
+        if ($user->jenis_pemilik !== 'admin')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        return fractal()
+            ->item($masyarakat)
+            ->parseIncludes('auth')
+            ->transformWith(MasyarakatTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
+    }
+
+    public function rejectCall(Request $request){
+        $user = $request->user();
+
+        if ($user->jenis_pemilik !== 'masyarakat')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $admin = User::where('username', $request->username)->first();
+
+        if (!$admin)
+            return response()->json(['error' => 'User tidak ditemukan'], 404);
+
+        broadcast(new RejectCallMasyarakatEvent($admin->id));
+
+        return response()->json(['success' => true]);
+    }
+
+    public function cancelCall(Request $request){
+        $user = $request->user();
+
+        if ($user->jenis_pemilik !== 'admin')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $masyarakat = Masyarakat::find($request->id_masyarakat);
+
+        if (!$masyarakat)
+            return response()->json(['error' => 'Masyarakat tidak ditemukan'], 404);
+
+        $to = $masyarakat->auth;
+
+        if (!$to)
+            return response()->json(['error' => 'Masyarakat tidak ditemukan'], 404);
+
+        if (env('USE_ONESIGNAL', false))
+            $this->kirimNotifikasiViaOnesignal('cancel-call', ['pesan' => 'Incoming call '. $user->username,'from' => $user->pemilik->nama, 'from_user' => $user->username, 'to_user' => $to->username], [$to->id]);
+
+        $this->kirimNotifikasiViaGcm('cancel-call', ['pesan' => 'Cancel call '. $user->username,'from' => $user->pemilik->nama, 'from_user' => $user->username, 'to_user' => $to->username], [$to->fcm_id]);
+    }
+
+    public function call(Request $request){
+        $user = $request->user();
+
+        if($user->jenis_pemilik !== 'admin')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $masyarakat = Masyarakat::find($request->id_masyarakat);
+
+        if (!$masyarakat)
+            return response()->json(['error' => 'Masyarakat tidak ditemukan'], 404);
+
+
+        $to = $masyarakat->auth;
+
+        if (!$to)
+            return response()->json(['error' => 'Masyarakat tidak ditemukan'], 404);
+
+        $log = CallLog::create([
+            'from' => $user->username,
+            'to' => $to->username,
+            'id_from' => $user->id,
+            'id_to' => $to->id
+        ]);
+
+
+        if(!$log)
+            return response()->json(['error' => 'terjadi kesalahan'], 500);
+
+        if (env('USE_ONESIGNAL', false))
+            $this->kirimNotifikasiViaOnesignal('incoming-call', ['pesan' => 'Incoming call '. $user->username,'from' => $user->pemilik->nama, 'from_user' => $user->username, 'to_user' => $to->username], [$to->id]);
+
+        $this->kirimNotifikasiViaGcm('incoming-call', ['pesan' => 'Incoming call '. $user->username,'from' => $user->pemilik->nama, 'from_user' => $user->username, 'to_user' => $to->username], [$to->fcm_id]);
+
+        return response()->json(['success' => true, 'id' => $log->id]);
     }
 
     public function ambilSemua(Request $request){

@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Kecamatan;
-use App\Models\JenisWilayah;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Kelurahan extends Model
 {
-
+    use HasFactory;
     /**
      * Nama tabel yang dipakai oleh model.
      *
@@ -88,9 +87,9 @@ class Kelurahan extends Model
                 ->get()->pluck('id_kec')->all()
         );
     }
-    
+
     public function scopeGetByProv($query, $wilayah) {
-        
+
         $where = env('TINGKAT_DANA_DESA', 'provinsi') == 'kabupaten' ? 'wkb.id_kab' : 'wkb.id_prov';
 
         return $query->whereIn(
@@ -101,7 +100,7 @@ class Kelurahan extends Model
                 ->join('wil_kabupaten as wkb', 'wk.id_kab', '=', 'wkb.id_kab')
                 ->where($where, $wilayah)
                 ->get()->pluck('id_kel')->all()
-            );
+        );
     }
 
     public function scopeFilteredDanaDesa($query, $filter, $wilayah)
@@ -109,7 +108,7 @@ class Kelurahan extends Model
         if ($filter == null) {
             return $query;
         }
-        
+
         $where = env('TINGKAT_DANA_DESA', 'provinsi') == 'kabupaten' ? 'wkb.id_kab' : 'wkb.id_prov';
 
         return $query->whereIn(
@@ -123,6 +122,7 @@ class Kelurahan extends Model
                     k.nama, '||', wk.nama, '||', wkb.nama
                 ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%'])
                 ->get()->pluck('id_kel')->all()
-            );
+        );
     }
+
 }

@@ -3,10 +3,18 @@
 namespace App\Transformers;
 
 use App\Models\News;
+use Illuminate\Support\Str;
 use League\Fractal\TransformerAbstract;
 
 class NewsTransformer extends TransformerAbstract
 {
+    private $preview = false;
+
+    public function __construct($prev = false)
+    {
+        $this->preview = $prev;
+    }
+
     /**
      * A Fractal transformer.
      *
@@ -17,9 +25,9 @@ class NewsTransformer extends TransformerAbstract
     {
         return [
             'id' => $news->id,
-            'judul'   => $news->title,
+            'judul'   => $this->preview ? Str::limit($news->title) : $news->title,
             'date' => $news->date->toDateTimeString(),
-            'content' => $news->content, 
+            'content' => $news->content,
             'gambar'  => $news->image ? url($news->image) : null,
         ];
     }

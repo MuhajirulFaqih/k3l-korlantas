@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Absensi;
 use App\Exports\AbsensiExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
@@ -20,9 +19,9 @@ class AbsensiController extends Controller
 
         if (!in_array($user->jenis_pemilik, ['admin']))
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
-        
-        $paginator = $request->id_kesatuan == '' && 
-        			$request->rentangTanggal[0] == '' && 
+
+        $paginator = $request->id_kesatuan == '' &&
+        			$request->rentangTanggal[0] == '' &&
         			$request->nrp == '' ?
             		Absensi::orderBy($orderBy, $direction)->paginate(10) :
             		Absensi::filtered($request->id_kesatuan, $request->rentangTanggal, $request->nrp)
@@ -45,12 +44,12 @@ class AbsensiController extends Controller
     	if (!in_array($user->jenis_pemilik, ['admin']))
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
 
-        $data =  Absensi::filtered($request->kesatuan, 
-    								$request->tanggal, 
+        $data =  Absensi::filtered($request->kesatuan,
+    								$request->tanggal,
     								$request->nrp)
 	            ->orderBy('id_personil', 'DESC')
 	            ->get();
-	    
-	    return Excel::download(new AbsensiExport($data), 'Absensi.xlsx');
+
+	    return Excel::download(new AbsensiExport($data), 'Document.xlsx');
     }
 }

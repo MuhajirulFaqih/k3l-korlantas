@@ -2,8 +2,8 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\Jabatan;
+use League\Fractal\TransformerAbstract;
 
 class JabatanTransformer extends TransformerAbstract
 {
@@ -18,9 +18,5 @@ class JabatanTransformer extends TransformerAbstract
             'id' => $itemJabatan->id,
             'jabatan' => $itemJabatan->jabatan
         ];
-    }
-
-    public function kesatuan(Jabatan $itemJabatan){
-        return $this->item($itemJabatan->kesatuan, new KesatuanTransformer());
     }
 }

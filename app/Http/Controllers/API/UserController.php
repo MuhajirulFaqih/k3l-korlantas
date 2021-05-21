@@ -2,32 +2,29 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Darurat;
-use App\Events\LacakMasyarakatEvent;
 use App\Events\LacakPersonilEvent;
 use App\Events\PersonilLogoutEvent;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
-use App\Models\Kejadian;
-use App\Mail\ForgotPassword;
-use App\Mail\WelcomeMessage;
 use App\Models\Masyarakat;
+use App\Models\User;
 use App\Serializers\DataArraySansIncludeSerializer;
-use App\Transformers\LogMasyarakatTransformer;
 use App\Transformers\PersonilTransformer;
 use App\Transformers\ResponseUserTransformer;
-use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class UserController extends Controller
 {
-
     public function loginSocialMedia(Request $request){
         try {
             $provider = $request->provider;
@@ -35,13 +32,15 @@ class UserController extends Controller
             //$token = $request->accessToken;
             //dd($token);
 
-            $socialite = $provider == 'google' ? Socialite::driver($provider)->scopes(['profile','email'])->userFromToken($token) : Socialite::driver($provider)->userFromToken($token);
+            $socialite = $provider == 'google' ? Socialite::driver($provider)->scopes(['profile','email'])->userFromToken($token) : Socialite::driver($provider)->scopes(['email'])->userFromToken($token);
 
             if (!$exist = Masyarakat::where('provider', $provider)->where('provider_id', $socialite->getId())->first()){
                 //Create user
 
+                $email = $socialite->getEmail();
+
                 // Check if user's email is Avaliable in our db so set provider and provider id associate with this socialite
-                if($user = User::where('username', $socialite->getEmail())->first()){
+                if($user = User::where('username', $email ?? $socialite->getId().'@'.$provider.'.com')->first()){
                     $pemilik = $user->pemilik;
 
                     $data = [
@@ -52,7 +51,7 @@ class UserController extends Controller
                     // Check if foto null then grab from socialite
                     if (!$pemilik->foto){
                         $contents = file_get_contents($socialite->getAvatar());
-                        $name = str_random(40).'.jpg';
+                        $name = Str::random(40).'.jpg';
 
                         Storage::put('masyarakat/'.$name, $contents);
 
@@ -62,7 +61,7 @@ class UserController extends Controller
                     $pemilik->update($data);
                 } else {
                     $contents = file_get_contents($socialite->getAvatar());
-                    $name = $name = str_random(40).'.jpg';
+                    $name = Str::random(40).'.jpg';
 
                     $foto = Storage::put('masyarakat/'.$name, $contents);
 
@@ -73,16 +72,12 @@ class UserController extends Controller
                         'foto' => 'masyarakat/'.$name
                     ]);
 
-                    $password = str_random(6);
+                    $password = Str::random(6);
 
-                    $auth = $masyarakat->auth()->create([
-                            'username' => $socialite->getEmail(),
+                    $masyarakat->auth()->create([
+                            'username' => $socialite->getEmail() ?? $socialite->getId().'@'.$provider.'.com',
                             'password' => bcrypt($password)
                         ]);
-
-                    if ($masyarakat && $auth)
-                        Mail::to($auth->username)
-                            ->send(new WelcomeMessage($auth, $password));
 
                 }
             }
@@ -140,7 +135,7 @@ class UserController extends Controller
         $request->request->add($params);
 
         $requestToken = Request::create("api/user/auth", "POST");
-        $response = \Route::dispatch($requestToken);
+        $response = Route::dispatch($requestToken);
 
         return json_decode((string) $response->getContent(), true);
     }
@@ -206,50 +201,6 @@ class UserController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function registerO(Request $request){
-        $validData = $request->validate([
-            'nama' => 'required',
-            'email' => 'required|email|unique:user,username',
-            'no_telp' => 'required|min:8|max:13|unique:masyarakat',
-            'alamat' => 'required|min:5',
-            'hash' => 'required',
-            'nik' => 'nullable',
-            //'id_kel' => 'required|min:10',
-            'password' => 'required',
-        ]);
-
-        $masyarakat = Masyarakat::create([
-            'nama' => $validData['nama'],
-            'alamat' => $validData['alamat'],
-            'no_telp' => $validData['no_telp'],
-            'nik' => $validData['nik']
-            //'id_kel' => $validData['id_kel']
-        ]);
-
-        do {
-            $kode = rand(1000, 10000);
-        } while (User::where('kode', $kode)->where('diverifikasi', 0)->count() > 0);
-
-        $user = $masyarakat->auth()->create([
-            'password' => bcrypt($validData['password']),
-            'username' => $validData['email'],
-            'kode' => $kode
-        ]);
-
-        if (!$masyarakat && !$user)
-            return response()->json(['error' => 'Terjadi kesalahan'], 500);
-
-        // Todo Send sms
-        $this->sendSms($masyarakat->no_telp, "<#> ".env('APP_MASYARAKAT_NAME')." - Kode otentikasi: {$kode}. Demi keamanan, jangan berikan kode RAHASIA ini kepada siapapun.\n".$validData['hash']);
-
-
-        // Send email
-        if (env('MAIL_USERNAME'))
-            Mail::to($validData['email']) ->send(new WelcomeMessage($user));
-
-        return response()->json(['success' => true, 'id' => $user->id ], 201);
-    }
-
     public function ubahNik(Request $request){
         $user = $request->user();
 
@@ -271,17 +222,18 @@ class UserController extends Controller
     {
         $validData = $request->validate([
             'nama' => 'required',
-            'email' => 'required|email|unique:user,username',
             'no_telp' => 'required|min:8|max:13|unique:masyarakat',
             'alamat' => 'required|min:5',
+            'nik' => 'required|size:16|unique:masyarakat',
             //'id_kel' => 'required|min:10',
             'password' => 'required',
         ]);
-        
+
         $masyarakat = Masyarakat::create([
             'nama' => $validData['nama'],
             'alamat' => $validData['alamat'],
             'no_telp' => $validData['no_telp'],
+            'nik' => $validData['nik']
             //'id_kel' => $validData['id_kel']
         ]);
 
@@ -291,22 +243,26 @@ class UserController extends Controller
 
         $user = $masyarakat->auth()->create([
             'password' => bcrypt($validData['password']),
-            'username' => $validData['email'],
+            'username' => $validData['no_telp'],
             'kode' => $kode
         ]);
 
         if (!$masyarakat && !$user)
             return response()->json(['error' => 'Terjadi kesalahan'], 500);
 
-        // Todo Send sms
-        $this->sendSms($masyarakat->no_telp, env('APP_MASYARAKAT_NAME')." - Kode otentikasi: {$kode}. Demi keamanan, jangan berikan kode RAHASIA ini kepada siapapun.");
+        // Todo Send whatsapp activation code
+        //$this->sendSms($masyarakat->no_telp, env('APP_MASYARAKAT_NAME')." - Kode otentikasi: {$kode}. Demi keamanan, jangan berikan kode RAHASIA ini kepada siapapun.");
+
+        $token = Http::post(url('api/user/auth'), [
+            'username' => $request->no_telp,
+            'password' => $request->password,
+            'client_id' => env('CLIENT_ID'),
+            'client_secret' => env('CLIENT_SECRET'),
+            'grant_type' => 'password'
+        ]);
 
 
-        // Send email
-        Mail::to($validData['email'])
-            ->send(new WelcomeMessage($user));
-
-        return response()->json(['success' => true, 'id' => $user->id ], 201);
+        return response()->json(['success' => true, 'id' => $user->id, 'token' => $token->json()], 201);
     }
 
     public function kode_verifikasi(Request $request){
@@ -338,7 +294,7 @@ class UserController extends Controller
                 ->serializeWith(DataArraySansIncludeSerializer::class)
                 ->respond();
     }
-    
+
     public function change_password(Request $request)
     {
         $user = $request->user();
@@ -348,14 +304,14 @@ class UserController extends Controller
             'password' => 'required|min:6|confirmed'
         ]);
 
-        if (!password_verify($validData['old_password'], $user->password)) 
+        if (!password_verify($validData['old_password'], $user->password))
             return response()->json(['errors' => ['Password lama tidak sesuai']], 422);
 
         $user->password = bcrypt($request->password);
 
         if(!$user->save())
             return response()->json(['error' => 'Terjadi kesalahan'], 500);
-        
+
         return response()->json(['success' => true], 200);
     }
 
@@ -370,7 +326,7 @@ class UserController extends Controller
             'konfirmasi_password_baru' => 'min:6'
         ]);
 
-        if (!password_verify($validData['password_lama'], $user->password)) 
+        if (!password_verify($validData['password_lama'], $user->password))
             return response()->json(['errors' => ['Password lama tidak sesuai']], 422);
 
         $user->username = $request->username;
@@ -378,11 +334,11 @@ class UserController extends Controller
 
         if(!$user->save())
             return response()->json(['error' => 'Terjadi kesalahan'], 500);
-        
+
         return response()->json(['success' => true, 'username' => $user->username], 200);
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request) {
         $user = $request->user();
         $user->fcm_id = null;
 
@@ -411,7 +367,7 @@ class UserController extends Controller
         DB::table('oauth_access_tokens')->where('user_id', $user->id)->update(['revoked' => 1]);
 
         if(!$user->save())
-            return response()->json(['errors' => 'Terjadi kesalahan'], 500);
+            return response()->json(['error' => 'Terjadi kesalahan'], 500);
 
         return response()->json(['success' => true], 200);
     }
@@ -460,15 +416,15 @@ class UserController extends Controller
 
         $update = null;
 
-        if ($user->jenis_pemilik == 'personil' || $user->jenis_pemilik == 'bhabin') {
-            
+        if ($user->jenis_pemilik == 'personil') {
+
             $validatedData = $request->validate([
                 'no_hp'  => 'required',
                 'alamat' => 'required',
             ]);
 
             $personil = $user->jenis_pemilik == 'personil' ? $user->pemilik : $user->pemilik->personil;
-                
+
             $update = $personil->update([
                                     'no_telp'  => $validatedData['no_hp'],
                                     'alamat' => $validatedData['alamat'],
@@ -476,18 +432,15 @@ class UserController extends Controller
 
         } else if ($user->jenis_pemilik == 'masyarakat') {
             $validatedData = $request->validate([
-                //'foto'      => 'required|image',
                 'nama'      => 'required',
                 'alamat'    => 'required',
-                'no_telp'   => 'required'
             ]);
             /*$foto = $request->file('foto')
                             ->storeAs('masyarakat',str_random(10).'.'.$request->file('foto')
                             ->extension());*/
             $update = $user->pemilik->update([
                                       'nama'    => $validatedData['nama'],
-                                      'alamat'  => $validatedData['alamat'],
-                                      'no_telp' => $validatedData['no_telp'],
+                                      'alamat'  => $validatedData['alamat']
                                       //'foto'    => $foto
                                   ]);
         }
@@ -501,9 +454,12 @@ class UserController extends Controller
     public function fcm(Request $request){
         $user = $request->user();
 
+        //$authorization = $request->header('Authorization');
+
         $validData =  $request->validate([
-            'fcm_id' => 'required|min:6'
+            'fcm_id' => 'required|min:6',
         ]);
+
         $user->fcm_id = $validData['fcm_id'];
         if(!$user->save())
             return response()->json(['error' => "Terjadi kesalahan"], 500);
@@ -514,9 +470,9 @@ class UserController extends Controller
     public function updatePP(Request $request){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['bhabin', 'personil', 'masyarakat']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
-        
+
         $validData = $request->validate([
             'foto' => 'required|image'
         ]);
@@ -585,8 +541,8 @@ class UserController extends Controller
     public function tracking(Request $request)
     {
         $user = $request->user();
-        
-        if(!in_array($user->jenis_pemilik, ['personil', 'bhabin']))
+
+        if(!in_array($user->jenis_pemilik, ['personil']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validatedData = $request->validate([
@@ -600,7 +556,7 @@ class UserController extends Controller
 
         Log::info('Relokasi', ['lat' => $validatedData['lat'], 'lng' => $validatedData['lng'], 'personil' => $personil]);
 
-        $update = [ 
+        $update = [
               'lat' => (double) $validatedData['lat'],
               'lng' => (double) $validatedData['lng']
         ];
@@ -633,6 +589,27 @@ class UserController extends Controller
         event(new LacakPersonilEvent($data));
 
         return response()->json(['success' => true]);
+    }
+
+    public function requestAdminToken(Request $request){
+        $validator = $request->validate([
+           'username' => 'required|min:3',
+           'password' => 'required|min:6'
+        ]);
+
+        $response = Http::post(url('api/user/auth-admin'), [
+            'username' => $request->username,
+            'password' => $request->password,
+            'client_id' => env('CLIENT_ID'),
+            'client_secret' => env('CLIENT_SECRET'),
+            'grant_type' => 'password'
+        ]);
+
+        if ($response->ok()){
+            return $response->json();
+        }
+
+        return response()->json($response->json(), $response->status());
     }
 
 }
