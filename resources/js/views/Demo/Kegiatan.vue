@@ -10,7 +10,7 @@
                             breakpoint="md"
                             label="Bearer Token Akun Personil"
                             class="mt-3">
-                            <b-form-textarea class="e-form" v-model="token" placeholder="Masukkan bearer token personil" rows="10"/>
+                            <b-form-textarea class="e-form" v-model="token" placeholder="Masukkan bearer token personil. Ex : eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiYjNkMTY0ZGY3MjhiZjViOTBlMW" rows="10"/>
                             <b-button variant="primary" class="mt-3" @click="getJenis">Cek Tipe Laporan</b-button>
                         </b-form-group>
                         <b-form v-if="isCheck && token != null" @submit.prevent="kirimKegiatan">
@@ -278,7 +278,7 @@ export default {
                 return 
             }
             axios.get(baseUrl + '/api/kegiatan', 
-                { headers: { Authorization: this.token } }
+                { headers: { Authorization: 'Bearer ' + this.token } }
             )
             .then(({ data : { data } }) => {
                 this.kegiatan = data
@@ -310,7 +310,7 @@ export default {
             if(this.token == null) { return }
             this.kecamatan = null
             axios.get(baseUrl + '/api/kabupaten-provinsi', 
-                { headers: { Authorization: this.token } }
+                { headers: { Authorization: 'Bearer ' + this.token } }
             )
             .then(({ data : { kabupaten } }) => {
                 this.kabupatenOptions = kabupaten
@@ -322,7 +322,7 @@ export default {
             this.kelurahan = null
             this.single.id_kelurahan_binmas = null
             axios.get(baseUrl + '/api/kecamatan/' + kabupaten.id_kab, 
-                { headers: { Authorization: this.token } }
+                { headers: { Authorization: 'Bearer ' + this.token } }
             )
             .then(({ data : { kecamatan } }) => {
                 this.kecamatanOptions = kecamatan
@@ -333,7 +333,7 @@ export default {
         getKelurahan(kecamatan) {
             this.single.id_kelurahan_binmas = null
             axios.get(baseUrl + '/api/kelurahan/' + kecamatan.id_kec, 
-                { headers: { Authorization: this.token } }
+                { headers: { Authorization: 'Bearer ' + this.token } }
             )
             .then(({ data : { kelurahan } }) => {
                 this.kelurahanOptions = kelurahan
@@ -351,7 +351,7 @@ export default {
             }
                 
             axios.get(baseUrl + '/api/kegiatan/tipejenisbypersonil', 
-                { headers: { Authorization: this.token } }
+                { headers: { Authorization: 'Bearer ' + this.token } }
             )
             .then(({ data : { data } }) => {
                 this.isCheck = true
