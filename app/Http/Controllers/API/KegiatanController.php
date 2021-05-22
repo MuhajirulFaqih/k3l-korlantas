@@ -65,8 +65,10 @@ class KegiatanController extends Controller
 
         $kegiatan = Kegiatan::create($data);
 
-        foreach($request->id_jenis as $keyIdJenis => $valueIdJenis) {
-            KegiatanJenisKegiatan::create(['id_kegiatan' => $kegiatan->id, 'id_jenis_kegiatan' => $valueIdJenis]);
+        if($request->id_jenis) {
+            foreach($request->id_jenis as $keyIdJenis => $valueIdJenis) {
+                KegiatanJenisKegiatan::create(['id_kegiatan' => $kegiatan->id, 'id_jenis_kegiatan' => $valueIdJenis]);
+            }
         }
 
         if (!$kegiatan)

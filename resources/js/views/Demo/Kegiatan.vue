@@ -383,21 +383,23 @@ export default {
             data.append('lat', defaultLat)
             data.append('lng', defaultLng)
             //Collect Jenis
-            data.append('id_jenis[]', this.jenisKegiatan.id)
-            this.jenisKegiatan.children.forEach((v) => {
-                data.append('id_jenis[]', v.id)
-            })
-            this.subJenisKegiatan.forEach((v) => {
-                data.append('id_jenis[]', v.id)
-                if(v.children) {
-                    v.children.forEach(vv => {
-                        data.append('id_jenis[]', vv.id)
-                    })
-                }
-            })
-            this.dropdownSubJenisKegiatan.forEach((v) => {
-                data.append('id_jenis[]', v.id)
-            })
+            if(this.jenisKegiatan != null) {
+                data.append('id_jenis[]', this.jenisKegiatan.id)
+                this.jenisKegiatan.children.forEach((v) => {
+                    data.append('id_jenis[]', v.id)
+                })
+                this.subJenisKegiatan.forEach((v) => {
+                    data.append('id_jenis[]', v.id)
+                    if(v.children) {
+                        v.children.forEach(vv => {
+                            data.append('id_jenis[]', vv.id)
+                        })
+                    }
+                })
+                this.dropdownSubJenisKegiatan.forEach((v) => {
+                    data.append('id_jenis[]', v.id)
+                })
+            }
             
             data.append('dokumentasi', document.getElementById('foto').files[0])
             Object.keys(single).forEach(function(key) {
@@ -406,7 +408,7 @@ export default {
 
             axios.post(baseUrl + '/api/kegiatan', data, {
                 headers: { 
-                    'Authorization' : this.token,
+                    'Authorization' : 'Bearer ' + this.token,
                     'Content-Type': 'multipart/form-data'
                 }
             })
