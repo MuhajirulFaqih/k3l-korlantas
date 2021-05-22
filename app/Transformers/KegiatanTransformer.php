@@ -48,11 +48,13 @@ class KegiatanTransformer extends TransformerAbstract
     public function includeJenis($kegiatan){
         if($kegiatan->jenis)
             return $this->collection($kegiatan->jenis, new KegiatanJenisKegiatanTransformer());
+        return null;
     }
     
     public function includeKelurahan($kegiatan){
         if($kegiatan->kelurahan)
             return $this->item($kegiatan->kelurahan, new KelurahanTransformer());
+        return null;
     }
 
 }

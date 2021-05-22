@@ -35,6 +35,10 @@ class KegiatanJenisTransformer extends TransformerAbstract
             'jenis' => $jenisKegiatan->jenis,
             'jenis_singkat' => $jenisKegiatan->jenis_singkat,
             'keterangan' => $jenisKegiatan->keterangan,
+            'has_daftar_rekan' => $jenisKegiatan->has_daftar_rekan,
+            'has_nomor_polisi' => $jenisKegiatan->has_nomor_polisi,
+            'has_kelurahan' => $jenisKegiatan->has_kelurahan,
+            'has_rute' => $jenisKegiatan->has_rute,
         ];
     }
 

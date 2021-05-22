@@ -39,6 +39,7 @@ class KegiatanController extends Controller
             'lat' => 'required',
             'lng' => 'required',
             'id_kelurahan_binmas' => 'nullable',
+            'is_quick_response' => 'nullable',
         ]);
 
         $dokumentasi = null;
@@ -58,7 +59,8 @@ class KegiatanController extends Controller
             'dokumentasi' => $dokumentasi,
             'lat' => $validatedData['lat'],
             'lng' => $validatedData['lng'],
-            'id_kelurahan_binmas' => $validatedData['id_kelurahan_binmas']
+            'id_kelurahan_binmas' => $validatedData['id_kelurahan_binmas'],
+            'is_quick_response' => $validatedData['is_quick_response']
         ];
 
         $kegiatan = Kegiatan::create($data);
@@ -110,8 +112,8 @@ class KegiatanController extends Controller
             return response()->json(['error' => 'Terlarang'], 403);
 
         $kegiatan = $request->filter == '' ?
-            Kegiatan::with('user')->orderBy($orderBy, $direction) :
-            Kegiatan::with('user')->filter($request->filter)->orderBy($orderBy, $direction);
+            Kegiatan::with(['user'])->orderBy($orderBy, $direction) :
+            Kegiatan::with(['user'])->filter($request->filter)->orderBy($orderBy, $direction);
 
 
         $limit = $request->limit != '' ? $request->limit : 10;

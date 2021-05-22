@@ -26,23 +26,27 @@ class DemoUserSeeder extends Seeder
 
         $password = bcrypt('telabangmandau2021');
 
-        $personil = Personil::create([
-            'nrp' => 11111111,
-            'nama' => 'AKUN DEMO PERSONIL',
-            'id_pangkat' => 2,
-            'id_jabatan' => 2,
-            'id_kesatuan' => 189,
-            'kelamin' => 'L',
-            'alamat' => 'KALIMANTAN TIMUR',
-            'status_dinas' => 1,
-            'w_status_dinas' => \Carbon\Carbon::now(),
-            'bearing' => NULL,
-            'no_telp' => NULL,
-            'lat' => -7.1519363,
-            'lng' => 111.8787191,
-            'ptt_ht' => NULL,
-        ]);
-        $personil->auth()->create(['username' => 'demopersonil', 'password' => $password]);
+        $kesatuan = [3, 124, 189, 430, 431, 434, 435, 581, 607, 2396];
+        $jabatan = [3, 741, 5, 604, 2394, 2202, 2159, 2262, 2269, 3266];
+        foreach ($kesatuan as $key => $kesatuan_value) {
+            $personil = Personil::create([
+                'nrp' => 1111111.$key,
+                'nama' => 'AKUN DEMO PERSONIL',
+                'id_pangkat' => 2,
+                'id_jabatan' => $jabatan[$key],
+                'id_kesatuan' => $kesatuan_value,
+                'kelamin' => 'L',
+                'alamat' => 'KALIMANTAN TIMUR',
+                'status_dinas' => 1,
+                'w_status_dinas' => \Carbon\Carbon::now(),
+                'bearing' => NULL,
+                'no_telp' => NULL,
+                'lat' => -7.1519363,
+                'lng' => 111.8787191,
+                'ptt_ht' => NULL,
+            ]);
+            $personil->auth()->create(['username' => 'demopersonil' . $key, 'password' => $password]);
+        }
 
         $masyarakat = Masyarakat::create([
             'nik' => 1111111111111111,

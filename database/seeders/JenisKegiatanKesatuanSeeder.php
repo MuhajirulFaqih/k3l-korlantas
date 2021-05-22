@@ -30,6 +30,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                 'data' => [
                     [
                         'jenis' => 'Laporan Pengaturan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => true,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Lokasi Pengaturan', 
@@ -57,6 +61,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Laporan Penjagaan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => true,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Lokasi Penjagaan', 
@@ -71,6 +79,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Giat Pengawalan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => true,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Giat Pengawalan', 
@@ -84,6 +96,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Laporan Patroli',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => true,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Patroli', 
@@ -111,6 +127,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Kegiatan Pelayanan Masyarakat',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Pelayanan Masyarakat', 
@@ -124,6 +144,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Giat SIM',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Pembuatan SIM Baru', 
@@ -168,6 +192,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                 'data' => [
                     [
                         'jenis' => 'Pengaturan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -181,6 +209,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Penjagaan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -193,6 +225,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Pengawalan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -205,6 +241,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Patroli',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -221,6 +261,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Dalmas',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -233,6 +277,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Negosiator',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -245,6 +293,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'TPTKP',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -259,6 +311,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'PAMMAT/SAR Terbatas',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -273,6 +329,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'BANTIS Satwa',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Cara Bertindak', 
@@ -297,6 +357,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                 'data' => [
                     [
                         'jenis' => 'Pembinaan Ketertiban Sosial',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Pembinaan', 
@@ -310,6 +374,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Pembinaan Satpam/Polsus',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Pelatihan', 
@@ -323,6 +391,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Pembinaan POLMAS',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Pembinaan', 
@@ -335,6 +407,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Pembinaan Bhabinkamtibmas',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'ANEV kegiatan Bhabinkamtibmas', 
@@ -366,6 +442,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                 'data' => [
                     [
                         'jenis' => 'Laporan Pengaturan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => true,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Lokasi Pengaturan', 
@@ -393,6 +473,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Laporan Penjagaan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Lokasi Penjagaan', 
@@ -407,6 +491,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Giat Pengawalan',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => true,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Giat Pengawalan', 
@@ -420,6 +508,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Laporan Patroli',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => true,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Patroli', 
@@ -447,6 +539,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Kegiatan Pelayanan Masyarakat',
+                        'has_daftar_rekan' => true,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Pelayanan Masyarakat', 
@@ -460,6 +556,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Giat SIM',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Pembuatan SIM Baru', 
@@ -518,8 +618,20 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     '2204516', '220452609', '220452710', '220452809', '220452909', '220453009', '220453109',  
                 ],
                 'data' => [
-                    ['jenis' => 'SP2HP'],
-                    ['jenis' => 'E-Penyidikan'],
+                    [
+                        'jenis' => 'SP2HP',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'E-Penyidikan',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
                 ]
             ],
             //Sat Intelkam
@@ -540,8 +652,20 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     "220261006", "2202612", "2204512", "220452606", "220452706", "220452806", "220452906", "220453006", "220453106", 
                 ],
                 'data' => [
-                    ['jenis' => 'SKCK'],
-                    ['jenis' => 'Perizinan'],
+                    [
+                        'jenis' => 'SKCK',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'Perizinan',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
                 ]
             ],
             //Sat Narkoba
@@ -550,8 +674,20 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     "2201921", "2202014", "2202125", "2202226", "2202320", "2202420", "2202514", "2202617", "2204517", 
                 ],
                 'data' => [
-                    ['jenis' => 'SP2HP'],
-                    ['jenis' => 'E-Penyidikan'],
+                    [
+                        'jenis' => 'SP2HP',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'E-Penyidikan',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
                 ]
             ],
             //Sat Sabhara
@@ -572,15 +708,69 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     "2204518", "220452610", "220452711", "220452810", "220452910", "220453010", "220453110", 
                 ],
                 'data' => [
-                    ['jenis' => 'Pengaturan'],
-                    ['jenis' => 'Penjagaan'],
-                    ['jenis' => 'Pengawalan'],
-                    ['jenis' => 'Patroli'],
-                    ['jenis' => 'Pengamanan'],
-                    ['jenis' => 'DALMAS'],
-                    ['jenis' => 'TPTKP'],
-                    ['jenis' => 'PAMMAT'],
-                    ['jenis' => 'TIPIRING'],
+                    [
+                        'jenis' => 'Pengaturan',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'Penjagaan',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'Pengawalan',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'Patroli',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'Pengamanan',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'DALMAS',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'TPTKP',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'PAMMAT',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
+                    [
+                        'jenis' => 'TIPIRING',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => false,
+                        'has_rute' => false,
+                    ],
                 ]
             ],
             //Sat Binmas
@@ -605,6 +795,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                 'data' => [
                     [
                         'jenis' => 'Deteksi Dini',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => true,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => '3T',
@@ -631,6 +825,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Sambang',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => true,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => '3T',
@@ -657,6 +855,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Pembinaan Polmas',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => true,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => 'Jenis Pembinaan',
@@ -704,6 +906,10 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                     ],
                     [
                         'jenis' => 'Lain-lain',
+                        'has_daftar_rekan' => false,
+                        'has_nomor_polisi' => false,
+                        'has_kelurahan' => true,
+                        'has_rute' => false,
                         'subjenis' => [
                             [
                                 'jenis' => '3T',
@@ -743,7 +949,15 @@ class JenisKegiatanKesatuanSeeder extends Seeder
             $kode_satuan = $row['kode_satuan'];
             foreach($row['data'] as $row1) {
                 
-                $parent = JenisKegiatan::create(['jenis' => $row1['jenis'], 'is_quick_response' => $is_quick_response]);
+                $parent = JenisKegiatan::create([
+                    'jenis' => $row1['jenis'], 
+                    'keterangan' => 'jenis_kegiatan', 
+                    'is_quick_response' => $is_quick_response,
+                    'has_daftar_rekan' => $row1['has_daftar_rekan'],
+                    'has_nomor_polisi' => $row1['has_nomor_polisi'],
+                    'has_kelurahan' => $row1['has_kelurahan'],
+                    'has_rute' => $row1['has_rute'],
+                ]);
                 foreach ($kode_satuan as $key => $value) {
                     $kesatuan = Kesatuan::whereRaw("kode_satuan like '$value%'")->get();
                     foreach ($kesatuan as $keyKesatuan) {
@@ -753,16 +967,16 @@ class JenisKegiatanKesatuanSeeder extends Seeder
 
                 if(isset($row1['subjenis'])) {
                     foreach($row1['subjenis'] as $row2) {
-                        $parent2 = $parent->children()->create(['jenis' => $row2['jenis'], 'keterangan' => 'jenis_kegiatan', 'is_quick_response' => $is_quick_response]);
+                        $parent2 = $parent->children()->create(['jenis' => $row2['jenis'], 'keterangan' => 'judul_subjenis']);
                         if(isset($row2['subjenis'])) {
                             foreach($row2['subjenis'] as $row3) {
-                                $parent3 = $parent2->children()->create(['jenis' => $row3['jenis'], 'keterangan' => 'judul_subjenis', 'is_quick_response' => $is_quick_response]);
+                                $parent3 = $parent2->children()->create(['jenis' => $row3['jenis'], 'keterangan' => 'subjenis']);
                                 if(isset($row3['subjenis'])) {
                                     foreach($row3['subjenis'] as $row4) {
-                                        $parent4 = $parent3->children()->create(['jenis' => $row4['jenis'], 'keterangan' => 'dropdown_subjenis', 'is_quick_response' => $is_quick_response]);
+                                        $parent4 = $parent3->children()->create(['jenis' => $row4['jenis'], 'keterangan' => 'judul_dropdown_subjenis']);
                                         if(isset($row4['subjenis'])) {
                                             foreach($row4['subjenis'] as $row5) {
-                                                $parent4->children()->create(['jenis' => $row5['jenis'], 'keterangan' => 'sub_dropdown_subjenis', 'is_quick_response' => $is_quick_response]);
+                                                $parent4->children()->create(['jenis' => $row5['jenis'], 'keterangan' => 'dropdown_subjenis']);
                                             }
                                         }
                                     }

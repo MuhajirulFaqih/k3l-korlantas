@@ -24,7 +24,8 @@ class CreateKegiatanTable extends Migration
             $table->double('lat');
             $table->double('lng');
             $table->string('dokumentasi');
-            $table->integer('id_kelurahan_binmas')->nullable();
+            $table->string('id_kelurahan_binmas', 50)->nullable();
+            $table->boolean('is_quick_response')->default(false);
             $table->timestamps();
         });
     }

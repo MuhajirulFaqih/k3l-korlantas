@@ -18,7 +18,10 @@ class CreateTableJenisKegiatanKesatuan extends Migration
             $table->string('jenis')->nullable();
             $table->string('jenis_singkat')->nullable();
             $table->string('keterangan', 30)->nullable();
-            $table->boolean('is_quick_response')->default(false);
+            $table->tinyInteger('has_daftar_rekan')->nullable();
+            $table->tinyInteger('has_nomor_polisi')->nullable();
+            $table->tinyInteger('has_kelurahan')->nullable();
+            $table->tinyInteger('has_rute')->nullable();
             $table->nestedSet();
             $table->timestamps();
             $table->softDeletes();
