@@ -27,7 +27,7 @@
                                         class="e-form"
                                         @keyup="whenSearch"
                                         v-model="filterDebounced"
-                                        placeholder="Cari judul, tipe, waktu kegiatan..."/>
+                                        placeholder="Cari detail, jenis, waktu kegiatan..."/>
                                     <b-input-group-append>
                                         <button class="btn e-btn e-btn-primary" type="submit">
                                             <ph-magnifying-glass class="phospor"/>
@@ -50,9 +50,6 @@
                         :sort-desc.sync="sortDesc">
                         <template v-slot:cell(index)="data">
                             {{ ((currentPage - 1) * perPage) + data.index + 1 }}.
-                        </template>
-                        <template v-slot:cell(kuat)="data">
-                            {{ data.item.kuat_pers == '' || data.item.kuat_pers == null ? 0 : data.item.kuat_pers }} Personil
                         </template>
                         <template v-slot:cell(nama)="data">
                             {{ data.item.user.nama }} <br/> {{ data.item.user.jabatan }}
@@ -100,9 +97,27 @@ export default {
             sortDesc: true,
             tableColumns: [
                 { key: 'index', label: 'No' },
-                { key: 'judul', label: 'Judul', thStyle: { width: '25%' }, sortable: true },
-                { key: 'tipe.tipe', label: 'Tipe', sortable: true },
-                { key: 'kuat', label: 'Kuat pers', sortable: true },
+                { key: 'detail', label: 'Detail', thStyle: { width: '25%' }, sortable: true },
+                { 
+                    key: 'jenis', 
+                    label: 'Jenis', 
+                    sortable: false, 
+                    formatter: v => {
+                        var viewJenis = ''
+                        v.forEach((w) => {
+                            switch (w.jenis.keterangan) {
+                                case 'jenis_kegiatan':
+                                    viewJenis += `<div class="4">Jenis Kegiatan</div> 
+                                                <div class="1">:</div> 
+                                                <div class="7">${v.jenis.jenis}</div>`
+                                    break;
+                                default:
+                                    break;
+                            }
+                        })
+                        return viewJenis == '' ? '-' : viewJenis
+                    } 
+                },
                 { 
                     key: 'w_kegiatan', label: 'Waktu kegiatan', 
                     formatter: v => format(parseISO(v), 'd MMMM yyyy HH:mm:ss', {locale: id}) ,
@@ -124,12 +139,6 @@ export default {
             switch(ctx.sortBy) {
                 case 'judul':
                     sortBy = 'judul'
-                    break
-                case 'tipe.tipe':
-                    sortBy = 'tipe_laporan'
-                    break
-                case 'kuat':
-                    sortBy = 'kuat_pers'
                     break
                 case 'w_kegiatan':
                     sortBy = 'waktu_kegiatan'

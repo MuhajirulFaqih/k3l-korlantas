@@ -8,13 +8,13 @@
                 </div>
                 <span>Kegiatan</span>
             </a>
-            <a href="javascript:void(0);"  @click="showPengaduan" class="bottombar-menu">
+            <!-- <a href="javascript:void(0);"  @click="showPengaduan" class="bottombar-menu">
                 <span class="bottombar-menu-info" v-if="pengaduan != 0">{{ pengaduan }}</span>
                 <div class="bottombar-icon">
                     <ph-newspaper-clipping class="phospor"/>
                 </div>
                 <span>Pengaduan</span>
-            </a>
+            </a> -->
             <a href="javascript:void(0);" @click="showKejadian" class="bottombar-menu">
                 <div class="bottombar-icon">
                     <ph-activity class="phospor"/>
@@ -41,7 +41,7 @@
             </a>
         </div>
         <Kegiatan ref="kegiatan"/>
-        <Pengaduan ref="pengaduan"/>
+        <!-- <Pengaduan ref="pengaduan"/> -->
         <Kejadian ref="kejadian"/>
         <History ref="history"/>
         <Personil ref="personil"/>
@@ -51,18 +51,22 @@
 
 <script>
 import Kegiatan from "@/views/Monit/Kegiatan/Main"
-import Pengaduan from "@/views/Monit/Pengaduan/Main"
+// import Pengaduan from "@/views/Monit/Pengaduan/Main"
 import Kejadian from "@/views/Monit/Kejadian/Main"
 import History from "@/views/Monit/HistoryVC/Main"
 import Personil from "@/views/Monit/Personil/Main"
 import Darurat from "@/views/Monit/Darurat/Main"
 export default {
     name: 'bottom-bar',
-    components: { Kegiatan, Pengaduan, Kejadian, History, Personil, Darurat },
+    components: { 
+            Kegiatan, 
+            // Pengaduan, 
+            Kejadian, History, Personil, Darurat 
+    },
     data () {
         return {
             kegiatan: 0,
-            pengaduan: 0
+            // pengaduan: 0
         }
     },
     computed: {
@@ -75,10 +79,10 @@ export default {
             this.kegiatan = 0
             this.$refs.kegiatan.showModal()
         },
-        showPengaduan () {
-            this.pengaduan = 0
-            this.$refs.pengaduan.showModal()
-        },
+        // showPengaduan () {
+        //     this.pengaduan = 0
+        //     this.$refs.pengaduan.showModal()
+        // },
         showKejadian () {
             this.$refs.kejadian.showModal()
         },

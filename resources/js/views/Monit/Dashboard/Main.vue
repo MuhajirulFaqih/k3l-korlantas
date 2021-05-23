@@ -41,11 +41,11 @@
                     :icon="require('@/assets/kejadian.png').default" @click="$refs.bottombar.$refs.kejadian.detail(indexMarkerKejadian)"/>
             </div>
 
-            <div id="marker-pengaduan" v-if="pengaduanStatus && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
+            <!-- <div id="marker-pengaduan" v-if="pengaduanStatus && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <GmapMarker v-for="(indexMarkerPengaduan, keyMarkerPengaduan) in markerPengaduan" :key="`kegiatan-${keyMarkerPengaduan}`" 
                     :position="{ lat: parseFloat(indexMarkerPengaduan.lat), lng: parseFloat(indexMarkerPengaduan.lng) }"
                     :icon="require('@/assets/pengaduan.png').default" @click="$refs.bottombar.$refs.pengaduan.detail(indexMarkerPengaduan)"/>
-            </div>
+            </div> -->
             
             <div id="marker-personil" v-if="markerPersonilShow && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <gmap-custom-marker v-for="(indexMarkerPersonil, keyMarkerPersonil) in markerPersonil" :key="`personil-${keyMarkerPersonil}`"
@@ -133,7 +133,7 @@ export default {
             mapsOptions: this.$parent.mapsOptions,
             markerSingle: [],
             markerKegiatan: [],
-            markerPengaduan: [],
+            // markerPengaduan: [],
             markerKejadian: [],
             markerDarurat: [],
             markerHotspot: [],
@@ -154,7 +154,7 @@ export default {
             markerPersonilShow: false,
             markerSingleShow: false,
             kegiatanStatus: true, //Belongs to leftbar
-            pengaduanStatus: true, //Belongs to leftbar
+            // pengaduanStatus: true, //Belongs to leftbar
             kejadianStatus: true, //Belongs to leftbar
             user: null,
             audioEmergency: audioEmergency,
@@ -191,9 +191,9 @@ export default {
                 case 'kegiatan':
                     this.$refs.bottombar.$refs.kegiatan.detail(item.data)
                     break;
-                case 'pengaduan':
-                    this.$refs.bottombar.$refs.pengaduan.detail(item.data)
-                    break;
+                // case 'pengaduan':
+                //     this.$refs.bottombar.$refs.pengaduan.detail(item.data)
+                //     break;
                 case 'kejadian':
                     this.$refs.bottombar.$refs.kejadian.detail(item.data)
                     break;
@@ -210,9 +210,9 @@ export default {
                 case 'kegiatan':
                     return require('@/assets/kegiatan.png').default
                     break;
-                case 'pengaduan':
-                    return require('@/assets/pengaduan.png').default
-                    break;
+                // case 'pengaduan':
+                //     return require('@/assets/pengaduan.png').default
+                //     break;
                 case 'kejadian':
                     return require('@/assets/kejadian.png').default
                     break;
@@ -227,7 +227,7 @@ export default {
         getDefaultMarker() {
             this.getMarkerKegiatan()
             this.getMarkerKejadian()
-            this.getMarkerPengaduan()
+            // this.getMarkerPengaduan()
         },
         getMarkerSingle(item) {
             this.markerSingle = [item]
@@ -254,15 +254,15 @@ export default {
                 console.log(error)
             })
         },
-        getMarkerPengaduan () {
-            axios.get("pengaduan/", { params: { limit: this.$refs.leftbar.pengaduan, sort: 'created_at:desc' } })
-            .then(({ data: { data }}) => {
-                this.markerPengaduan = data
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        },
+        // getMarkerPengaduan () {
+        //     axios.get("pengaduan/", { params: { limit: this.$refs.leftbar.pengaduan, sort: 'created_at:desc' } })
+        //     .then(({ data: { data }}) => {
+        //         this.markerPengaduan = data
+        //     })
+        //     .catch(error => {
+        //         console.log(error)
+        //     })
+        // },
         resetDefaultMarker () {
             this.zoom = 15
             this.center = { lat: Number(defaultLat), lng: Number(defaultLng) }
@@ -325,8 +325,8 @@ export default {
                     .listen('.darurat-baru', this.daruratBaru)
                     .listen('.kegiatan-baru', this.kegiatanBaru)
                     .listen('.kegiatan-komentar', this.kegiatanKomentar)
-                    .listen('.pengaduan-baru', this.pengaduanBaru)
-                    .listen('.pengaduan-komentar', this.pengaduanKomentar)
+                    // .listen('.pengaduan-baru', this.pengaduanBaru)
+                    // .listen('.pengaduan-komentar', this.pengaduanKomentar)
                     .listen('.kejadian-baru', this.kejadianBaru)
                     .listen('.kejadian-tindaklanjut', this.kejadianTindaklanjut)
                     .listen('.personil-relokasi', this.relokasiPersonil)
@@ -385,16 +385,16 @@ export default {
                 this.$refs.bottombar.$refs.kegiatan.$refs.detail.isReloadKomentar(data)
             }
         },
-        pengaduanBaru(data){
-            this.$toast.info(data.data.user.nama + ' menambah pengaduan baru')
-            this.$refs.bottombar.kegiatan++
-        },
-        pengaduanKomentar({ data }){
-            if(data.user.id != this.user.id) {
-                this.$toast.info(data.user.nama + ' mengomentari pengaduan ' + data.induk)
-                this.$refs.bottombar.$refs.pengaduan.$refs.detail.isReloadKomentar(data)
-            }
-        },
+        // pengaduanBaru(data){
+        //     this.$toast.info(data.data.user.nama + ' menambah pengaduan baru')
+        //     this.$refs.bottombar.kegiatan++
+        // },
+        // pengaduanKomentar({ data }){
+        //     if(data.user.id != this.user.id) {
+        //         this.$toast.info(data.user.nama + ' mengomentari pengaduan ' + data.induk)
+        //         this.$refs.bottombar.$refs.pengaduan.$refs.detail.isReloadKomentar(data)
+        //     }
+        // },
         kejadianBaru ({data : {data}}) {
             if(data.id_darurat == null) {
                 this.socketKejadian = true

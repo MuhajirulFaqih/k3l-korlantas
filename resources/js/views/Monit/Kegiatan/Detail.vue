@@ -7,25 +7,25 @@
             title="Detail Kegiatan">
 	  	<div class="d-block" v-if="single !== null">
             <b-row>
-                <b-col cols="12 py-2">
+                <!-- <b-col cols="12 py-2">
                     <h4>{{ single.judul }}</h4>
                     <hr/>
-                </b-col>
+                </b-col> -->
                 <b-col cols="6">
                     <b-row>
                         <b-col cols="12">
-                            <perfect-scrollbar class="e-data-body">
+                            <perfect-scrollbar class="e-data-body pr-4">
                                 <b-row v-if="single.dokumentasi !== null" class="mb-3">
                                     <b-col cols="12">
                                         <b-img :src="single.dokumentasi" alt="" class="w-100"/>
                                     </b-col>
                                 </b-row>
-                                <b-row v-if="single.keterangan != null">
+                                <b-row v-if="single.detail_lengkap != null">
                                     <b-col cols="12">
-                                        <p v-if="single.keterangan !== ''">{{ single.keterangan }}</p>
+                                        <p v-if="single.detail_lengkap !== ''">{{ single.detail_lengkap }}</p>
                                     </b-col>
                                 </b-row>
-                                <b-row v-if="single.tipe.tipe != null">
+                                <!-- <b-row v-if="single.tipe.tipe != null">
                                     <b-col cols="4">Tipe</b-col>
                                     <b-col cols="1">:</b-col>
                                     <b-col cols="7"><b>{{ single.tipe.tipe }}</b></b-col>
@@ -79,11 +79,27 @@
                                     <b-col cols="4">Modus</b-col>
                                     <b-col cols="1">:</b-col>
                                     <b-col cols="7"><b>{{ single.modus }}</b></b-col>
-                                </b-row>
-                                <b-row v-if="single.tsk_bb != null">
-                                    <b-col cols="4">Tsk BB</b-col>
+                                </b-row> -->
+                                <b-row v-if="typeof single.jenis != 'undefined'" v-html="formatJenis(single.jenis)"></b-row>
+                                <b-row v-if="single.daftar_rekan">
+                                    <b-col cols="4">Daftar rekan</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="7"><b>{{ single.tsk_bb }}</b></b-col>
+                                    <b-col cols="7"><b>{{ single.daftar_rekan }}</b></b-col>
+                                </b-row>
+                                <b-row v-if="single.nomor_polisi">
+                                    <b-col cols="4">Nomor polisi</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="7"><b>{{ single.nomor_polisi }}</b></b-col>
+                                </b-row>
+                                <b-row v-if="single.nomor_polisi">
+                                    <b-col cols="4">Rute patroli</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="7"><b>{{ single.rute_patroli }}</b></b-col>
+                                </b-row>
+                                <b-row v-if="typeof single.kelurahan != 'undefined'">
+                                    <b-col cols="4">{{ single.kelurahan.jenis.nama }}</b-col>
+                                    <b-col cols="1">:</b-col>
+                                    <b-col cols="7"><b>{{ single.kelurahan.nama }}</b></b-col>
                                 </b-row>
                             </perfect-scrollbar>
                         </b-col>
@@ -174,7 +190,7 @@
                 </b-col>
             </b-row>
             <hr/>
-            <center v-if="single.user.jenis_pemilik == 'personil' || single.user.jenis_pemilik == 'bhabin'">
+            <center v-if="single.user.jenis_pemilik == 'personil'">
                 <button circle class="btn e-btn e-btn-primary" @click="$parent.$parent.$refs.personil.$refs.detail.videoCallById(single.user.id_personil)">
                     <ph-video-camera class="phospor"/>
                 </button>
@@ -217,6 +233,32 @@ export default {
             this.single = item
             this.getComment('master', item.id)
             this.$refs.detail.show()
+        },
+        formatJenis(jenis) {
+            var viewJenis = ''
+            jenis.forEach((v) => {
+                switch (v.jenis.keterangan) {
+                    case 'jenis_kegiatan':
+                        viewJenis += `<div class="4">Jenis Kegiatan</div> 
+                                    <div class="1">:</div> 
+                                    <div class="7">${v.jenis.jenis}</div>`
+                        break;
+                    case 'subjenis':
+                        viewJenis += `<div class="4">${v.jenis.parent.jenis}</div> 
+                                    <div class="1">:</div> 
+                                    <div class="7">${v.jenis.jenis}</div>`
+                        break;
+                    case 'dropdown_subjenis':
+                        viewJenis += `<div class="4">${v.jenis.parent.jenis}</div> 
+                                    <div class="1">:</div> 
+                                    <div class="7">${v.jenis.jenis}</div>`
+                        break;
+                
+                    default:
+                        break;
+                }
+            })
+            return viewJenis
         },
         commentClass(id) {
             var id_user_login = this.$store.getters.userInfo.id ? this.$store.getters.userInfo.id : ''

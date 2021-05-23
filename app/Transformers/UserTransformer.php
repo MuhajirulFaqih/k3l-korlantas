@@ -21,6 +21,7 @@ class UserTransformer extends TransformerAbstract
                 return [
                     'id' => $user->id,
                     'id_pemilik' => $user->id_pemilik,
+                    'id_personil' => $user->id_pemilik,
                     'jenis_pemilik' => $user->jenis_pemilik,
                     'nama'     => $user->pemilik->pangkat->pangkat." ".$user->pemilik->nama ?? null,
                     'nrp'  => $user->pemilik->nrp,

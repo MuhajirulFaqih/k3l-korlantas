@@ -32,6 +32,7 @@ class KegiatanTransformer extends TransformerAbstract
             'daftar_rekan' => $kegiatan->daftar_rekan,
             'nomor_polisi' => $kegiatan->nomor_polisi,
             'detail' => $this->prev ? Str::limit($kegiatan->detail) : $kegiatan->detail,
+            'detail_lengkap' => $kegiatan->detail,
             'rute_patroli' => $kegiatan->rute_patroli,
             'lat' => $kegiatan->lat,
             'lng' => $kegiatan->lng,

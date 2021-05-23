@@ -16,7 +16,7 @@
                         <b-img v-else :src="v.dokumentasi" class="w-100" alt=""/>
                         <div>{{ v.user.nama }}</div>
                         <span>{{ v.w_kegiatan }}</span>
-                        <p>{{ v.judul }}</p>
+                        <p>{{ v.detail }}</p>
                     </div>
                 </li>
                 <li>

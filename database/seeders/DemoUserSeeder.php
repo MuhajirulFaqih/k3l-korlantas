@@ -40,7 +40,7 @@ class DemoUserSeeder extends Seeder
                 'status_dinas' => 1,
                 'w_status_dinas' => \Carbon\Carbon::now(),
                 'bearing' => NULL,
-                'no_telp' => NULL,
+                'no_telp' => 08888888888.$key,
                 'lat' => -7.1519363,
                 'lng' => 111.8787191,
                 'ptt_ht' => NULL,
