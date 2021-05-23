@@ -395,7 +395,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('get-log-personil', [LogPersonilController::class, 'index']);
 
     Route::prefix('absensi')->group(function () {
-        Route::post('/', [AbsensiController::class, 'index']);
+        Route::get('/', [AbsensiController::class, 'index']);
+        Route::post('/', [AbsensiController::class, 'absenPersonil']);
+        Route::get('/today', [AbsensiController::class, 'getToday']);
         Route::post('/export', [AbsensiController::class, 'export']);
     });
 

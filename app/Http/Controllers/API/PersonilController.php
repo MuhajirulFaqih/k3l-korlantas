@@ -247,7 +247,7 @@ class PersonilController extends Controller
             'waktu_mulai_dinas' => $waktu
         ]);
 
-        $this->absenPersonil($personil, $validatedData);
+        // $this->absenPersonil($personil, $validatedData);
 
         if (!$update)
             return response()->json(['error' => 'Terjadi kesalahan saat menambah menyimpan data'], 500);
@@ -296,53 +296,6 @@ class PersonilController extends Controller
 
         if(!$personil) {
             return response()->json(['error' => 'Terjadi kesalahan saat reset password'], 500);
-        }
-    }
-
-    public function absenPersonil($personil, $request)
-    {
-        $tanggal = date('Y-m-d');
-
-        //Cek jika hari baru
-        $cekHariBaru = Absensi::whereDate('waktu_mulai', $tanggal)
-            ->where('id_personil', $personil->id)
-            ->count();
-        //Jika belum ditemukan, absen datang
-        if($cekHariBaru == 0) {
-            $this->absenDatang($personil, $request);
-        }
-        else {
-            $this->absenPulang($personil, $request);
-        }
-    }
-
-    public function absenDatang($personil, $request)
-    {
-        if($request['id_dinas'] != '9') {
-            Absensi::create([
-                'id_personil' => $personil->id,
-                'waktu_mulai' => \Carbon\Carbon::now(),
-                'lat_datang' => $request['lat'],
-                'lng_datang' => $request['lng'],
-                'waktu_selesai' => null,
-            ]);
-        }
-    }
-
-    public function absenPulang($personil, $request)
-    {
-        $tanggal = date('Y-m-d');
-
-        $absensi = Absensi::whereDate('waktu_mulai', $tanggal)
-            ->where('id_personil', $personil->id)
-            ->first();
-
-        if($request['id_dinas'] == '9' && is_null($absensi->waktu_selesai)) {
-            $absensi->update([
-                'lat_pulang' => $request['lat'],
-                'lng_pulang' => $request['lng'],
-                'waktu_selesai' => \Carbon\Carbon::now(),
-            ]);
         }
     }
 

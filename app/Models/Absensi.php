@@ -11,8 +11,7 @@ class Absensi extends Model
     use HasFactory;
 
     protected $table = 'absensi_personil';
-    protected $fillable = [ 'id_personil', 'waktu_mulai', 'waktu_selesai',
-        'lat_datang', 'lng_datang', 'lat_pulang', 'lng_pulang'];
+    protected $guarded = [];
     protected $date = ['waktu_mulai', 'waktu_selesai'];
 
     public function personil(){

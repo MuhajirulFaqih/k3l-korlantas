@@ -37,7 +37,7 @@ class PersonilTransformer extends TransformerAbstract
             'id_kesatuan' => $personil->id_kesatuan,
             'kesatuan' => $personil->kesatuan->kesatuan,
             'kesatuan_lengkap' => in_array($personil->kesatuan->level, [1, 2]) ? $personil->kesatuan->kesatuan :  $personil->kesatuan->kesatuan .' '.$personil->kesatuan->parent->kesatuan,
-            'banner_grid' => url('api/upload/' . ($personil->kesatuan->banner_grid ?? Pengaturan::getByKey('default_banner_grid')->first()->nilai)),
+            'banner_grid' => $personil->kesatuan->banner_grid != null ? url('api/upload/' . ($personil->kesatuan->banner_grid ?? Pengaturan::getByKey('default_banner_grid')->first()->nilai )) : null,
             'induk' => $personil->kesatuan->induk,
             'mulai_dinas' => $personil->w_status_dinas,
             'icon' => optional($personil->dinas)->icon ? url("api/upload/{$personil->dinas->icon}") : ($personil->kesatuan->icon ? url("api/upload/pin-personil/{$personil->kesatuan->icon}") : url("api/upload/pin-personil/personil-1.png")),
