@@ -23,5 +23,9 @@ class DatabaseSeeder extends Seeder
         $this->call(TempatVitalSeeder::class);
         $this->call(JenisKegiatanKesatuanSeeder::class);
         $this->call(DemoUserSeeder::class);
+        $this->call(DemoKegiatanSeeder::class);
+        $this->call(DemoDaruratSeeder::class);
+        $this->call(DemoKejadianSeeder::class);
+        $this->call(DemoNewsSeeder::class);
     }
 }

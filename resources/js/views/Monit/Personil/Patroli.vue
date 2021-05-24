@@ -144,9 +144,11 @@ export default {
             }, 500)
         },
         refreshTable () {
-            this.totalRows > this.perPage ? 
-            (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
-            : this.$refs.table.refresh()
+            if(typeof this.$refs.table != 'undefined') {
+                this.totalRows > this.perPage ? 
+                (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
+                : this.$refs.table.refresh()
+            }
         },
         search: debounce(function () {
             this.filter = this.filterDebounced

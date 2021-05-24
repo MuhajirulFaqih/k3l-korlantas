@@ -12,7 +12,7 @@ class Kejadian extends Model
 
     protected $table = 'kejadian';
     protected $fillable = [
-        'id_user', 'kejadian', 'w_kejadian', 'lokasi', 'keterangan', 'lat', 'lng', 'id_darurat', 'verifikasi'
+        'id_user', 'kejadian', 'w_kejadian', 'lokasi', 'keterangan', 'lat', 'lng', 'id_darurat', 'verifikasi', 'follow_me', 'selesai'
     ];
 
     protected $casts = ['w_kejadian' => 'datetime'];
@@ -31,6 +31,10 @@ class Kejadian extends Model
 
     public function nearby(){
         return $this->morphMany(PersonilTerdekat::class, 'personil_terdekat', 'jenis_induk', 'id_induk');
+    }
+
+    public function logmasyarakat(){
+        return $this->morphMany(LogPosisiMasyarakat::class, 'posisi_masyarakat', 'jenis_induk', 'id_induk');
     }
 
     public function scopeFiltered($query, $filter, $status)

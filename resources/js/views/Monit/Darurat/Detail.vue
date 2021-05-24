@@ -196,12 +196,13 @@ export default {
                 this.$parent.refreshTable()
                 this.$refs.detail.hide()
             })
-            .catch(({ response: { status, data: { errors }}}) => {
-                if (status === 422)
-                    this.$toast.error(flattenDepth(values(errors)).join('<br>'))
-            })
+            // .catch(({ response: { status, data: { errors }}}) => {
+            //     if (status === 422)
+            //         this.$toast.error(flattenDepth(values(errors)).join('<br>'))
+            // })
         },
         simpanDaruratKejadian () {
+            this.singleDarurat.id_asal = this.single.user.id
             this.prosesSimpanKejadian = true
             var payload = this.singleDarurat
             if(this.jenis == '') {
@@ -226,6 +227,7 @@ export default {
                 this.$parent.refreshTable()
                 this.$parent.$parent.$parent.getMarkerKejadian()
                 this.ubahKejadian = false
+                this.$parent.$parent.$parent.$refs.topbar.isReload()
                 this.$toast.success('Data berhasil disimpan', { layout: 'topRight' })
                 this.$refs.detail.hide()
             })
