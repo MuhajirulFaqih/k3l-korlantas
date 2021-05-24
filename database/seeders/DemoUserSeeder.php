@@ -30,7 +30,7 @@ class DemoUserSeeder extends Seeder
         $jabatan = [3, 741, 5, 604, 2394, 2202, 2159, 2262, 2269, 3266];
         foreach ($kesatuan as $key => $kesatuan_value) {
             $personil = Personil::create([
-                'nrp' => 1111111.$key,
+                'nrp' => '1111111'.$key,
                 'nama' => 'AKUN DEMO PERSONIL',
                 'id_pangkat' => 2,
                 'id_jabatan' => $jabatan[$key],
@@ -40,7 +40,7 @@ class DemoUserSeeder extends Seeder
                 'status_dinas' => 1,
                 'w_status_dinas' => \Carbon\Carbon::now(),
                 'bearing' => NULL,
-                'no_telp' => 08888888888.$key,
+                'no_telp' => '08888888888'.$key,
                 'lat' => -7.1519363,
                 'lng' => 111.8787191,
                 'ptt_ht' => NULL,

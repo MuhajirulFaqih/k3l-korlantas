@@ -951,8 +951,7 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                 
                 $parent = JenisKegiatan::create([
                     'jenis' => $row1['jenis'], 
-                    'keterangan' => 'jenis_kegiatan', 
-                    'is_quick_response' => $is_quick_response,
+                    'keterangan' => 'jenis_kegiatan',
                     'has_daftar_rekan' => $row1['has_daftar_rekan'],
                     'has_nomor_polisi' => $row1['has_nomor_polisi'],
                     'has_kelurahan' => $row1['has_kelurahan'],
