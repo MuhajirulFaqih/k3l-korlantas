@@ -223,9 +223,11 @@ export default {
             this.$refs.darurat.hide()
         },
         refreshTable () {
-            this.totalRows > this.perPage ? 
-            (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
-            : this.$refs.table.refresh()
+            if(typeof this.$refs.table != 'undefined') {
+                this.totalRows > this.perPage ? 
+                (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
+                : this.$refs.table.refresh()
+            }
         },
         sortingStatus () {
             this.refreshTable()

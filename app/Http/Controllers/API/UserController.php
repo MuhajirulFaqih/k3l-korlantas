@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\LacakMasyarakatEvent;
 use App\Events\LacakPersonilEvent;
 use App\Events\PersonilLogoutEvent;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
 use App\Models\Masyarakat;
+use App\Models\Kejadian;
+use App\Models\Darurat;
 use App\Models\User;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\PersonilTransformer;
+use App\Transformers\LogMasyarakatTransformer;
 use App\Transformers\ResponseUserTransformer;
 use Carbon\Carbon;
 use GuzzleHttp\Client;

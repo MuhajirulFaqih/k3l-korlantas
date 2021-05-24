@@ -60,7 +60,7 @@ class KegiatanController extends Controller
             'lat' => $validatedData['lat'],
             'lng' => $validatedData['lng'],
             'id_kelurahan_binmas' => $validatedData['id_kelurahan_binmas'],
-            'is_quick_response' => $validatedData['is_quick_response']
+            'is_quick_response' => $validatedData['is_quick_response'] == '' ? 0 : 1
         ];
 
         $kegiatan = Kegiatan::create($data);

@@ -17,6 +17,7 @@ class TempatVitalSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
         DB::table('tempat_vital')->truncate();
         \App\Models\TempatVital::insert([
+            ['id_jenis' => 3, 'nama_tempat' =>'Demo Kantor', 'lokasi' => 'Lokasi Demo Kantor', 'lat' => -0.4124897, 'lng' => 117.0122759, 'id_jajaran' => 4],
             ['id_jenis' => 8, 'nama_tempat' =>'RSUD Aji Muhammad Parikesit', 'lokasi' => 'Jalan Ratu Agung No.1, Teluk Dalam, Tenggarong Seberang, Tlk. Dalam, Tenggarong Seberang, Kabupaten Kutai Kartanegara', 'lat' => -0.4124897, 'lng' => 117.0122759, 'id_jajaran' => 4],
             ['id_jenis' => 8, 'nama_tempat' =>'Rumah Sakit Umum Daerah Abdul Wahab Sjahranie', 'lokasi' => 'Jl. Palang Merah No.1, Sidodadi, Samarinda Ulu, Kota Samarinda', 'lat' => -0.4743708, 'lng' => 117.092444, 'id_jajaran' => 4],
             ['id_jenis' => 8, 'nama_tempat' =>'RSUD Inche Abdoel Moeis', 'lokasi' => 'Jl. H. A. M. Rifaddin No.1, Harapan Baru, Kec. Loa Janan Ilir, Kota Samarinda', 'lat' => -0.3189251, 'lng' => 116.9202514, 'id_jajaran' => 4],

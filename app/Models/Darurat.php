@@ -28,6 +28,10 @@ class Darurat extends Model
         return $this->hasOne(Kejadian::class, 'id_darurat');
     }
 
+    public function logmasyarakat(){
+        return $this->morphMany(LogPosisiMasyarakat::class, 'posisi_masyarakat', 'jenis_induk', 'id_induk');
+    }
+
     public function scopeFiltered($query, $filter, $status, $statusKejadian)
     {
         if($filter == null && $status == null)

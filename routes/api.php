@@ -301,7 +301,7 @@ Route::middleware('auth:api')->group(function () {
 
 // TEMPAT VITAL
     Route::prefix('tempat-vital')->group(function () {
-        Route::get('jenis/{id}', [TempatVitalController::class, 'ByJenis']);
+        Route::get('jenis/{id}', [TempatVitalController::class, 'getByJenis']);
         Route::post('all', [TempatVitalController::class, 'getAll']);
     });
 //TEMPAT VITAL END

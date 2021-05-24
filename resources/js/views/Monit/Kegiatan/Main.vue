@@ -107,9 +107,7 @@ export default {
                         v.forEach((w) => {
                             switch (w.jenis.keterangan) {
                                 case 'jenis_kegiatan':
-                                    viewJenis += `<div class="4">Jenis Kegiatan</div> 
-                                                <div class="1">:</div> 
-                                                <div class="7">${v.jenis.jenis}</div>`
+                                    viewJenis += `${w.jenis.jenis}`
                                     break;
                                 default:
                                     break;
@@ -187,9 +185,11 @@ export default {
             this.$refs.kegiatan.hide()
         },
         refreshTable () {
-            this.totalRows > this.perPage ? 
-            (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
-            : this.$refs.table.refresh()
+            if(typeof this.$refs.table != 'undefined') {
+                this.totalRows > this.perPage ? 
+                (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
+                : this.$refs.table.refresh()
+            }
         },
         search: debounce(function () {
             this.filter = this.filterDebounced

@@ -13,7 +13,6 @@ class AddColumnKondisiLokasiDokumentasiOnAbsensiPersonilTable extends Migration
      */
     public function up()
     {
-        //
         Schema::table('absensi_personil', function (Blueprint $table) {
             $table->string('lokasi_datang', 50)->after('lng_pulang')->nullable();
             $table->string('lokasi_pulang', 50)->after('lokasi_datang')->nullable();

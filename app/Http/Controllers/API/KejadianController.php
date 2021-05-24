@@ -43,7 +43,7 @@ class KejadianController extends Controller
             'lat'        => $request->lat,
             'lng'        => $request->lng,
             'id_darurat' => $request->id_darurat ?? null,
-            'verifikasi' => $request->id_darurat != '' ? 1 : null,
+            'verifikasi' => $request->id_darurat != '' ? true : false,
             'follow_me'  => $request->follow_me == 'true' ? true : false
         ];
 
@@ -52,14 +52,25 @@ class KejadianController extends Controller
         if (!$kejadian)
             return response()->json(['error' => 'terjadi kesalahan saat menyimpan data'], 500);
 
+        // Todo send notification
+        //Notification::send($user, new KejadianCreated($kejadian));
         //Jika asal dari darurat
-        if($request->id_asal != '') {
+        if($request->id_asal != '')
             $user = User::find($request->id_asal);
-            $this->broadcastNotifikasiKejadianVerified($user,
-                                                    $kejadian,
-                                                    $request->jenis,
-                                                    $request->kesatuan,
-                                                    $request->personil);
+
+        //Jika kejadian dari masyarakat dan asal bukan dari admin
+        if($user->jenis_pemilik == 'masyarakat' && $request->id_asal == '') {
+            //Cek auto send notification
+            /*$auto = Pengaturan::GetByKey('auto_send_notification')->first()->pluck('nilai');
+            //Jika auto send notification aktif
+            if($auto == "1") {
+                $kejadian->update([ 'verifikasi' => 1 ]);
+                $this->broadcastNotifikasi($user, $kejadian);
+            }*/
+        } else {
+            if($request->id_asal == '') {
+                // $this->broadcastNotifikasi($user, $kejadian); 
+            }
         }
 
         $personilTerdekat = (new Personil())->terdekat($request->lat, $request->lng);
@@ -162,7 +173,7 @@ class KejadianController extends Controller
         if(!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
-        list($orderBy, $direction) = explode(':', $request->sort);
+        list($orderBy, $direction) = explode(':', $request->sort ?? 'created_at:desc');
 
         if($user->jenis_pemilik == 'admin') {
             $kejadian = Kejadian::filtered($request->filter, $request->status)
