@@ -29,7 +29,7 @@ class PersonilController extends Controller
         if (!in_array($user->jenis_pemilik, ['admin']))
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
 
-        $paginator = Personil::with('pangkat','kesatuan','jabatan','kesatuan.parent')->search($request->filter)
+        $paginator = Personil::with('pangkat', 'kesatuan', 'jabatan', 'kesatuan.parent')->search($request->filter)
             ->orderBy($orderBy, $direction)
             ->paginate(10);
 
@@ -69,7 +69,8 @@ class PersonilController extends Controller
         return response()->json(['success' => true, 'foto' => $foto]);
     }
 
-    public function ubahPttHt(Request $request, Personil $personil){
+    public function ubahPttHt(Request $request, Personil $personil)
+    {
         $user = $request->user();
 
         if ($user->jenis_pemilik !== 'admin')
@@ -103,7 +104,7 @@ class PersonilController extends Controller
 
         $exists = Personil::where('nrp', $validData['nrp'])->first();
 
-        if ($exists){
+        if ($exists) {
             $exists->update($validData);
         } else {
             $personil = Personil::create($validData);
@@ -113,9 +114,9 @@ class PersonilController extends Controller
 
             if ($request->file('foto'))
                 Storage::move($validData['foto'], 'personil/' . $personil->nrp . '.jpg');
-            else if($request->has('foto') && $request->foto){
+            else if ($request->has('foto') && $request->foto) {
                 $foto = file_get_contents($request->foto);
-                file_put_contents(storage_path('app/personil/'.$personil->nrp.'.jpg'), $foto);
+                file_put_contents(storage_path('app/personil/' . $personil->nrp . '.jpg'), $foto);
             }
 
             $pengaturan = Pengaturan::getByKey('default_password')->first();
@@ -197,20 +198,54 @@ class PersonilController extends Controller
         //dd($personil);
 
         // Update foto
-        if ($request->file('foto')){
+        if ($request->file('foto')) {
             if (Storage::exists('personil/' . $personil->nrp . '.jpg'))
                 Storage::delete('personil/' . $personil->nrp . '.jpg');
             Storage::move($validData['foto'], 'personil/' . $personil->nrp . '.jpg');
-        }else if($request->has('foto') && $request->foto){
+        } else if ($request->has('foto') && $request->foto) {
             if (Storage::exists('personil/' . $personil->nrp . '.jpg'))
                 Storage::delete('personil/' . $personil->nrp . '.jpg');
 
             $foto = file_get_contents($request->foto);
-            file_put_contents(storage_path('app/personil/'.$personil->nrp.'.jpg'), $foto);
+            file_put_contents(storage_path('app/personil/' . $personil->nrp . '.jpg'), $foto);
         }
 
         return response()->json(['success' => true]);
 
+    }
+
+    public function update(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->jenis_pemilik != 'personil')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $personil = $user->pemilik;
+
+        $responsePersonil = (new PersonilService())->fetchPersonil($user->pemilik->nrp);
+
+        if ($responsePersonil == null)
+            return response()->json(['error' => 'Tidak dapat mendapatkan data'], 404);
+
+
+        if (isset($responsePersonil['foto_file']) && $responsePersonil['foto_file']){
+            $foto = file_get_contents($responsePersonil['foto_file']);
+            file_put_contents(storage_path('app/personil/' . $personil->nrp . '.jpg'), $foto);
+        }
+
+        $data = [
+            'id_pangkat' => $responsePersonil['id_pangkat'],
+            'id_kesatuan' => $responsePersonil['id_kesatuan'],
+            'id_jabatan' => $responsePersonil['id_jabatan'],
+            'nama' => $responsePersonil['nama'],
+            'no_telp' => $responsePersonil['handphone'],
+            'kelamin' => $responsePersonil['jenis_kelamin']
+        ];
+
+        if (!$personil->update($data))
+            return response()->json(['error' => 'Terjadi Kesalahan'], 500);
+        return response()->json(['success' => true]);
     }
 
     public function updateStatusDinas(Request $request)
@@ -229,7 +264,7 @@ class PersonilController extends Controller
         $personil = $user->jenis_pemilik == 'personil' ? $user->pemilik : $user->pemilik->personil;
         $log = LogPersonil::where('id_personil', $personil->id)->latest()->first();
         $waktu = Carbon::now();
-        if($log) {
+        if ($log) {
             $log->update(['waktu_selesai_dinas' => $waktu]);
         }
 
@@ -294,7 +329,7 @@ class PersonilController extends Controller
             'password' => bcrypt($pengaturan->nilai)
         ]);
 
-        if(!$personil) {
+        if (!$personil) {
             return response()->json(['error' => 'Terjadi kesalahan saat reset password'], 500);
         }
     }
@@ -351,7 +386,8 @@ class PersonilController extends Controller
             ->respond();
     }
 
-    public function fetchPerosonil(Request $request){
+    public function fetchPerosonil(Request $request)
+    {
         $user = $request->user();
 
         if ($user->jenis_pemilik != 'admin')
@@ -370,10 +406,12 @@ class PersonilController extends Controller
         $personil = Personil::find($id);
         $user = $personil->auth;
 
-        if(!$personil->delete()) {
+        if (!$personil->delete()) {
             return response()->json(['error' => 'terjadi kesalahan saat menghapus data'], 500);
         }
 
-        if($user) { $user->delete(); }
+        if ($user) {
+            $user->delete();
+        }
     }
 }

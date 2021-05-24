@@ -272,6 +272,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('fetch', [PersonilController::class, 'fetchPerosonil']);
         Route::get('/', [PersonilController::class, 'index']);
         Route::post('/', [PersonilController::class, 'tambah']);
+        Route::post('update', [PersonilController::class, 'update']);
         Route::get('{personil}/ptt', [PersonilController::class, 'ubahPttHt']);
         Route::delete('/{personil}', [PersonilController::class, 'delete']);
         Route::post('foto', [PersonilController::class, 'uploadFoto']);

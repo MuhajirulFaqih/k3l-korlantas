@@ -33,10 +33,10 @@ class PersonilService
                 $data = $responseJson['data'];
 
                 try {
-                    $satuan1 = $data['satuan2'] ? explode('-', $data['satuan2']) : null;
-                    $satuan2 = $data['satuan3'] ? explode('-', $data['satuan3']) : null;
-                    $satuan3 = $data['satuan4'] ? explode('-', $data['satuan4']) : null;
-                    $satuan4 = $data['satuan5'] ? explode('-', $data['satuan5']) : null;
+                    $satuan1 = $data['satuan1'] ? explode('-', $data['satuan1']) : null;
+                    $satuan2 = $data['satuan2'] ? explode('-', $data['satuan2']) : null;
+                    $satuan3 = $data['satuan3'] ? explode('-', $data['satuan3']) : null;
+                    $satuan4 = $data['satuan4'] ? explode('-', $data['satuan4']) : null;
 
                     $kode1 = array_pop($satuan1);
                     $satuan1 = implode('-', $satuan1);

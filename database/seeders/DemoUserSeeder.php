@@ -45,7 +45,7 @@ class DemoUserSeeder extends Seeder
                 'lng' => 111.8787191,
                 'ptt_ht' => NULL,
             ]);
-            $personil->auth()->create(['username' => 'demopersonil' . $key, 'password' => $password]);
+            $personil->auth()->create(['username' => $personil->nrp, 'password' => $password]);
         }
 
         $masyarakat = Masyarakat::create([
