@@ -15,12 +15,19 @@ class CreateCallLogTable extends Migration
     {
         Schema::create('call_log', function (Blueprint $table) {
             $table->id();
-            $table->string('from');
-            $table->integer('id_from');
-            $table->string('to');
-            $table->integer('id_to');
-            $table->datetime('start')->nullable();
-            $table->datetime('end')->nullable();
+            $table->integer('id_admin');
+            $table->string('session_id')->nullable();
+            $table->string('custom_session_id')->nullable();
+            $table->string('recording_id')->nullable();
+            $table->string('recording_path')->nullable();
+            $table->string('recording_name')->nullable();
+            $table->string('recording_resolution')->nullable();
+            $table->bigInteger('recording_duration')->nullable();
+            $table->boolean('is_calling')->default(true);
+            $table->datetime('startTime')->nullable();
+            $table->datetime('endTime')->nullable();
+            $table->bigInteger('duration')->default(0);
+            $table->string('end_reason')->default('lastParticipantLeft');
             $table->timestamps();
         });
     }

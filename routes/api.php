@@ -140,7 +140,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/', [KegiatanController::class, 'upload_laporan']);
 
         Route::get('tipejenis', [KegiatanController::class, 'getJenisTipe']);
-        
+
         Route::get('tipejenisbypersonil', [KegiatanController::class, 'getJenisTipeByPersonil']);
 
         Route::get('{kegiatan}', [KegiatanController::class, 'detail_laporan']);
@@ -194,6 +194,8 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('call')->group(function () {
         Route::post('request-to-admin', [CallController::class, 'createCallFromPersonil']);
         Route::post('request', [CallController::class, 'createCall']);
+
+        Route::post('admin', [CallController::class, 'requestCallFromAdminKesatuan']);
 
         Route::get('ready', [CallController::class, 'ready']);
 

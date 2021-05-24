@@ -14,27 +14,94 @@ use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\CallTransformer;
 use App\Transformers\MasyarakatTransformer;
 use App\Transformers\PersonilTransformer;
+use App\Transformers\UserTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class CallController extends Controller
 {
-    public function getCall(Request $request){
+    public function requestCallFromAdminKesatuan(Request $request)
+    {
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
+            return response()->json(['error' => 'Terlarang'], 404);
+
+        $callLog = CallLog::where('id_admin', $user->id)->where('is_calling', true)->first();
+
+        if (!$callLog) {
+            $callLog = CallLog::create([
+                'id_admin' => $user->id
+            ]);
+        }
+
+        $responseSession = Http::withBasicAuth("OPENVIDUAPP", env("OPENVIDU_SECRET"))->withHeaders([
+            'Content-Type' => 'application/json'
+        ])
+            ->post(env('OPENVIDU_URL') . "/openvidu/api/sessions", [
+                'customSessionId' => 'session' . $callLog->id,
+                'recordingMode' => 'ALWAYS'
+            ]);
+
+        if ($responseSession->status() == 200) {
+            $responseSessionJson = $responseSession->json();
+            $callLog->update([
+                'session_id' => $responseSessionJson['id'],
+                'custom_session_id' => 'session' . $callLog->id,
+                'startTime' => Carbon::now()
+            ]);
+        }
+
+        $responseToken = Http::withBasicAuth("OPENVIDUAPP", env("OPENVIDU_SECRET"))
+            ->withHeaders([
+                'Content-Type' => 'application/json'
+            ])
+            ->post(env('OPENVIDU_URL') . '/openvidu/api/sessions/session' . $callLog->id . '/connection', [
+                'type' => 'WEBRTC',
+                'data' => '',
+                'role' => 'PUBLISHER'
+            ]);
+
+        $responseTokenJson = $responseToken->json();
+        if ($responseToken->ok()) {
+            $participant = $callLog->participants()->where('id_user', $user->id)->first();
+            if ($participant)
+                $participant->update([
+                    'connection_id' => $responseTokenJson['id'],
+                    'status' => $responseTokenJson['status']
+                ]);
+            else
+                $callLog->participants()->create([
+                    'id_user' => $user->id,
+                    'connection_id' => $responseTokenJson['id'],
+                    'status' => $responseTokenJson['status'],
+                    'active_at' => Carbon::now()
+                ]);
+
+            return response()->json($responseTokenJson);
+        }
+
+        return response()->json(['error' => 'Terjadi kesalahan']);
+    }
+
+    public function getCall(Request $request)
+    {
         $user = $request->user();
 
         $call = $request->filter == '' ?
 
-                    CallLog::where('id_from', $user->id)
-                            ->orWhere('id_to', $user->id)
-                            ->orderBy('created_at', 'DESC') :
+            CallLog::where('id_from', $user->id)
+                ->orWhere('id_to', $user->id)
+                ->orderBy('created_at', 'DESC') :
 
-                    CallLog::whereIn('id', CallLog::search($request->filter)->get()->pluck('id'))
-                            ->where(function($query) use($user) {
-                                $query->where('id_from', $user->id);
-                                $query->orWhere('id_to', $user->id);
-                            })
-                            ->orderBy('created_at', 'DESC') ;
+            CallLog::whereIn('id', CallLog::search($request->filter)->get()->pluck('id'))
+                ->where(function ($query) use ($user) {
+                    $query->where('id_from', $user->id);
+                    $query->orWhere('id_to', $user->id);
+                })
+                ->orderBy('created_at', 'DESC');
 
         $paginator = $call->paginate(10);
         $collection = $paginator->getCollection();
@@ -47,7 +114,8 @@ class CallController extends Controller
             ->respond();
     }
 
-    public function createCallFromPersonil(Request $request){
+    public function createCallFromPersonil(Request $request)
+    {
         $user = $request->user();
 
         if ($user->jenis_pemilik !== 'masyarakat')
@@ -73,7 +141,8 @@ class CallController extends Controller
         return response()->json(['success' => true, 'username' => $user->username]);
     }
 
-    public function cancelCall(Request $request){
+    public function cancelCall(Request $request)
+    {
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['admin']))
@@ -97,7 +166,8 @@ class CallController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function createCall(Request $request){
+    public function createCall(Request $request)
+    {
         $user = $request->user();
 
         if ($user->jenis_pemilik !== 'admin')
@@ -119,35 +189,36 @@ class CallController extends Controller
 
         $user->pemilik->update(['in_call', true]);
 
-        if(!$log)
+        if (!$log)
             return response()->json(['error' => 'terjadi kesalahan'], 500);
 
         if (env('USE_ONESIGNAL', false))
-            $this->kirimNotifikasiViaOnesignal('incoming-call', ['pesan' => 'Incoming call '. $user->username,'from' => $user->pemilik->nama, 'from_user' => $user->username, 'to_user' => $to->username, 'datetime' => Carbon::now()->toDateTimeString()], [(string) $to->id]);
+            $this->kirimNotifikasiViaOnesignal('incoming-call', ['pesan' => 'Incoming call ' . $user->username, 'from' => $user->pemilik->nama, 'from_user' => $user->username, 'to_user' => $to->username, 'datetime' => Carbon::now()->toDateTimeString()], [(string)$to->id]);
 
-        $this->kirimNotifikasiViaGcm('incoming-call', ['pesan' => 'Incoming call '. $user->username,'from' => $user->pemilik->nama, 'from_user' => $user->username, 'to_user' => $to->username, 'datetime' => Carbon::now()->toDateTimeString()], [$to->fcm_id]);
+        $this->kirimNotifikasiViaGcm('incoming-call', ['pesan' => 'Incoming call ' . $user->username, 'from' => $user->pemilik->nama, 'from_user' => $user->username, 'to_user' => $to->username, 'datetime' => Carbon::now()->toDateTimeString()], [$to->fcm_id]);
 
         return response()->json(['success' => true, 'id' => $log->id]);
     }
 
-    public function updateCall(Request $request){
+    public function updateCall(Request $request)
+    {
         $user = $request->user();
 
         // if ($user->jenis_pemilik !== 'admin')
         //     return response()->json(['error' => 'Terlarang!!'], 403);
 
-        if ($request->status == 'start'){
+        if ($request->status == 'start') {
             $pemilik = $request->jenis == 'masyarakat' ? Masyarakat::find($request->id_user) : Personil::find($request->id_user);
 
             $to = $pemilik->auth;
 
             if (!$to)
-                return response()->json(['error' => $request->jenis.' tidak ditemukan'], 404);
+                return response()->json(['error' => $request->jenis . ' tidak ditemukan'], 404);
 
             $call = CallLog::create([
-               'from' => $user->username,
-               'to' => $to->uername,
-               'id_from' => $user->id,
+                'from' => $user->username,
+                'to' => $to->uername,
+                'id_from' => $user->id,
                 'id_to' => $to->id,
             ]);
 
@@ -155,12 +226,12 @@ class CallController extends Controller
         } else {
             $call = CallLog::where($request->id);
 
-            if ($call){
+            if ($call) {
                 /*if ($request->status == 'end')
                     exec("sudo service kurento-media-server restart");*/
                 $user->pemilik->update(['in_call', false]);
-                $update = $request->status == 'start'? ['start' => \Carbon\Carbon::now()] : ['end' => \Carbon\Carbon::now()];
-                if($call->update($update))
+                $update = $request->status == 'start' ? ['start' => \Carbon\Carbon::now()] : ['end' => \Carbon\Carbon::now()];
+                if ($call->update($update))
                     return response()->json(['success' => true]);
             }
 
@@ -169,12 +240,13 @@ class CallController extends Controller
         return response()->json(['error' => 'Terjadi Kesalahan'], 500);
     }
 
-    public function ready(Request $request){
+    public function ready(Request $request)
+    {
         $user = $request->user();
 
         $personil = $user->jenis_pemilik == 'personil' ? $user->pemilik : $user->pemilik->personil;
 
-        event(new CallReady(['id_personil' => $personil->id ]));
+        event(new CallReady(['id_personil' => $personil->id]));
 
         return response()->json(['success' => true]);
     }

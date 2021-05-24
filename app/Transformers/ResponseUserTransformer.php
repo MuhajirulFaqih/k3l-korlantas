@@ -35,6 +35,9 @@ class ResponseUserTransformer extends TransformerAbstract
             case 'admin':
                 $pemilik = new AdminTransformer();
                 break;
+            case 'kesatuan':
+                $pemilik = new KesatuanTransformer();
+                break;
             default:
                 $pemilik = new MasyarakatTransformer();
                 break;

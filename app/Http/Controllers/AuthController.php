@@ -27,7 +27,7 @@ class AuthController extends AccessTokenController
 
     public function issueTokenAdmin (ServerRequestInterface $request) {
         $response = parent::issueToken($request);
-        
+
         $body = json_decode($response->content());
 
         if (isset($body->error))
@@ -36,9 +36,9 @@ class AuthController extends AccessTokenController
         $oauth = (Controller::userAccessTokenId($body->access_token));
         $user = User::find($oauth->user_id);
 
-        if($user->jenis_pemilik == 'admin')
+        if(in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return $response;
-        
+
         return response()->json(['message' => 'Username dan password salah'], 403);
 
     }

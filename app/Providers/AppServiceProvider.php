@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Darurat;
 use App\Models\Kegiatan;
 use App\Models\Kejadian;
+use App\Models\Kesatuan;
 use App\Models\Masyarakat;
 use App\Models\Pengaduan;
 use App\Models\Personil;
@@ -26,9 +27,9 @@ class AppServiceProvider extends ServiceProvider
         setlocale(LC_TIME, 'id_ID.UTF-8');
         config(['app.locale' => 'id']);
 	    \Carbon\Carbon::setLocale('id');
-        
+
         Schema::defaultStringLength(191);
-        
+
         Relation::morphMap([
             'admin' => Admin::class,
             'personil' => Personil::class,
@@ -36,7 +37,8 @@ class AppServiceProvider extends ServiceProvider
             'kegiatan' => Kegiatan::class,
             'kejadian' => Kejadian::class,
             'pengaduan' => Pengaduan::class,
-            'darurat' => Darurat::class
+            'darurat' => Darurat::class,
+            'kesatuan' => Kesatuan::class
         ]);
 
         if (Schema::hasTable('pengaturan')) {

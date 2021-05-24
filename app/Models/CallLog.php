@@ -10,9 +10,13 @@ class CallLog extends Model
     use HasFactory;
 
     protected $table = 'call_log';
-    protected $fillable = ['to', 'from', 'id_from', 'id_to', 'end', 'start'];
+    protected $guarded = [];
 
-    protected $dates = ['end', 'start'];
+    protected $dates = ['endTime', 'startTime'];
+
+    public function participants(){
+        return $this->hasMany(CallParticipant::class, 'id_call');
+    }
 
     public function fromData(){
         return $this->belongsTo(User::class, 'id_from');
