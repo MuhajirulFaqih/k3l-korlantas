@@ -36,6 +36,7 @@ import AdminDeteksiDini from '@/views/Admin/LaporanBhabin/DeteksiDini'
 import AdminPeneranganSatuan from '@/views/Admin/PeneranganSatuan/Main'
 
 import DemoKegiatan from '@/views/Demo/Kegiatan'
+import DemoQuickResponse from '@/views/Demo/QuickResponse'
 
 Vue.use(Router);
 
@@ -175,6 +176,11 @@ const router = new Router({
 			path: '/demo-kegiatan',
 			name: 'Demo',
 			component: DemoKegiatan,
+        },
+        {
+			path: '/demo-quick-response',
+			name: 'Demo Quick Reponse',
+			component: DemoQuickResponse,
 		}
     ]
 });

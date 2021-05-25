@@ -27,7 +27,7 @@ class KegiatanController extends Controller
     {
         $user = $request->user();
         if (!in_array($user->jenis_pemilik, ['personil']))
-            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $validatedData = $request->validate([
             'id_jenis' => 'nullable',
@@ -51,6 +51,7 @@ class KegiatanController extends Controller
         }
         $data = [
             'id_user' => $user->id,
+            'id_kesatuan' => $user->pemilik->id_kesatuan ?? null,
             'daftar_rekan' => $validatedData['daftar_rekan'],
             'nomor_polisi' => $validatedData['nomor_polisi'],
             'detail' => $validatedData['detail'],
@@ -110,12 +111,12 @@ class KegiatanController extends Controller
         $user = $request->user();
         list($orderBy, $direction) = explode(':', $request->sort ?? 'created_at:desc');
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'kesatuan' ,'admin']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $kegiatan = $request->filter == '' ?
-            Kegiatan::with(['user'])->orderBy($orderBy, $direction) :
-            Kegiatan::with(['user'])->filter($request->filter)->orderBy($orderBy, $direction);
+            Kegiatan::with(['user'])->filterQuickResponse($request->is_quick_response)->orderBy($orderBy, $direction) :
+            Kegiatan::with(['user'])->filter($request->filter)->filterQuickResponse($request->is_quick_response)->orderBy($orderBy, $direction);
 
 
         $limit = $request->limit != '' ? $request->limit : 10;
@@ -139,10 +140,10 @@ class KegiatanController extends Controller
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
-            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         if ($user->jenis_pemilik == 'masyarakat' && $user->id != $kegiatan->id_user)
-            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $komentar = $kegiatan->komentar();
 
@@ -162,10 +163,10 @@ class KegiatanController extends Controller
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
-            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         if ($user->jenis_pemilik == 'masyarakat' && $user->id != $kegiatan->id_user)
-            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $validatedData = $request->validate([
             'komentar' => 'required|min:8'
@@ -200,7 +201,7 @@ class KegiatanController extends Controller
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['personil']))
-            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $jenis = JenisKegiatan::whereNull('parent_id')->get();
 
@@ -217,11 +218,64 @@ class KegiatanController extends Controller
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['personil']))
-            return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
         $id_kesatuan = $user->pemilik->kesatuan->id;
         $id_jenis_kegiatan_by_kesatuan = JenisKegiatanKesatuan::where('id_kesatuan', $id_kesatuan)->pluck('id_jenis_kegiatan');
         $jenis = JenisKegiatan::whereIn('id', $id_jenis_kegiatan_by_kesatuan)->get();
 
+        return fractal()
+            ->collection($jenis)
+            ->parseIncludes(['children.children.children.children'])
+            ->transformWith(KegiatanJenisTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
+    }
+
+    public function getKesatuanQuickResponse(Request $request)
+    {
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['personil']))
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
+
+        $kesatuan = $user->pemilik->kesatuan;
+        $kesatuan_induk = Kesatuan::where('kode_satuan', substr($kesatuan->kode_satuan, 0, 5));
+        
+        if($kesatuan_induk->count() == 0)
+            return response()->json(['error' => 'Tipe laporan kosong'], 204);
+
+        $kesatuan_induk = $kesatuan_induk->first();
+        $kesatuan_children_id = optional($kesatuan_induk->children)->where('id_jenis_kesatuan', 8)->pluck('id');
+        $kesatuan_has_options = JenisKegiatanKesatuan::whereIn('id_kesatuan', $kesatuan_children_id)->pluck('id_kesatuan');
+        $response = Kesatuan::whereIn('id', $kesatuan_has_options)->get();
+
+        $options = [];
+        if($user->pemilik->is_patroli_beat == 1) {
+            $options[] = [ 'id' => 0, 'kesatuan' => 'PATROLI BEAT' ];
+        }
+
+        foreach ($response as $key => $value) {
+            $options[] = [ 'id' => $value->id, 'kesatuan' => $value->kesatuan ]; 
+        }
+
+        return response()->json(['data' => $options]);
+        
+    }
+
+    public function getJenisTipeByKesatuan($tipe, Request $request)
+    {
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['personil']))
+            return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
+
+        if($tipe != 0) {
+            $id_kesatuan = $tipe;
+            $id_jenis_kegiatan_by_kesatuan = JenisKegiatanKesatuan::where('id_kesatuan', $id_kesatuan)->pluck('id_jenis_kegiatan');
+            $jenis = JenisKegiatan::whereIn('id', $id_jenis_kegiatan_by_kesatuan)->get();
+        } else {
+            $jenis = JenisKegiatan::where('jenis', 'PATROLI BEAT')->get();
+        }
         return fractal()
             ->collection($jenis)
             ->parseIncludes(['children.children.children.children'])

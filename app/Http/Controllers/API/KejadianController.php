@@ -34,8 +34,12 @@ class KejadianController extends Controller
             'lng'           => 'required',
         ]);
 
+        if($request->id_asal != '')
+            $user = User::find($request->id_asal);
+
         $store = [
-            'id_user'    => $request->id_asal != '' ? $request->id_asal : $user->id,
+            'id_user'    => $user->id,
+            'id_kesatuan' =>$user->pemilik->id_kesatuan ?? null,
             'w_kejadian' => Carbon::now(),
             'kejadian'   => $request->kejadian,
             'lokasi'     => $request->lokasi,
@@ -54,9 +58,6 @@ class KejadianController extends Controller
 
         // Todo send notification
         //Notification::send($user, new KejadianCreated($kejadian));
-        //Jika asal dari darurat
-        if($request->id_asal != '')
-            $user = User::find($request->id_asal);
 
         //Jika kejadian dari masyarakat dan asal bukan dari admin
         if($user->jenis_pemilik == 'masyarakat' && $request->id_asal == '') {

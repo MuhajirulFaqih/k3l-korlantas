@@ -80,6 +80,14 @@ class Kegiatan extends Model
         return $query;
     }
 
+    public function scopeFilterQuickResponse($query, $is_quick_response)
+    {
+        if($is_quick_response) {
+            return $query->where('is_quick_response', 1);
+        }
+        return $query->where('is_quick_response', 0);
+    }
+
     public function kelurahan(){
         return $this->belongsTo(Kelurahan::class, 'id_kelurahan_binmas');
     }

@@ -140,8 +140,10 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/', [KegiatanController::class, 'upload_laporan']);
 
         Route::get('tipejenis', [KegiatanController::class, 'getJenisTipe']);
-
+        
         Route::get('tipejenisbypersonil', [KegiatanController::class, 'getJenisTipeByPersonil']);
+        Route::get('kesatuanquickresponse', [KegiatanController::class, 'getKesatuanQuickResponse']);
+        Route::get('tipejenisbykesatuan/{tipe}', [KegiatanController::class, 'getJenisTipeByKesatuan']);
 
         Route::get('{kegiatan}', [KegiatanController::class, 'detail_laporan']);
 

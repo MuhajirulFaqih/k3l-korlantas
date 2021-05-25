@@ -7,7 +7,7 @@ use League\Fractal\TransformerAbstract;
 
 class KesatuanTransformer extends TransformerAbstract
 {
-    protected $defaultIncludes = [];
+    protected $defaultIncludes = ['jenis'];
     protected $availableIncludes = ['parent', 'children'];
     /**
      * A Fractal transformer.
@@ -33,5 +33,11 @@ class KesatuanTransformer extends TransformerAbstract
         if ($itemKesatuan->children)
             return $this->collection($itemKesatuan->children, new KesatuanTransformer());
         return collect();
+    }
+
+    public function includeJenis(object $itemKesatuan){
+        if ($itemKesatuan->jenis)
+            return $this->item($itemKesatuan->jenis, new JenisKesatuanTransformer());
+        return null;
     }
 }

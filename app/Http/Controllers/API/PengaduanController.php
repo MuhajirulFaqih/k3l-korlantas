@@ -134,6 +134,7 @@ class PengaduanController extends Controller
 
         $pengaduan = Pengaduan::create([
             'id_user' => $user->id,
+            'id_kesatuan' =>$user->pemilik->id_kesatuan ?? null,
             'keterangan' => $validateData['keterangan'],
             'lokasi' => $validateData['lokasi'],
             'lat' => $validateData['lat'],

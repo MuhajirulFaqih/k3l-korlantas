@@ -3,7 +3,7 @@
         <b-container fluid>
             <b-row>
                 <b-col cols="6">
-                    <div class="my-5"><h4>SIMULASI TAMBAH KEGIATAN DAN QUICK RESPONSE</h4></div>
+                    <div class="my-5"><h4>SIMULASI TAMBAH KEGIATAN</h4></div>
                         <b-form-group
                             horizontal="horizontal"
                             :label-cols="2"
@@ -182,7 +182,7 @@
                                     <b-form-file id="foto" class="e-form" v-model="dokumentasi" placeholder="Pilih gambar..." accept="image/*"></b-form-file>
                                 </b-form-group>
                             </div>
-                            <div>
+                            <!-- <div>
                                 <b-form-checkbox
                                     v-model="single.is_quick_response"
                                     value="1"
@@ -190,7 +190,7 @@
                                     >
                                     Quick Response
                                     </b-form-checkbox>
-                            </div>
+                            </div> -->
                             <div class="text-center mt-4">
                                 <button class="btn e-btn e-btn-success mx-1">
                                     <ph-paper-plane-tilt class="phospor"/> Simpan</button>
@@ -217,7 +217,7 @@
                             <div v-if="typeof k.jenis != 'undefined'" v-html="formatJenis(k.jenis)"></div>
                             <div v-if="k.daftar_rekan">Daftar rekan : {{ k.daftar_rekan }}</div>
                             <div v-if="k.nomor_polisi">Nomor polisi : {{ k.nomor_polisi }}</div>
-                            <div v-if="k.nomor_patroli">Rute patroli : {{ k.rute_patroli }}</div>
+                            <div v-if="k.rute_patroli">Rute patroli : {{ k.rute_patroli }}</div>
                             <div v-if="typeof k.kelurahan != 'undefined'">Kelurahan : {{ k.kelurahan.jenis.nama }} {{ k.kelurahan.nama }}</div>
                         </b-col>
                     </b-row>

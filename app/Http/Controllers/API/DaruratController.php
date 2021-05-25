@@ -25,6 +25,7 @@ class DaruratController extends Controller
 
         $data = [
             'id_user' => $user->id,
+            'id_kesatuan' => $user->pemilik->id_kesatuan ?? null,
             'lat' => $validatedData['lat'],
             'lng' => $validatedData['lng'],
             'acc' => $validatedData['acc']
