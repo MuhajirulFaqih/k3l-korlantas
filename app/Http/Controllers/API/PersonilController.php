@@ -6,6 +6,7 @@ use App\Events\LacakPersonilEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
 use App\Models\Jabatan;
+use App\Models\Kesatuan;
 use App\Models\LogPersonil;
 use App\Models\Pengaturan;
 use App\Models\Personil;
@@ -24,14 +25,19 @@ class PersonilController extends Controller
     public function index(Request $request, Jabatan $jabatan)
     {
         $user = $request->user();
-        list($orderBy, $direction) = explode(':', $request->sort);
+        list($orderBy, $direction) = explode(':', $request->sort ?? 'id:asc');
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
 
-        $paginator = Personil::with('pangkat', 'kesatuan', 'jabatan', 'kesatuan.parent')->search($request->filter)
-            ->orderBy($orderBy, $direction)
-            ->paginate(10);
+        if ($user->jenis_pemilik == 'kesatuan') {
+            $id_kesatuan = Kesatuan::descendantsAndSelf($user->pemilik->id)->pluck('id')->all();
+            $paginator = Personil::with('pangkat', 'kesatuan', 'jabatan', 'kesatuan.parent')->whereIn('id_kesatuan', $id_kesatuan)->orderBy($orderBy, $direction)->paginate(10);
+        } else {
+            $paginator = Personil::with('pangkat', 'kesatuan', 'jabatan', 'kesatuan.parent')->search($request->filter)
+                ->orderBy($orderBy, $direction)
+                ->paginate(10);
+        }
 
         $collection = $paginator->getCollection();
 
@@ -229,7 +235,7 @@ class PersonilController extends Controller
             return response()->json(['error' => 'Tidak dapat mendapatkan data'], 404);
 
 
-        if (isset($responsePersonil['foto_file']) && $responsePersonil['foto_file']){
+        if (isset($responsePersonil['foto_file']) && $responsePersonil['foto_file']) {
             $foto = file_get_contents($responsePersonil['foto_file']);
             file_put_contents(storage_path('app/personil/' . $personil->nrp . '.jpg'), $foto);
         }

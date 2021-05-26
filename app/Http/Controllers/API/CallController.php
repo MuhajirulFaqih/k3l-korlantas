@@ -14,6 +14,7 @@ use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\CallTransformer;
 use App\Transformers\MasyarakatTransformer;
 use App\Transformers\PersonilTransformer;
+use App\Transformers\ResponseUserTransformer;
 use App\Transformers\UserTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -84,6 +85,28 @@ class CallController extends Controller
         }
 
         return response()->json(['error' => 'Terjadi kesalahan']);
+    }
+
+    public function notifyPersonil(Request $request){
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $personil = Personil::where('nrp', $request->nrp)->first();
+
+        if (!$personil)
+            return response()->json(['error' => 'Personil tidak ditemukan'], 404);
+
+        $data = fractal()
+            ->item($user)
+            ->transformWith(ResponseUserTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->toArray();
+
+        $this->kirimNotifikasiViaOnesignal('vcon', $data['data'], [$personil->auth->id]);
+
+        return response()->json(['success' => true]);
     }
 
     public function getCall(Request $request)

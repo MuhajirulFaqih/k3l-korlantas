@@ -20,10 +20,10 @@ class DatabaseSeeder extends Seeder
         $this->call(WilayahSeeder::class);
         $this->call(JenisKesatuanSeeder::class);
         $this->call(KesatuanSeeder::class);
-        $this->call(UserAdminKesatuanSeeder::class);
         $this->call(JenisTempatVitalSeeder::class);
         $this->call(TempatVitalSeeder::class);
         $this->call(JenisKegiatanKesatuanSeeder::class);
+        $this->call(UserAdminKesatuanSeeder::class);
         $this->call(DemoUserSeeder::class);
         $this->call(DemoKegiatanSeeder::class);
         $this->call(DemoDaruratSeeder::class);

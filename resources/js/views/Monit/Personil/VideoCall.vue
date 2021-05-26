@@ -1,27 +1,39 @@
 <template>
     <div>
         <b-modal ref="videoCall"
-            hide-footer centered
-            modal-class="e-modal e-modal-mg"
-            title-tag="h4"
-            no-close-on-backdrop
-            no-close-on-esc
-            hide-header-close
-            title="Video Call">
+                 hide-footer centered
+                 modal-class="e-modal e-modal-mg"
+                 title-tag="h4"
+                 no-close-on-backdrop
+                 no-close-on-esc
+                 hide-header-close
+                 title="Video Call">
             <div class="d-block" v-if="single !== null">
                 <b-row>
                     <b-col cols="9">
                         <div class="e-call">
                             <div class="e-call-waiting" v-if="videoCall.inCall == false && this.call == true">
-                                <div class="d-inline-block"><ph-hourglass-medium class="phospor"/></div> Memanggil...
+                                <div class="d-inline-block">
+                                    <ph-hourglass-medium class="phospor"/>
+                                </div>
+                                Memanggil...
                             </div>
+                            <user-video :stream-manager="mainStreamManager" video-class="e-person"/>
                             <video ref="videoOutput" id="videoOutput" autoplay class="e-person"></video>
-                            <div class="e-person-other">
-                                <video ref="videoOutputOtherThumb1" id="videoInput" autoplay class="e-person-other-thumb"></video>
+                            <div class="e-person-other" id="video-container">
+                                <user-video :stream-manager="publisher"
+                                            @click.native="updateMainVideoStreamer(publisher)"
+                                            video-class="e-person-other-thumb"/>
+                                <user-video v-for="sub in subscribers" :key="sub.stream.connection.connectionId"
+                                            :stream-manager="sub" @click.native="updateMainVideoStreamer(sub)"/>
+                                <video ref="videoOutputOtherThumb1" id="videoInput" autoplay
+                                       class="e-person-other-thumb"></video>
                                 <!-- <video ref="videoOutputOtherThumb2" id="videoInput2" autoplay class="e-person-other-thumb"></video>
                                 <video ref="videoOutputOtherThumb3" id="videoInput3" autoplay class="e-person-other-thumb"></video> -->
                             </div>
-                            <button class="btn e-btn e-btn-danger e-call-close" @click="closeCall"><ph-phone-slash class="phospor"/></button>
+                            <button class="btn e-btn e-btn-danger e-call-close" @click="closeCall">
+                                <ph-phone-slash class="phospor"/>
+                            </button>
                         </div>
                     </b-col>
                     <b-col cols="3"></b-col>
@@ -33,265 +45,109 @@
 </template>
 
 <script>
-import { format, formatISO, parseISO } from 'date-fns'
-import { debounce, flattenDepth, values } from 'lodash'
-import kurentoUtils from 'kurento-utils'
-import id from 'date-fns/locale/id'
-import moment from 'moment'
-moment.locale('id')
-export default {
-    name: 'video-call-personil',
-    data () {
-        return {
-            isBusy: false,
-            single: null,
-            ringBackTone: ringBackTone,
-            call: false,
-            videoCall: {
-                ws: null,
-                echoChannel: null,
-                calling: null,
-                inCall: false,
-                currentCallId: null,
-                webRtcPeer: null,
-                videoOutput: null,
-                videoInput: null
-            },
-        }
-    },
-    methods : {
-        showModal (item) {
-            this.single = item
-            let self = this
-            setTimeout(function() {
-                self.outGoing(item)
-                self.$refs.videoCall.show()
-            }, 500)
-        },
-        humanizeFormat (value) {
-            return moment(value).fromNow()
-        },
-        callReady(data) {
-            console.log('callReady', data)
-            if (data.data.id_personil == this.videoCall.calling.id) {
-                this.callPersonil(this.videoCall.calling)
+    import {format, formatISO, parseISO} from 'date-fns'
+    import {debounce, flattenDepth, values} from 'lodash'
+    import {OpenVidu} from 'openvidu-browser'
+    import UserVideo from './UserVideo'
+    import id from 'date-fns/locale/id'
+    import moment from 'moment'
+
+    moment.locale('id')
+    export default {
+        name: 'video-call-personil',
+        data() {
+            return {
+                isBusy: false,
+                single: null,
+                ringBackTone: ringBackTone,
+                call: false,
+                OV: undefined,
+                session: undefined,
+                mainStreamManager: null,
+                publisher: null,
+                subscribers: [],
             }
         },
-        onCallReady(message) {
-            console.log('callReady', message)
-            if (message.to === this.videoCall.calling.nrp)
-                this.callPersonil(this.videoCall.calling)
+        components: {
+            UserVideo
         },
-        outGoing (personil) {
-            this.call = true
-            this.videoCall.calling = personil
-            this.initVideoCall(personil)
-            this.$refs.rbt.play()
-            var self = this
-            setTimeout(function() {
-                if(self.videoCall.inCall == false && this.call == true) {
-                    self.stop(true);
-                    self.$refs.rbt.pause()
-                    self.$refs.rbt.currentTime = 0
-                    self.$toast.error('Panggilan tidak dijawab')
-                }
-            }, 40000)
-        },
+        methods: {
+            joinSession() {
+                this.OV = new OpenVidu()
 
-        endCalling () {
-            this.call = false
-            this.reject()
-            this.videoCall.calling = null
-            this.$refs.rbt.pause()
-            this.$refs.rbt.currentTime = 0
-        },
-        requestCall(personil){
-            var payload = {
-                id_personil : personil.id
-            }
-            axios.post('call/request', payload)
-            .then((response) => {
-                this.videoCall.currentCallId = response.data.id
-                this.videoCall.calling = personil
-            })
-            //this.callPersonil(personil)
-        },
-        initVideoCall(personil){
-            this.videoCall.ws = new WebSocket(wssVc)
-            this.videoCall.ws.onmessage = this.onWsMessage
-            this.videoCall.ws.onopen = this.onWsOpen
-            this.videoCall.ws.onerror = this.onWsError
-            this.videoCall.ws.onclose = this.onWsClose
-        },
-        incomingCall(message) { },
-        startCommunication(message){
-            this.webRtcPeer.processAnswer(message.sdpAnswer)
-        },
-        onWsOpen() {
-            console.log('ws open')
-            this.registerVideoCall()
-        },
-        onWsClose() {
-            console.log('ws Close')
-        },
-        onWsError(message) {
-            console.log('ws error', message)
-        },
-        onWsMessage(message) {
-            var parsedMessage = JSON.parse(message.data)
-            console.log(parsedMessage.id, parsedMessage)
-            switch (parsedMessage.id) {
-                case 'registerResponse':
-                    console.log('registerResponse', parsedMessage)
-                    if (parsedMessage.response === 'accepted')
-                        this.requestCall(this.single)
-                    else
-                        this.stop(true)
-                    break;
-                case 'callResponse':
-                    this.callResponse(parsedMessage)
-                    break;
-                case 'incomingCall':
-                    this.incomingCall(parsedMessage)
-                    break;
-                case 'startCommunication':
-                    this.startCommunication(parsedMessage)
-                    break;
-                case 'stopCommunication':
-                    this.stop(true)
-                    break;
-                case 'iceCandidate':
-                    this.videoCall.webRtcPeer.addIceCandidate(parsedMessage.candidate)
-                    break;
-                case 'callReady':
-                    this.onCallReady(parsedMessage)
-                    break;
-                case 'callReject':
-                    this.onCallReject(parsedMessage)
-                    break;
-                default:
-                    console.log('Message', parsedMessage)
-                    break;
-            }
-        },
-        registerVideoCall(){
-            //Todo change name from response user
-            var message = {
-                id: 'register',
-                name: this.$parent.$parent.$parent.$parent.user.username
-            }
+                this.session = this.OV.initSession()
 
-            this.sendMessage(message)
-        },
-        onCallReject(message){
-            console.log('onCallReject', message)
-            this.stop(true)
-        },
-        reject(){
-            console.log("Sending call reject");
-            if (this.videoCall.calling != null){
-                var data = {
-                    id: 'callReject',
-                    to: this.videoCall.calling.nrp
-                }
-
-                console.log(this.videoCall.calling)
-                this.sendMessage(data)
-            }
-        },
-        sendMessage(message){
-            var jsonMessage = JSON.stringify(message)
-            this.videoCall.ws.send(jsonMessage)
-        },
-        onIceCandidate (candidate){
-            var message = {
-                id: 'onIceCandidate',
-                candidate: candidate
-            }
-            this.sendMessage(message)
-        },
-        stop(message) {
-            this.endCalling()
-            this.updateCallStatus("end")
-            if (this.videoCall.ws != null){
-                if(this.videoCall.webRtcPeer){
-                    this.videoCall.webRtcPeer.dispose()
-                    this.videoCall.webRtcPeer = null
-                    if (!message){
-                        var message = {
-                            id: 'stop'
-                        }
-                        this.sendMessage(message)
-                    }
-                }
-
-                this.videoCall.ws.close()
-                this.videoCall.ws = null
-                this.videoCall.currentCallId = null
-                this.videoCall.inCall = false
-            }
-        },
-        updateCallStatus(status){
-            if (!this.videoCall.inCall)
-                return
-
-            axios.post('call/update', { id: this.videoCall.currentCallId, status: status })
-                .then((d) => { })
-                .catch((err) => { })
-        },
-        callResponse(message){
-            if(message.response != 'accepted'){
-                console.info('Call not accepted by peer. Closing call')
-                var errorMessage = message.message ? message.message : 'Unknown reason for call rejection.'
-                console.log(errorMessage);
-                this.stop(true);
-            } else {
-                this.videoCall.inCall = true
-                this.updateCallStatus("start")
-                this.videoCall.webRtcPeer.processAnswer(message.sdpAnswer)
-            }
-
-            this.$refs.rbt.pause()
-            this.$refs.rbt.currentTime = 0
-        },
-        callPersonil(personil){
-            var options = {
-                localVideo: document.getElementById('videoInput'),
-                remoteVideo: document.getElementById('videoOutput'),
-                onicecandidate: this.onIceCandidate
-            }
-            var self = this;
-
-            this.videoCall.webRtcPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function (error) {
-                if(error){
-                    //Todo notifikasi
-                    console.log('error callPersonil webRtcPeerSendrecv', error)
-                    //self.call = false
-                }
-
-                //console.log(this)
-                this.generateOffer(function (err, offerSdp) {
-                    if(err){
-                        //Todo Notifikasi
-                        console.log('error callPersonil generateOffer', err)
-                        //self.call = false
-                    }
-
-                    // Todo Change 'from' fetch in userInfo
-                    var message = {
-                        id: 'call',
-                        from: self.user.username,
-                        to: personil.nrp,
-                        sdpOffer: offerSdp
-                    }
-                    self.sendMessage(message)
+                this.session.on('streamCreated', ({stream}) => {
+                    const subscriber = this.session.subscribe(stream)
+                    this.subscribers.push(subscriber)
                 })
-            })
+
+                this.session.on('streamDestroyed', ({stream}) => {
+                    const index = this.subscriber.indexOf(stream.streamManager, 0)
+                    if (index >= 0) {
+                        this.subscribers.splice(index, 1)
+                    }
+                })
+
+                this.getToken().then(token => {
+                    this.session.connect(token, {clientData: JSON.stringify({  })})
+                        .then(() => {
+                            let publisher = this.OV.initPublisher(undefined, {
+                                audioSource: undefined,
+                                videoSource: undefined,
+                                publishAudio: true,
+                                publishVideo: true,
+                                resolution: '640x480',
+                                frameRate: 30,
+                                insertMode: 'APPEND',
+                                mirror: false
+                            })
+
+                            this.mainStreamManager = publisher
+                            this.publisher = publisher
+
+                            this.session.publish(this.publisher)
+                        })
+
+                        this.callPersonil()
+                    .catch(error => {
+                        console.log("Error get connection :", error.code, error.message)
+                    })
+                })
+
+                window.addEventListener('beforeunload', this.leaveSession)
+            },
+            callPersonil(nrp){
+                axios.post(baseUrl+'/call/notify-personil', {
+                    nrp: nrp
+                })
+                .then((data) => {
+
+                })
+            },
+            leaveSession() {
+                if (this.session) this.session.disconnect()
+
+                this.session = undefined
+                this.mainStreamManager = undefined
+                this.publisher = undefined
+                this.subscribers = []
+                this.OV = undefined
+
+                window.removeEventListener('beforeunload', this.leaveSession)
+            },
+            updateMainVideoStreamer(stream) {
+                if (this.mainStreamManager === stream) return
+                this.mainStreamManager = stream
+            },
+            requestToken() {
+                return new Promise((resolve, reject) => {
+                    axios.post(baseUrl + '/call/admin')
+                        .then(response => response.data)
+                        .then(data => resolve(data.token))
+                        .catch(error => reject(error.response))
+                })
+            }
         },
-        closeCall () {
-            this.stop()
-            this.$refs.videoCall.hide()
-        }
-    },
-}
+    }
 </script>

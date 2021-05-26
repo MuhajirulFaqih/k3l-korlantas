@@ -198,6 +198,9 @@ Route::middleware('auth:api')->group(function () {
         Route::post('request-to-admin', [CallController::class, 'createCallFromPersonil']);
         Route::post('request', [CallController::class, 'createCall']);
 
+        Route::post('notify-personil', [CallController::class, 'notifyPersonil']);
+        Route::post('notify-admin', [CallController::class, 'notifyAdmin']);
+
         Route::post('admin', [CallController::class, 'requestCallFromAdminKesatuan']);
 
         Route::get('ready', [CallController::class, 'ready']);
@@ -314,6 +317,7 @@ Route::middleware('auth:api')->group(function () {
 // TEMPAT VITAL
     Route::prefix('tempat-vital')->group(function () {
         Route::get('jenis/{id}', [TempatVitalController::class, 'getByJenis']);
+        Route::get('kantor', [TempatVitalController::class, 'getKantor']);
         Route::post('all', [TempatVitalController::class, 'getAll']);
     });
 //TEMPAT VITAL END

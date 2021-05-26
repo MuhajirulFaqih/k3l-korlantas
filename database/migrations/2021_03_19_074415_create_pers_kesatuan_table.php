@@ -15,6 +15,7 @@ class CreatePersKesatuanTable extends Migration
     {
         Schema::create('pers_kesatuan', function (Blueprint $table) {
             $table->id();
+            $table->integer('id_jenis')->nullable();
             $table->string('kesatuan');
             $table->char('kode_satuan', 15)->nullable();
             $table->integer('level')->default(1);

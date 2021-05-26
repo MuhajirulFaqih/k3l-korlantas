@@ -22,7 +22,7 @@ class CreatePersonilTable extends Migration
             $table->integer('id_kesatuan')->unsigned();
             $table->string('kelamin')->nullable();
             $table->string('alamat')->nullable();
-            $table->string('status_dinas')->nullable();
+            $table->string('status_dinas')->default(9);
             $table->string('bearing')->nullable();
             $table->string('no_telp', 20)->nullable();
             $table->double('lat')->nullable();

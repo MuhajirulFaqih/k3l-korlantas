@@ -23,7 +23,7 @@ class KejadianController extends Controller
     public function create_kejadian(Request $request) {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'kesatuan', 'admin', 'masyarakat']))
             return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
 
         $request->validate([
@@ -70,7 +70,7 @@ class KejadianController extends Controller
             }*/
         } else {
             if($request->id_asal == '') {
-                // $this->broadcastNotifikasi($user, $kejadian); 
+                // $this->broadcastNotifikasi($user, $kejadian);
             }
         }
 
@@ -113,7 +113,7 @@ class KejadianController extends Controller
     public function buatTindakLanjut(Request $request, Kejadian $kejadian){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses'], 403);
 
 
@@ -171,7 +171,7 @@ class KejadianController extends Controller
     {
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
+        if(!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         list($orderBy, $direction) = explode(':', $request->sort ?? 'created_at:desc');

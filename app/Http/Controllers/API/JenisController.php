@@ -13,7 +13,7 @@ class JenisController extends Controller
     public function index()
     {
     	$user = request()->user();
-    	if (!in_array($user->jenis_pemilik, ['admin']))
+    	if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses '], 403);
 
         $jenis = Jenis::all();

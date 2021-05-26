@@ -13,7 +13,7 @@ class TempatVitalTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform(TempatVital $tempat)
+    public function transform($tempat)
     {
         return [
             'id' => $tempat->id,
@@ -21,7 +21,8 @@ class TempatVitalTransformer extends TransformerAbstract
             'lokasi' => $tempat->lokasi,
             'lat' => $tempat->lat,
             'lng' => $tempat->lng,
-            'jajaran' => $tempat->jajaran
+            'jajaran' => $tempat->jajaran,
+            'jarak' => $tempat->jarak,
         ];
     }
 
