@@ -85,19 +85,15 @@ class DaruratController extends Controller
             list($orderBy, $direction) = explode(':', $request->sort);
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'personil', 'masyarakat']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
-        if($request->filter != '') {
-            $darurat = $user->jenis_pemilik == 'masyarakat' ?
-                        Darurat::search($request->filter)->where('id_user', $user->id) :
-                        ($user->jenis_pemilik == 'admin' ?
-                        Darurat::filtered($request->filter, $request->status, $request->statusKejadian)->orderBy($orderBy, $direction) :
-                        Darurat::filtered($request->filter, $request->status, $request->statusKejadian));
-        }
-        else {
-            $darurat = $user->jenis_pemilik == 'masyarakat' ? Darurat::where('id_user', $user->id) : ($user->jenis_pemilik == 'admin' ? Darurat::filtered($request->filter, $request->status, $request->statusKejadian)->orderBy($orderBy, $direction) : Darurat::semua());
-        }
+        $darurat = $request->filter == '' ?
+        Darurat::with(['user'])->filterJenisPemilik($user)
+                        ->orderBy($orderBy, $direction) :
+        Darurat::with(['user'])->filterJenisPemilik($user)
+                        ->filter($request->filter, $request->status, $request->statusKejadian)
+                        ->orderBy($orderBy, $direction);
 
         $paginator = $darurat->paginate(10);
         $collection = $paginator->getCollection();

@@ -111,19 +111,24 @@ class KegiatanController extends Controller
         $user = $request->user();
         list($orderBy, $direction) = explode(':', $request->sort ?? 'created_at:desc');
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'kesatuan' ,'admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'personil' ,'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $kegiatan = $request->filter == '' ?
-            Kegiatan::with(['user'])->filterQuickResponse($request->is_quick_response)->orderBy($orderBy, $direction) :
-            Kegiatan::with(['user'])->filter($request->filter)->filterQuickResponse($request->is_quick_response)->orderBy($orderBy, $direction);
-
+        Kegiatan::with(['user'])->filterJenisPemilik($user)
+                        ->filterQuickResponse($request->is_quick_response)
+                        ->orderBy($orderBy, $direction) :
+        Kegiatan::with(['user'])->filterJenisPemilik($user)
+                        ->filter($request->filter)
+                        ->filterQuickResponse($request->is_quick_response)
+                        ->orderBy($orderBy, $direction);
 
         $limit = $request->limit != '' ? $request->limit : 10;
+
         if($limit == 0)
             return null;
-        $paginator = $kegiatan->paginate($limit);
 
+        $paginator = $kegiatan->paginate($limit);
         $collection = $paginator->getCollection();
 
         return fractal()

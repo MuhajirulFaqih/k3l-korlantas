@@ -17,7 +17,7 @@ class PengaduanController extends Controller
     public function getAll(Request $request){
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['admin', 'masyarakat']))
+        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         list($orderBy, $dir) = explode(':', $request->sort);
@@ -25,20 +25,15 @@ class PengaduanController extends Controller
         $limit = $request->limit != '' ? $request->limit : 10;
         if($limit == 0)
             return null;
-        if ($user->jenis_pemilik == 'admin')
-            $paginate = $request->filter == '' ?
-                Pengaduan::orderBy($orderBy, $dir)->paginate($limit):
-                Pengaduan::filter($request->filter)
-                    ->orderBy($orderBy, $dir)->paginate($limit);
-        else
-            $paginate = $request->filter == '' ?
-                Pengaduan::where('id_user', $user->id)
-                    ->orderBy($orderBy, $dir)
-                    ->paginate($limit):
-                Pengaduan::filter($request->filter)
-                    ->where('id_user', $user->id)
-                    ->orderBy($orderBy, $dir)->paginate($limit);
-
+        
+        $pengaduan = $request->filter == '' ?
+        Pengaduan::with(['user'])->filterJenisPemilik($user)
+                        ->orderBy($orderBy, $direction) :
+        Pengaduan::with(['user'])->filterJenisPemilik($user)
+                        ->filter($request->filter)
+                        ->orderBy($orderBy, $direction);
+        
+        $paginate = $pengaduan->paginate($limit);
         $collection = $paginate->getCollection();
 
         return fractal()

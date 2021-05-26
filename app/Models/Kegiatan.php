@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Traits\FilterJenisPemilik;
 
 class Kegiatan extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterJenisPemilik;
 
     protected $table = 'kegiatan';
     protected $guarded = [];
@@ -86,6 +87,11 @@ class Kegiatan extends Model
             return $query->where('is_quick_response', 1);
         }
         return $query->where('is_quick_response', 0);
+    }
+    
+    public function scopeFilterJenisPemilik($query, $user)
+    {
+        return $this->filterJenisPemilik($query, $user);
     }
 
     public function kelurahan(){

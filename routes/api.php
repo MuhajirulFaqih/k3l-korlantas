@@ -17,6 +17,7 @@ use App\Http\Controllers\API\KejadianController;
 use App\Http\Controllers\API\KesatuanController;
 use App\Http\Controllers\API\LogPersonilController;
 use App\Http\Controllers\API\MasyarakatController;
+use App\Http\Controllers\API\SliderController;
 use App\Http\Controllers\API\NewsController;
 use App\Http\Controllers\API\PangkatController;
 use App\Http\Controllers\API\PengaduanController;
@@ -295,6 +296,14 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{kesatuan}', [MasyarakatController::class, 'delete']);
     });
     // endof masyarakat
+
+    // Slider
+    Route::prefix('slider')->group(function () {
+        Route::get('/', [SliderController::class, 'index']);
+        Route::post('/', [SliderController::class, 'store']);
+        Route::delete('/{slider}', [SliderController::class, 'delete']);
+    });
+    // End of slider
 
     // JENIS
     Route::prefix('jenis')->group(function () {

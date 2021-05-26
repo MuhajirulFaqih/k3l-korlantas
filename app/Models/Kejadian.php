@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Traits\FilterJenisPemilik;
 
 class Kejadian extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterJenisPemilik;
 
     protected $table = 'kejadian';
     protected $fillable = [
-        'id_user', 'kejadian', 'w_kejadian', 'lokasi', 'keterangan', 'lat', 'lng', 'id_darurat', 'verifikasi', 'follow_me', 'selesai'
+        'id_user', 'kejadian', 'w_kejadian', 'lokasi', 'keterangan', 'lat', 'lng', 'id_darurat', 'id_kesatuan', 'verifikasi', 'follow_me', 'selesai'
     ];
 
     protected $casts = ['w_kejadian' => 'datetime'];
@@ -139,5 +140,10 @@ class Kejadian extends Model
                 $sub->whereNotNull('k.id');
                 break;
         }
+    }
+
+    public function scopeFilterJenisPemilik($query, $user)
+    {   
+        return $this->filterJenisPemilik($query, $user);
     }
 }

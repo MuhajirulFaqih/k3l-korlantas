@@ -171,19 +171,17 @@ class KejadianController extends Controller
     {
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
+        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         list($orderBy, $direction) = explode(':', $request->sort ?? 'created_at:desc');
 
-        if($user->jenis_pemilik == 'admin') {
-            $kejadian = Kejadian::filtered($request->filter, $request->status)
-                                ->orderBy($orderBy, $direction);
-        } else {
-            $kejadian = $request->filter == '' ?
-                    Kejadian::filteredUser($user)->orderBy($orderBy, $direction):
-                    Kejadian::filteredUser($user)->orderBy($orderBy, $direction);
-        }
+        $kejadian = $request->filter == '' ?
+        Kejadian::with(['user'])->filterJenisPemilik($user)
+                        ->orderBy($orderBy, $direction) :
+        Kejadian::with(['user'])->filterJenisPemilik($user)
+                        ->filter($request->filter, $request->status)
+                        ->orderBy($orderBy, $direction);
 
         $limit = $request->limit != '' ? $request->limit : 10;
         if($limit == 0)

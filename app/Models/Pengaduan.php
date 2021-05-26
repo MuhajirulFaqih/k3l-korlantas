@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Traits\FilterJenisPemilik;
 
 class Pengaduan extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterJenisPemilik;
     protected $table = 'pengaduan';
 
-    protected $fillable = ['id_user', 'lat', 'lng', 'lokasi', 'keterangan', 'foto'];
+    protected $fillable = ['id_user', 'lat', 'lng', 'lokasi', 'id_kesatuan', 'keterangan', 'foto'];
 
     public function user(){
         return $this->belongsTo(User::class, 'id_user');
@@ -62,5 +63,10 @@ class Pengaduan extends Model
                 return $query->whereBetween('created_at', [substr($mulai, 0, 10), substr($selesai, 0, 10)]);
             endif;
         endif;
+    }
+
+    public function scopeFilterJenisPemilik($query, $user)
+    {
+        return $this->filterJenisPemilik($query, $user);
     }
 }

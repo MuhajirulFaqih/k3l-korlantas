@@ -15,6 +15,16 @@ class AbsensiTransformer extends TransformerAbstract
      */
     public function transform(Absensi $absensi)
     {
+        $lokasi = [
+            'dinas_luar' => 'Dinas Luar',
+            'rumah' => 'Rumah',
+            'kantor' => 'Kantor',
+        ];
+        $kondisi = [
+            'sehat' => 'Sehat',
+            'kurang_fit' => 'Kurang Fit',
+            'sakit' => 'Sakit',
+        ];
         return [
             'id' => $absensi->id,
             'waktu_mulai' => $absensi->waktu_mulai,
@@ -23,10 +33,10 @@ class AbsensiTransformer extends TransformerAbstract
             'lat_pulang' => $absensi->lat_pulang,
             'lng_datang' => $absensi->lng_datang,
             'lng_pulang' => $absensi->lng_pulang,
-            'lokasi_datang' => $absensi->lokasi_datang,
-            'lokasi_pulang' => $absensi->lokasi_pulang,
-            'kondisi_datang' => $absensi->kondisi_datang,
-            'kondisi_pulang' => $absensi->kondisi_pulang,
+            'lokasi_datang' => $lokasi[$absensi->lokasi_datang] ?? $absensi->lokasi_datang,
+            'lokasi_pulang' => $lokasi[$absensi->lokasi_pulang] ?? $absensi->lokasi_pulang,
+            'kondisi_datang' => $kondisi[$absensi->kondisi_datang] ?? $absensi->kondisi_datang,
+            'kondisi_pulang' => $kondisi[$absensi->kondisi_pulang] ?? $absensi->kondisi_pulang,
             'dokumentasi_datang' => $absensi->dokumentasi_datang ? url('api/upload/' . $absensi->dokumentasi_datang) : null,
             'dokumentasi_pulang' => $absensi->dokumentasi_pulang ? url('api/upload/' . $absensi->dokumentasi_pulang) : null,
         ];

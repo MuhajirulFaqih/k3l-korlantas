@@ -4,10 +4,12 @@ namespace App\Transformers;
 
 use App\Models\Kejadian;
 use Illuminate\Support\Str;
+use App\Traits\AudioKejadian;
 use League\Fractal\TransformerAbstract;
 
 class KejadianTransformer extends TransformerAbstract
 {
+    use AudioKejadian;
     /**
      * A Fractal transformer.
      *
@@ -30,7 +32,7 @@ class KejadianTransformer extends TransformerAbstract
     {
         $tindakLanjutStatus = [
             'tkp' => 'Menuju ke TKP',
-            'proses_penanganan' => 'Prosess Penanganan',
+            'proses_penanganan' => 'Proses Penanganan',
             'selesai' => 'Selesai'
         ];
         return [
@@ -46,7 +48,8 @@ class KejadianTransformer extends TransformerAbstract
             'verifikasi'     => $kejadian->verifikasi,
             'id_darurat'     => $kejadian->id_darurat,
             'follow_me'      => $kejadian->follow_me,
-            'selesai'        => $kejadian->selesai
+            'selesai'        => $kejadian->selesai,
+            'audio'        => $this->audioKejadian($kejadian->kejadian),
         ];
     }
 

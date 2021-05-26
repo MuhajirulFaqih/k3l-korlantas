@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Traits\FilterJenisPemilik;
 
 class Darurat extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterJenisPemilik;
     protected $table = 'darurat';
-    protected $fillable = ['id_user', 'lat', 'lng', 'acc', 'selesai'];
+    protected $fillable = ['id_user', 'lat', 'lng', 'acc', 'id_kesatuan', 'selesai'];
 
     public function user(){
         return $this->belongsTo(User::class, 'id_user');
@@ -34,7 +35,7 @@ class Darurat extends Model
 
     public function scopeFiltered($query, $filter, $status, $statusKejadian)
     {
-        if($filter == null && $status == null)
+        if($filter == null && $status == null && $statusKejadian == null)
             return $query;
 
         $idBulan = array ('Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
@@ -90,6 +91,11 @@ class Darurat extends Model
                 $sub->whereNotNull('d.created_at');
                 break;
         }
+    }
+
+    public function scopeFilterJenisPemilik($query, $user)
+    {
+        return $this->filterJenisPemilik($query, $user);
     }
 
 }
