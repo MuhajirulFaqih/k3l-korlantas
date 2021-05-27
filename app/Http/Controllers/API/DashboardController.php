@@ -15,16 +15,13 @@ class DashboardController extends Controller
     {
     	$user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 403);
         //Data
         $data = [
-        	'personil' => Personil::count(),
+        	'personil' => Personil::filterJenisPemilik($user)->count(),
         	'masyarakat' => Masyarakat::count(),
-        	'kesatuan' => Kesatuan::count(),
-        	'informasi' => Informasi::where('aktif', 1)
-        							->orderBy('created_at', 'DESC')
-        							->paginate(10),
+            'kesatuan' => $user->jenis_pemilik == 'admin' ? Kesatuan::count(): Kesatuan::descendantsAndSelf($user->pemilik->id)->count(),
         ];
 
         return response()->json(['data' => $data]);

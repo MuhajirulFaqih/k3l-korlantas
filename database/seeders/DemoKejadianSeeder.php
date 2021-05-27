@@ -29,7 +29,8 @@ class DemoKejadianSeeder extends Seeder
                 'lng' => '111.8926732', 
                 'verifikasi' => '0', 
                 'follow_me' => '0',
-                'selesai' => null
+                'selesai' => null,
+                'created_at' => \Carbon\Carbon::now(), 
             ],
             [ 
                 'id_user' => 11, 
@@ -42,7 +43,8 @@ class DemoKejadianSeeder extends Seeder
                 'lng' => '111.8926732', 
                 'verifikasi' => '0', 
                 'follow_me' => '0',
-                'selesai' => null
+                'selesai' => null,
+                'created_at' => \Carbon\Carbon::now(), 
             ],
         ]);
     }

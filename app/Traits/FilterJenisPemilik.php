@@ -5,7 +5,7 @@ use App\Models\Kesatuan;
 
 trait FilterJenisPemilik
 {
-	protected function filterJenisPemilik($query, $user)
+	protected function jenisPemilik($query, $user)
     {
         if($user->jenis_pemilik == 'masyarakat') {
             return $query->where('id_user', $user->id);

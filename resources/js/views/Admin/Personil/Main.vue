@@ -3,12 +3,12 @@
 		<b-row>
 	    	<b-col cols="2" md="2">
 	    		<b-row>
-	    			<b-col cols="12">
-						<h4 class="d-inline-block mr-3">Personil </h4>
-						<b-button @click="prepareTambah()" variant="primary" size="sm">
+	    			<b-col cols="6"><h4>Personil</h4></b-col>
+	    			<b-col cols="6">
+	    				<b-button @click="$refs.modalTambah.show()" variant="primary" size="sm">
 							<ph-plus class="phospor"/> Tambah
 						</b-button>
-					</b-col>
+	    			</b-col>
 	    		</b-row>
 			</b-col>
 	    	<b-col cols="6" md="6">
@@ -19,10 +19,21 @@
 		          :per-page="perPage" />
 		    </b-col>
 		    <b-col cols="4" md="4">
-		    	<b-form-input
-		        	align="right"
-		          	v-model="filterDebounced"
-		          	placeholder="Cari NRP, Nama, Jabatan, Status dinas..."/>
+				<form @submit.prevent="search">
+					<b-input-group align="right">
+						<b-form-input
+							align="right"
+							class="e-form"
+							@keyup="whenSearch"
+							v-model="filterDebounced"
+							placeholder="Cari NRP, Nama, Jabatan, Status dinas.."/>
+						<b-input-group-append>
+							<button class="btn e-btn e-btn-primary" type="submit">
+								<ph-magnifying-glass class="phospor"/>
+							</button>
+						</b-input-group-append>
+					</b-input-group>
+				</form>
 		    </b-col>
 		</b-row>
 
@@ -38,10 +49,10 @@
 	               :sort-by.sync="sortBy"
 	               :sort-desc.sync="sortDesc">
 
-		        <template v-slot:cell(index)="data">
+		        <template #cell(index)="data">
 		          	{{ ((currentPage - 1) * 10) + data.index + 1 }}
 		        </template>
-			    <template v-slot:cell(aksi)="row">
+			    <template #cell(aksi)="row">
 					<div class="dropdown-container">
 						<b-dropdown text="Pilih" class="btn-dropdown" boundary>
 							<b-dropdown-item @click="prepareUbah(row.item)">
@@ -64,9 +75,6 @@
 						</b-dropdown>
 					</div>
 			    </template>
-				<template v-slot:cell(bhabin_kel)="data">
-					{{ data.item.bhabin_kel == null ? '-' : data.item.bhabin_kel }}
-				</template>
 		    </b-table>
 
 		    <div class="loading" v-show="isBusy">
@@ -80,56 +88,59 @@
 				ok-title="Simpan"
 				cancel-title="Batal"
 				@ok="submitPersonil"
+				header-class="bg-primary"
+				header-text-variant="white"
 				@hide="resetFormTambah"
 				ref="modalTambah"
-				size="lg">
-				<template slot="modal-header">
-					<h3 class="modal-title">{{ title }}</h3>
+				size="xl">
+				<template #modal-header>
+					<h3 class="modal-title">Personil</h3>
 				</template>
 				<b-row>
 					<b-form-group label-class="h3" class="col-md-6 col-xl-12">
+                        <b-form-group label="NRP" label-class="h6 mt2" label-cols="2">
+                            <b-input-group>
+                                <b-form-input v-model="payload.nrp" type="text"/>
+                                <b-input-group-append>
+									<b-button variant="primary" @click="fetchPersonil" :disabled="isBusySearch">
+										<b-spinner style="width: 1rem; height: 1rem; top: -3px; position: relative;" variant="light" v-if="isBusySearch"/>
+										<ph-magnifying-glass class="phospor" v-else/> 
+										Cari
+									</b-button> 
+								</b-input-group-append>
+                            </b-input-group>
+                        </b-form-group>
 						<b-form-group label="Nama" label-class="h6 mt2" label-cols="2">
-							<b-form-input v-model="payload.nama" type="text" />
+							<b-form-input v-model="payload.nama" type="text" disabled/>
 						</b-form-group>
 						<b-form-group label="Pangkat" label-class="h6 mt2" label-cols="2">
-							<model-select v-model="payload.id_pangkat" :options="pangkat" placeholder="Pilih pangkat"/>
-						</b-form-group>
-						<b-form-group label="NRP" label-class="h6 mt2" label-cols="2">
-							<b-form-input v-model="payload.nrp" type="text"/>
+							<b-form-select v-model="payload.id_pangkat" :options="pangkat" placeholder="Pilih pangkat" disabled/>
 						</b-form-group>
 						<b-form-group label="Kesatuan" label-class="h6 mt2" label-cols="2">
-							<model-select v-model="payload.id_kesatuan" :options="kesatuan" placeholder="Pilih kesatuan"/>
+                            <b-form-input list="datalist-kesatuan" v-model="inputKesatuan" disabled/>
+                            <b-form-datalist id="datalist-kesatuan" :options="optionsKesatuan"></b-form-datalist>
 						</b-form-group>
 						<b-form-group label="Jabatan" label-class="h6 mt2" label-cols="2">
-							<model-select v-model="payload.id_jabatan" :options="jabatan" placeholder="Pilih jabatan"/>
+                            <b-form-input list="datalist-jabatan" v-model="inputJabatan" disabled/>
+                            <b-form-datalist id="input-list" :options="optionsJabatan"></b-form-datalist>
 						</b-form-group>
-						<b-form-group label="Alamat" label-class="h6 mt2" label-cols="2">
-							<b-form-input v-model="payload.alamat" type="text" />
-						</b-form-group>
+                        <b-form-group label="No Handphone" label-class="h6 mt2" label-cols="2">
+                            <b-form-input v-model="payload.no_telp" type="text"/>
+                        </b-form-group>
+                        <b-form-group label="Alamat" label-class="h6 mt2" label-cols="2">
+                            <b-form-textarea rows="4" v-model="payload.alamat" type="text"/>
+                        </b-form-group>
 						<b-form-group label="Foto" label-class="h6 mt2" label-cols="2">
 							<b-form-file @change="onFotoChange" accept="image/*"/>
 							<b-progress class="mt-1" :max="100" show-value v-if="valueProgressUpload > 0">
 								<b-progress-bar :value="valueProgressUpload" variant="success"/>
 							</b-progress>
-							<img class="mt-3 preview-profil" :src="srcProfil" @error="imgProfilError" width="50%" style="margin: 0 auto"/>
+							<img class="mt-1 preview-profil" :src="srcProfil" @error="imgProfilError" width="50%" style="margin: 0 auto"/>
 						</b-form-group>
-
-						<b-form-checkbox v-model="payload.isBhabin">
-						Bhabin
-						</b-form-checkbox>
-
-						<div v-if="payload.isBhabin">
-							<b-form-group label="Kelurahan" label-class="h6 mt2" label-cols="2">
-								<multi-select :options="kelurahan"
-									:selected-options="itemsKelurahan"
-									@select="onSelectKelurahan"
-									placeholder="Pilih desa/kelurahan"/>
-							</b-form-group>
-						</div>
 					</b-form-group>
 				</b-row>
-				
-				<template slot="modal-footer">
+
+				<template #modal-footer>
 					<b-btn variant="primary" @click="submitPersonil">Simpan</b-btn>
 					<b-btn variant="secondary" @click="$refs.modalTambah.hide('cancel')">Batal</b-btn>
 				</template>
@@ -161,18 +172,43 @@
         		filter: '',
         		filterDebounced: '',
         		isBusy: false,
+        		isBusySearch: false,
         		sortBy: 'id_jabatan',
-				sortDesc: true,
+				sortDesc: false,
 				valueProgressUpload: 0,
-				tableColumns: [
-					{ key: 'index', label: 'No' },
-					{ key: 'nrp', label: 'NRP', sortable: true },
-					{ key: 'nama', label: 'Nama', sortable: true },
-					{ key: 'bhabin_kel', label: 'Bhabin', sortable: true },
-					{ key: 'jabatan', label: 'Jabatan', sortable: true, thStyle: { width: '200px' } },
-					{ key: 'dinas.kegiatan', label: 'Status dinas', sortable: true },
-					{ key: 'aksi', label: 'Aksi', thStyle: { width: '200px' } }
+        		tableColumns: [
+        			{
+						key: 'index',
+			            label: 'No.'
+			        },
+		          	{
+						key: 'nrp',
+		            	label: 'NRP',
+		            	sortable: true
+		          	},
+		          	{
+						key: 'nama',
+						label: 'Nama',
+						sortable: true
+					},
+					{
+						key: 'jabatan',
+		            	label: 'Jabatan',
+		            	sortable: true
+		          	},
+		          	{
+		          		key: 'dinas.kegiatan',
+		            	label: 'Status Dinas',
+		            	sortable: true
+		          	},
+		          	{
+		          		key: 'aksi',
+						label: 'Aksi',
+						thStyle: { width: '200px' }
+		          	},
 				],
+                inputKesatuan: null,
+                inputJabatan: null,
 				payload: {
 					id: null,
 					nama: null,
@@ -182,6 +218,7 @@
 					id_kesatuan: null,
 					kelamin: null,
 					alamat: null,
+                    no_telp: null,
 					foto: null,
 					isBhabin: false,
 					id_kelurahan: []
@@ -191,8 +228,9 @@
 				pangkat: [],
 				jabatan: [],
 				kesatuan: [],
-				kelurahan: [],
-				title: 'Tambah personil',
+                optionsKesatuan: [],
+                optionsJabatan: [],
+				kelurahan: []
 			}
 		},
 		methods: {
@@ -205,9 +243,6 @@
 						break
 					case 'nama':
 						sortBy = 'nama'
-						break
-					case 'bhabin_kel':
-						sortBy = 'id'
 						break
 					case 'jabatan':
 						sortBy = 'id_jabatan'
@@ -239,6 +274,36 @@
 
 				return promise
 			},
+            fetchPersonil(e){
+				this.isBusySearch = true
+			    axios.get("personil/fetch?nrp="+this.payload.nrp, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(({data: {data}}) => {
+						this.isBusySearch = false
+						if(data == null) {
+							this.$toast.error("Personil tidak ditemukan")	
+							return
+						}
+                        this.payload.nama = data.nama
+                        this.payload.no_telp = data.handphone
+                        this.payload.id_kesatuan = data.id_kesatuan
+                        this.payload.id_pangkat = data.id_pangkat
+                        this.payload.id_jabatan = data.id_jabatan
+                        this.inputKesatuan = data.kesatuan_lengkap
+                        this.inputJabatan = data.jabatan
+                        this.srcProfil = data.foto_file
+                        this.payload.foto = data.foto_file
+                    })
+                    .catch(({response}) => {
+						this.isBusySearch = false
+                        if (response.status == 404)
+                            this.$toast.error("Personil tidak ditemukan")
+                    })
+            },
 			onFotoChange(e){
 				var foto = e.target.files[0]
 				//srcProfil = URL.createObjectURL(foto)
@@ -246,10 +311,9 @@
 				var formData = new FormData()
 				formData.append("foto", foto, foto.name)
 
-				axios.post("personil/foto", formData, {
+				axios.post(baseUrl+"/api/personil/foto", formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
-						// 'Authorization': localStorage.getItem('token'),
 						'Accept': 'application/json'
 					},
 					onUploadProgress: function (progressEvent) {
@@ -263,7 +327,7 @@
 						this.$toast.error(data.error)
 					}
 					else if('success' in data){
-						this.srcProfil = baseUrl + "/api/upload/" + data.foto
+						this.srcProfil = baseUrl+"/api/upload/"+data.foto
 						this.payload.foto = data.foto
 					}
 				})
@@ -301,19 +365,14 @@
 						}
 					})
 					.catch(({ response: { status, data: { errors }}}) => {
-						if (response.status === 422) {
-							this.$toast.error(flattenDeep(values(error.response.data.errors)).join('<br>'))
-						}
-					})
+	                if (status === 422)
+	                	this.$toast.error(flattenDeep(values(errors)).join('<br>'))
+	            	})
 				}
-				
+
 			},
 			imgProfilError (e){
 				this.srcProfil = baseUrl+"/api/upload/personil/pocil.jpg"
-			},
-			prepareTambah () {
-				this.$refs.modalTambah.show()
-				this.title = "Tambah personil"
 			},
 			resetFormTambah(){
 				this.payload = {
@@ -327,25 +386,27 @@
 					alamat: null,
 					foto: null,
 					isBhabin: false,
-					id_kelurahan: []
+					id_kelurahan: [],
+                    no_telp: null
 				}
+				this.inputJabatan = null
+                this.inputKesatuan = null
 				this.srcProfil = null
 				this.itemsKelurahan = []
 			},
             updatePtt(item){
 			    var promise = axios.get('personil/'+item.id+'/ptt')
-                    .then(({ data }) => {
-                        if ('success' in data){
-                            this.$toast.success('PTT HT personil '+ item.nama +' berhasil di ubah', { layout: 'topRight' })
-                            this.refreshTable()
-                        }
-                        else {
-                            this.$toast.error('PTT HT personil '+ item.nama +' gagal di ubah', { layout: 'topRight' })
-                        }
-                    })
+				.then(({ data }) => {
+					if ('success' in data){
+						this.$toast.success('PTT HT personil '+ item.nama +' berhasil di ubah')
+						this.refreshTable()
+					}
+					else {
+						this.$toast.error('PTT HT personil '+ item.nama +' gagal di ubah')
+					}
+				})
 			},
 			prepareUbah({ id }) {
-				this.title = 'Ubah personil'
 				var promise = axios.get('personil/'+id)
 				.then(({data : { data }}) => {
 					this.payload.id = data.id
@@ -359,6 +420,9 @@
 					this.payload.foto = null
 					this.payload.isBhabin = data.isBhabin
 					this.payload.id_kelurahan= data.kelurahan == null ? [] : data.kelurahan
+
+                    this.inputKesatuan = data.kesatuan_lengkap
+                    this.inputJabatan = data.jabatan
 
 					this.srcProfil = data.foto
 
@@ -378,14 +442,14 @@
 		            cancelButtonText: 'Batal'
 		        }).then((result) => {
 		          if (result.value) {
-		              axios.post('personil/reset_password/', { id: item.id })
+		              axios.post('personil/reset_password', { id: item.id })
 		                .then((response) => {
-		                  this.$toast.success('Password personil '+ item.nama +' berhasil di reset', { layout: 'topRight' })
+		                  this.$toast.success('Password personil '+ item.nama +' berhasil di reset')
 		                  this.refreshTable()
 		                })
 		                .catch(({ response: { status, data: { errors }}}) => {
 		                      if (status === 422)
-		                        this.$toast.danger('Terjadi kesalahan saat menghapus data', { layout: 'topRight' })
+		                        this.$toast.danger('Terjadi kesalahan saat menghapus data')
 		                })
 		            }
 		        })
@@ -403,12 +467,12 @@
 		          if (result.value) {
 		              axios.delete('personil/' + item.id)
 		                .then((response) => {
-		                  this.$toast.success('Data personil '+ item.nama +' berhasil di hapus', { layout: 'topRight' })
+		                  this.$toast.success('Data personil '+ item.nama +' berhasil di hapus')
 		                  this.refreshTable()
 		                })
 		                .catch(({ response: { status, data: { errors }}}) => {
 		                      if (status === 422)
-		                        this.$toast.danger('Terjadi kesalahan saat menghapus data', { layout: 'topRight' })
+		                        this.$toast.danger('Terjadi kesalahan saat menghapus data')
 		                })
 		            }
 		        })
@@ -417,15 +481,16 @@
 				this.itemsKelurahan = items
 				this.payload.id_kelurahan = items.map((val) => val.value)
 			},
-			fetchJabatan(){
-				var promise = axios.get('jabatan')
+			fetchJabatan(id_kesatuan = null){
+				var promise = axios.get('jabatan?id_kesatuan='+id_kesatuan)
 				.then(({data: {data}}) => {
-					this.jabatan = data.map((val) => {
-						return {value: val.id, text: val.jabatan}
+				    this.jabatan = data
+					this.optionsJabatan = data.map((val) => {
+						return val.jabatan
 					})
 				})
 				.catch((error) => {
-					
+
 				})
 			},
 			fetchPangkat(){
@@ -436,18 +501,19 @@
 					})
 				})
 				.catch((error) => {
-					
+
 				})
 			},
 			fetchKesatuan(){
 				var promise = axios.get('kesatuan')
 				.then(({data: {data}}) => {
-					this.kesatuan = data.map((val) => {
-						return {value: val.id, text: val.kesatuan}
+				    this.kesatuan = data
+					this.optionsKesatuan = data.map((val) => {
+						return val.kesatuan_lengkap
 					})
 				})
 				.catch((error) => {
-					
+
 				})
 			},
 			fetchWilKel(){
@@ -464,12 +530,32 @@
 				.catch((error) => {
 
 				})
-					
+
 			},
-			debounceFilter: debounce(function () {
+            setKesatuan(newKesatuan){
+			    const selectedKesatuan = this.kesatuan.find(o => o.kesatuan_lengkap === newKesatuan)
+                if (selectedKesatuan){
+                    this.payload.id_kesatuan = selectedKesatuan.id
+                    this.fetchJabatan(this.payload.id_kesatuan)
+                }
+
+            },
+            setJabatan(newJabatan){
+                const selectedJabatan = this.jabatan.find(o => o.jabatan === newJabatan)
+                if (selectedJabatan){
+                    this.payload.id_jabatan = selectedJabatan.id
+                }
+
+            },
+            search: debounce(function () {
 				this.filter = this.filterDebounced
 				this.currentPage = 1
 			}, 500),
+			whenSearch () {
+				if(this.filterDebounced == '') {
+					this.search()
+				}
+			},
 			refreshTable () {
 				this.totalRows > this.perPage ? 
 				(this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
@@ -480,12 +566,19 @@
 			this.fetchJabatan()
 			this.fetchPangkat()
 			this.fetchKesatuan()
-			this.fetchWilKel()
+			/*this.fetchWilKel()*/
 		},
 		watch: {
-			filterDebounced (newFilter) {
-		        this.debounceFilter()
-		    },
+			inputKesatuan: {
+			    handler(old_kesatuan, new_kesatuan){
+			        this.setKesatuan(new_kesatuan)
+                }
+            },
+            inputJabatan: {
+			    handler(old_jabatan, new_jabatan) {
+			        this.setJabatan(new_jabatan)
+                }
+            }
 		}
 	}
 </script>
@@ -495,12 +588,5 @@ img.preview-profil {
 	display:block;
   	margin-left:auto;
   	margin-right:auto;
-}
-.ui.selection.dropdown {
-	background: #868e96;
-	color: #fff;
-}
-.default {
-	color: #fff;
 }
 </style>

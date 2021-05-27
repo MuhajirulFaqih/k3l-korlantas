@@ -23,7 +23,7 @@ class DaruratTransformer extends TransformerAbstract
             'acc' => $daruratItem->acc,
             'selesai' => $daruratItem->selesai,
             'kejadian' => $daruratItem->kejadian ?? null,
-            'created_at' => $daruratItem->created_at->toDateTimeString(),
+            'created_at' => optional($daruratItem->created_at)->toDateTimeString(),
         ];
     }
 

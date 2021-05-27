@@ -29,6 +29,7 @@ use App\Http\Controllers\API\MonitController;
 use App\Http\Controllers\API\PengumumanController;
 use App\Http\Controllers\API\DinasController;
 use App\Http\Controllers\API\TitikApiController;
+use App\Http\Controllers\API\PengaturanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -239,35 +240,17 @@ Route::middleware('auth:api')->group(function () {
 
 
 // pengaturan
-    /*Route::prefix('pengaturan')->group(function () {
-        Route::get('/', [
-            'uses' => 'PengaturanController@load'
-        ]);
-        Route::get('/notif', [
-            'uses' => 'PengaturanController@notif'
-        ]);
-        Route::post('/banner_grid', [
-            'uses' => 'PengaturanController@bannerGrid'
-        ]);
-        Route::post('pdf_sispammako', [
-            'uses' => 'PengaturanController@pdfSispammako'
-        ]);
-        Route::post('default_password', [
-            'uses' => 'PengaturanController@defaultPassword'
-        ]);
-        Route::post('pdf_visi_misi', [
-            'uses' => 'PengaturanController@pdfVisiMisi'
-        ]);
-        Route::post('pdf_program_kapolres', [
-            'uses' => 'PengaturanController@pdfProgramKapolres'
-        ]);
-        Route::post('pdf_kebijakan_kapolres', [
-            'uses' => 'PengaturanController@pdfKebijakanKapolres'
-        ]);
-        Route::post('auto_send_notification', [
-            'uses' => 'PengaturanController@autoSendNotification'
-        ]);
-    });*/
+    Route::prefix('pengaturan')->group(function () {
+        Route::get('/', [ PengaturanController::class, 'load' ]);
+        Route::get('/notif', [ PengaturanController::class, 'notif' ]);
+        Route::post('/banner_grid', [ PengaturanController::class, 'bannerGrid' ]);
+        Route::post('pdf_sispammako', [ PengaturanController::class, 'pdfSispamako' ]);
+        Route::post('default_password', [ PengaturanController::class, 'defaultPassword' ]);
+        Route::post('pdf_visi_misi', [ PengaturanController::class, 'pdfVisiMisi' ]);
+        Route::post('pdf_program_kapolres', [ PengaturanController::class, 'pdfProgramKapolres' ]);
+        Route::post('pdf_kebijakan_kapolres', [ PengaturanController::class, 'pdfKebijakanKapolres' ]);
+        Route::post('auto_send_notification', [ PengaturanController::class, 'autoSendNotification' ]);
+    });
 // pengaturan
 
     // PERSONIL

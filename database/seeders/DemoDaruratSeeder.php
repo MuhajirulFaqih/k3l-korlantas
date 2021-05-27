@@ -17,8 +17,8 @@ class DemoDaruratSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
         DB::table('darurat')->truncate();
 
-        \App\Models\Darurat::insert([
+        \App\Models\Darurat::create(
             [ "id_user" => 1, "lat" => '-7.118737', "lng" => '111.8926732', 'acc' => '50', 'selesai' => 0],
-        ]);
+        );
     }
 }

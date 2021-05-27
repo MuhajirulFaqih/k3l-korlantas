@@ -61,7 +61,7 @@
         data() {
             return {
                 isBusy: false,
-                instansi: instansi,
+                instansi: kesatuan,
                 baseUrl: baseUrl,
                 username: null,
                 password: null,

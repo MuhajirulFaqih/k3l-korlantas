@@ -29,6 +29,7 @@ class KesatuanController extends Controller
 
         return fractal()
             ->collection($collection)
+            ->parseIncludes('parent')
             ->transformWith(new KesatuanTransformer())
             ->serializeWith(new DataArraySansIncludeSerializer)
             ->paginateWith(new IlluminatePaginatorAdapter($paginator))

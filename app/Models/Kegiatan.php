@@ -91,7 +91,7 @@ class Kegiatan extends Model
     
     public function scopeFilterJenisPemilik($query, $user)
     {
-        return $this->filterJenisPemilik($query, $user);
+        return $this->jenisPemilik($query, $user);
     }
 
     public function kelurahan(){

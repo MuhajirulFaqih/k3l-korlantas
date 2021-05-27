@@ -19,7 +19,7 @@
                     <span class="d-inline-block mr-3"><router-link to="/"><ph-monitor class="phospor"/> Monit</router-link></span>
                     <span class="d-inline-block mr-3"><a href="javascript:void(0)" @click="showModalUbahPassword"><ph-key class="phospor"/> Ubah Password</a></span>
                 </span>
-                <a href="#" @click="logout" title="Logout">
+                <a href="#" @click="triggerLogout" title="Logout">
                     <ph-sign-out class="phospor"/>
                 </a>
             </div>
@@ -112,17 +112,16 @@
                     }
                 })
             },
-            logout() {
-                sessionStorage.removeItem('token')
-                this.$router.push({ name: 'Login' })
+            triggerLogout() {
+                this.$parent.logout()
             }
         },
         computed: {
             namaUser (){
-                return this.$store.getters.userInfo.pemilik ? this.$store.getters.userInfo.pemilik.nama : ''
+                return this.$store.getters.userInfo !== null ? (this.$store.getters.userInfo.pemilik ? this.$store.getters.userInfo.pemilik.nama : '') : ''
             },
             username (){
-                return this.$store.getters.userInfo.pemilik ? this.$store.getters.userInfo.username : ''
+                return this.$store.getters.userInfo !== null ? (this.$store.getters.userInfo.pemilik ? this.$store.getters.userInfo.username : '') : ''
             },
         },
         created() {

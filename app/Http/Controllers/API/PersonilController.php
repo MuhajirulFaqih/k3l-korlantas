@@ -338,6 +338,8 @@ class PersonilController extends Controller
         if (!$personil) {
             return response()->json(['error' => 'Terjadi kesalahan saat reset password'], 500);
         }
+
+        return response()->json(['success' => true]);
     }
 
     public function patroli(Request $request)

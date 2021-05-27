@@ -6,10 +6,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Traits\FilterJenisPemilik;
 
 class Personil extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterJenisPemilik;
 
     protected $table = 'personil';
 
@@ -236,5 +237,10 @@ class Personil extends Model
                 ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%'])
                 ->get()->pluck('id')->all()
         );
+    }
+
+    public function scopeFilterJenisPemilik($query, $user)
+    {
+        return $this->jenisPemilik($query, $user);
     }
 }

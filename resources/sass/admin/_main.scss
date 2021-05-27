@@ -293,7 +293,8 @@ a.article, a.article:hover {
         backdrop-filter: blur(0);
     }
 
-    .ui.fluid.search, .custom-file-label, .form-control, .form-control:hover, .form-control:focus, .form-control:active {
+    .ui.fluid.search, .custom-file-label, .form-control, .form-control:hover, .form-control:focus, .form-control:active,
+    .custom-select, .custom-select:hover, .custom-select:focus, .custom-select:active {
         background: rgba(45, 52, 87, 0) !important;
         border: 1px solid #5a616d !important;
         color: $content;
@@ -301,6 +302,10 @@ a.article, a.article:hover {
         font-weight: 400 !important;
         &:focus {
             border: 1px solid #6a717e !important;
+        }
+        &:disabled {
+            background: rgb(125 127 139 / 36%) !important;
+            cursor: no-drop;
         }
     }
     
@@ -334,6 +339,9 @@ a.article, a.article:hover {
             border: none !important;
             outline: none !important;
             box-shadow: none !important;
+        }
+        .dropdown-item:hover, .dropdown-item:focus {
+            color: #212529 !important;
         }
         .dropdown-toggle::after {
             right: 8px !important;

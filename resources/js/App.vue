@@ -22,7 +22,6 @@ export default {
     },
     methods: {
         logout () {
-            // this.$router.push({ name: 'Login' })
             axios.get('user/logout-admin')
             .then(({ data }) => {
                 this.$store.commit('removeUser')

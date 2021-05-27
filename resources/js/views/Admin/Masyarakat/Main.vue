@@ -14,10 +14,21 @@
 		          :per-page="perPage" />
 		    </b-col>
 		    <b-col cols="4" md="4">
-		    	<b-form-input
-		        	align="right"
-		          	v-model="filterDebounced"
-		          	placeholder="Cari NIK, Nama, Alamat, No telepon..."/>
+				<form @submit.prevent="search">
+                    <b-input-group align="right">
+                        <b-form-input
+                            align="right"
+                            class="e-form"
+                            @keyup="whenSearch"
+                            v-model="filterDebounced"
+                            placeholder="Cari NIK, Nama, Alamat, No telepon..."/>
+                        <b-input-group-append>
+                            <button class="btn e-btn e-btn-primary" type="submit">
+                                <ph-magnifying-glass class="phospor"/>
+                            </button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </form>
 		    </b-col>
 		</b-row>
 
@@ -36,7 +47,7 @@
 		          	{{ ((currentPage - 1) * 10) + data.index + 1 }}
 		        </template>
 			    <template v-slot:cell(aksi)="row">
-			    	<b-button size="md" v-b-tooltip :title="'Edit data ' + row.item.nama" variant="info" @click="prepareEdit(row.item)">
+			    	<b-button size="md" v-b-tooltip :title="'Edit data ' + row.item.nama" variant="primary" @click="prepareEdit(row.item)">
 			    		<ph-pencil class="phospor"/>
 			    	</b-button>
 			    	<b-button size="md" v-b-tooltip :title="'Hapus data ' + row.item.nama" variant="danger" @click="prepareDelete(row.item)">
@@ -368,20 +379,20 @@
 			        } })
 				})
 			},
-		    debounceFilter: debounce(function () {
-		        this.filter = this.filterDebounced
-		        this.currentPage = 1
-			}, 500),
+			search: debounce(function () {
+                this.filter = this.filterDebounced
+                this.currentPage = 1
+            }, 500),
+            whenSearch () {
+                if(this.filterDebounced == '') {
+                    this.search()
+                }
+            },
 			refreshTable () {
 				this.totalRows > this.perPage ? 
 				(this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
 				: this.$refs.table.refresh()
 			}, 
-		},
-		watch: {
-			filterDebounced (newFilter) {
-		        this.debounceFilter()
-		    },
 		},
 		mounted () {
 			this.fetchWilayah()

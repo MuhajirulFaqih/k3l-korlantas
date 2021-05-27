@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
 
 class Kesatuan extends Model
@@ -34,5 +35,23 @@ class Kesatuan extends Model
     public function kegiatan()
     {
         return $this->hasMany(JenisKegiatanKesatuan::class, 'id_kesatuan');
+    }
+
+    public function scopeFiltered($query, $filter)
+    {
+        if ($filter == null) {
+            return $query;
+        }
+
+        return $query->whereIn(
+            'id',
+            DB::table('pers_kesatuan as k')
+                ->select('k.id')
+                ->whereNull('k.deleted_at')
+                ->whereRaw("CONCAT(
+                    k.kesatuan
+                ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%'])
+                ->get()->pluck('id')->all()
+            );
     }
 }

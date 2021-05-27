@@ -4,118 +4,25 @@
 	    	<b-col cols="2" md="2">
 				<b-row>
 	    			<b-col cols="8"><h4>Pengaturan</h4></b-col>
-	    			<b-col cols="4">
-	    				<!-- <b-button variant="primary" size="sm">
-							<icon name="plus"/> Tambah
-						</b-button> -->
-	    			</b-col>
 	    		</b-row>
 			</b-col>
-	    	<b-col cols="6" md="6">
-		        <!-- <b-pagination
-		          align="right"
-		          :total-rows="totalRows"
-		          v-model="currentPage"
-		          :per-page="perPage" /> -->
-		    </b-col>
-		    <b-col cols="4" md="4">
-		    	<!-- <b-form-input
-		        	align="right"
-		          	v-model="filterDebounced"
-		          	placeholder="Cari Nama Pengaturan..."/> -->
-		    </b-col>
 		</b-row>
 
 		<div class="position-relative">
-			<b-form-group
-				:label-cols="3"
-				breakpoint="md"
-				description="Default password personil dan bhabin"
-				label="Default password">
-				<b-input-group>
-					<b-form-input v-model="default_password" placeholder="password"></b-form-input>
-					<b-btn slot="append" @click="ubahDefaultPassword" variant="info">Simpan</b-btn>
-				</b-input-group>
-			</b-form-group>
-			<b-form-group
-				:label-cols="3"
-				breakpoint="md"
-				description="Default banner/header foto grid"
-				label="Default banner/header foto grid dengan rasio 5:1">
-				<b-form-file @change="bannerChange" placeholder="Banner" accept="image/*"></b-form-file>
-				<div class="src-banner">
-					<img :src="srcBanner" v-if="srcBanner != null" />
-					<b-spinner variant="primary" v-if="spinnerBanner != null"></b-spinner>
-				</div>
-			</b-form-group>
-			<b-form-group
-				:label-cols="3"
-				breakpoint="md"
-				description="Default Pdf Sispammako"
-				label="Default pdf sispammako">
-				
-				<b-form-file @change="pdfSispamChange" placeholder="Sispammako" accept="application/pdf"></b-form-file>
-				<b-spinner variant="primary" v-if="spinnerPdfSispam != null"></b-spinner>
-				<iframe :src="srcPdfSispammako" v-if="srcPdfSispammako != null" />
-			</b-form-group>
-
-			<b-form-group
-					:label-cols="3"
-					breakpoint="md"
-                    v-if="visiMisi == '1'"
-					description="Visi Misi"
-					label="Pdf Visi & Misi">
-
-				<b-form-file @change="pdfVisiMisiChange" placeholder="Visi Misi" accept="application/pdf"></b-form-file>
-				<b-spinner variant="primary" v-if="spinnerPdfVisiMisi != null"></b-spinner>
-				<iframe :src="srcPdfVisiMisi" v-if="srcPdfVisiMisi != null" />
-			</b-form-group>
-
-            <b-form-group
-                    :label-cols="3"
-                    breakpoint="md"
-                    v-if="visiMisi == '1'"
-                    description="Kebijakan Kapolres"
-                    label="Pdf Kebijakan Kapolres">
-
-                <b-form-file @change="pdfKebijakanKapolresChange" placeholder="Kebijakan Kapolres" accept="application/pdf"></b-form-file>
-				<b-spinner variant="primary" v-if="spinnerPdfKebijakanKapolres != null" ></b-spinner>
-                <iframe :src="srcPdfKebijakanKapolres" v-if="srcPdfKebijakanKapolres != null" />
-            </b-form-group>
-
-            <b-form-group
-                    :label-cols="3"
-                    breakpoint="md"
-                    v-if="visiMisi == '1'"
-                    description="Program Kapolres"
-                    label="Pdf Program Kapolres">
-
-                <b-form-file @change="pdfProgramKapolresChange" placeholder="Program Kapolres" accept="application/pdf"></b-form-file>
-				<b-spinner variant="primary" v-if="spinnerPdfProgramKapolres != null" ></b-spinner>
-                <iframe :src="srcPdfProgramKapolres" v-if="srcPdfProgramKapolres != null" />
-            </b-form-group>
-			
-			<!-- <b-table responsive
-	               ref="tabelPengaturan"
-	               :busy.sync="isBusy"
-	               :fields="tableColumns"
-	               :current-page="currentPage"
-	               :per-page="perPage"
-	               :filter="filter"
-	               :sort-by.sync="sortBy"
-	               :sort-desc.sync="sortDesc">
-
-		        <template slot="index" slot-scope="data">
-		          	{{ ((currentPage - 1) * 10) + data.index + 1 }}
-		        </template>
-			    <template slot="aksi" slot-scope="row">
-			    	
-			    </template>
-		    </b-table>
-
-		    <div class="loading" v-show="isBusy">
-		        <spinner :speed=".4" :size="30" />
-		    </div> -->
+			<b-row>
+				<b-col cols="6">
+					<b-form-group
+						:label-cols="3"
+						breakpoint="md"
+						description="Default password user"
+						label="Default password">
+						<b-input-group>
+							<b-form-input v-model="default_password" placeholder="password"></b-form-input>
+							<b-btn slot="append" @click="ubahDefaultPassword" variant="primary">Simpan</b-btn>
+						</b-input-group>
+					</b-form-group>
+				</b-col>
+			</b-row>
 	  	</div>
 	</div>
 </template>
@@ -131,7 +38,7 @@
 		name: 'pengaturan',
 		data () {
 			return {
-			    visiMisi: visiMisi,
+			    visiMisi: null,
 				srcBanner: null,
 				srcPdfSispammako: null,
 				spinnerPdfSispam: null,

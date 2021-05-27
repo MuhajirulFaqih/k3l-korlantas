@@ -10,7 +10,7 @@
         <meta name="token" content="{{ csrf_token() }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="app-name" content="{{ ENV('APP_NAME') }}">
-        <meta name="instansi" content="{{ ENV('APP_INSTANSI') }}">
+        <meta name="kesatuan" content="{{ ENV('APP_KESATUAN') }}">
         <meta name="default-lat" content="{{ ENV('DEFAULT_LAT') }}">
         <meta name="default-lng" content="{{ ENV('DEFAULT_LNG') }}">
         <meta name="emergency-audio-url" content="{{ url('/audio/emergency.mp3') }}">

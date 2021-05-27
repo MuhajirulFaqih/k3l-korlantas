@@ -13,7 +13,7 @@ window.defaultLat = document.head.querySelector('meta[name="default-lat"]').cont
 window.defaultLng = document.head.querySelector('meta[name="default-lng"]').content;
 window.socketPrefix = document.head.querySelector('meta[name="socket-prefix"]').content;
 window.induk = document.head.querySelector('meta[name="induk"]').content;
-window.instansi = document.head.querySelector('meta[name="instansi"]').content;
+window.kesatuan = document.head.querySelector('meta[name="kesatuan"]').content;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
