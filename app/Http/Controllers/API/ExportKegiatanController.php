@@ -10,6 +10,8 @@ use App\Transformers\KegiatanTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Serializers\DataArraySansIncludeSerializer;
 use Illuminate\Support\Str;
+use App\Exports\KegiatanExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExportKegiatanController extends Controller
 {
@@ -21,8 +23,8 @@ class ExportKegiatanController extends Controller
 
         list($orderBy, $direction) = explode(':', $request->sort);
 
-        $data = Kegiatan::with('user', 'jenis', 'user.pemilik')
-                ->laporan($request->filter, $request->rentang, $request->id_jenis)
+        $data = Kegiatan::filterQuickResponse($request->is_quick_response)
+                ->filterLaporan($request->rentang, $request->id_jenis)
                 ->orderBy($orderBy, $direction);
 
         $paginator = $data->paginate(10);
@@ -41,26 +43,35 @@ class ExportKegiatanController extends Controller
         $jenis = JenisKegiatan::filterKegiatan()->where('keterangan', 'jenis_kegiatan')->get();
         return response()->json($jenis);
     }
-
-    public function export(Request $request)
+    
+    public function jenisQuickResponse(Request $request)
     {
-        $kegiatan = Kegiatan::filterkesatuan($request->id_kesatuan)
-            ->where('w_kegiatan', '>=', $request->tanggal_mulai)
-            ->where('w_kegiatan', '<=', $request->tanggal_selesai)
-            ->whereNotIn('id', $request->id_kegiatan)
-            ->get();
+        $jenis = JenisKegiatan::filterQuickResponse()->where('keterangan', 'jenis_kegiatan')->get();
+        return response()->json($jenis);
+    }
+
+    public function cetak(Request $request)
+    {
+        $user = $request->user();
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $data = Kegiatan::filterQuickResponse($request->is_quick_response)
+                ->filterLaporan($request->rentang, $request->id_jenis)
+                ->orderBy('waktu_kegiatan', 'desc')->get();
 
         $kegiatan = fractal()
-            ->collection($kegiatan)
-            ->transformWith(KegiatanTransformer::class)
-            ->serializeWith(DataArraySansIncludeSerializer::class)
-            ->parseIncludes(['user', 'kesatuan', 'jenis'])
-            ->respond();
+                ->collection($data)
+                ->parseIncludes(['jenis', 'jenis.parent.parent.parent', 'kelurahan'])
+                ->transformWith(new KegiatanTransformer)
+                ->serializeWith(new DataArraySansIncludeSerializer)
+                ->respond();
 
         $kegiatan = json_decode($kegiatan->getContent(), true);
         $kegiatan = collect($kegiatan['data']);
+        
 
-        $nama_file = $request->tanggal_mulai . '-' . $request->tanggal_selesai;
+        $nama_file = ($request->is_quick_response ? 'quick-response' : 'kegiatan').'-export-'.date('Y-m-d');
         return Excel::download(new KegiatanExport($request, $kegiatan), $nama_file . '.xlsx');
     }
 }

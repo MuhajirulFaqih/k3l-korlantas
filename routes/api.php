@@ -424,6 +424,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('export-kegiatan')->group(function () {
         Route::get('/', [ExportKegiatanController::class, 'index']);
         Route::get('/jenis', [ExportKegiatanController::class, 'jenis']);
+        Route::get('/jenis-quick-response', [ExportKegiatanController::class, 'jenisQuickResponse']);
         Route::post('/cetak', [ExportKegiatanController::class, 'cetak']);
     });
 
