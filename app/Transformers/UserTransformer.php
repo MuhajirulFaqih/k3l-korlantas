@@ -57,6 +57,19 @@ class UserTransformer extends TransformerAbstract
                     'no_telp' => null,
                     'id_personil'  => null,
                 ];
+            case 'kesatuan':
+                return [
+                    'id' => $user->id,
+                    'id_pemilik' => $user->id_pemilik,
+                    'jenis_pemilik' => $user->jenis_pemilik,
+                    'nama'     => $user->pemilik->kesatuan,
+                    'username' => $user->username,
+                    'nrp'  => null,
+                    'jabatan'  => 'Kesatuan',
+                    'alamat' => null,
+                    'no_telp' => null,
+                    'id_personil'  => null,
+                ];
             default:
                 return [
                     'id' => $user->id,

@@ -174,7 +174,7 @@ class KegiatanController extends Controller
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $validatedData = $request->validate([
-            'komentar' => 'required|min:8'
+            'komentar' => 'required|min:1'
         ]);
 
         $komentar = $kegiatan->komentar()->create([

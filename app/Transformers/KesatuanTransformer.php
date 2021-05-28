@@ -8,7 +8,7 @@ use League\Fractal\TransformerAbstract;
 class KesatuanTransformer extends TransformerAbstract
 {
     protected $defaultIncludes = ['jenis'];
-    protected $availableIncludes = ['parent', 'children'];
+    protected $availableIncludes = ['parent', 'children', 'auth'];
     /**
      * A Fractal transformer.
      *
@@ -21,6 +21,19 @@ class KesatuanTransformer extends TransformerAbstract
             'kesatuan' => $itemKesatuan->kesatuan,
             'kesatuan_lengkap' => in_array($itemKesatuan->level, [1, 2]) ? $itemKesatuan->kesatuan : $itemKesatuan->kesatuan .' '.$itemKesatuan->parent->kesatuan
         ];
+    }
+
+    public function includeAuth($itemKesatuan){
+        if ($itemKesatuan->auth){
+            return $this->item($itemKesatuan->auth, function ($itemAuth) {
+               return [
+                   'id' => $itemAuth->id,
+                   'username' => $itemAuth->username,
+                   'online' => $itemAuth->online
+               ];
+            });
+        }
+        return null;
     }
 
     public function includeParent(object $itemKesatuan){

@@ -12,41 +12,41 @@
 		>
 
             <div id="marker-single" v-if="markerSingleShow">
-                <GmapMarker v-for="(indexMarkerSingle, keyMarkerSingle) in markerSingle" :key="`single-${keyMarkerSingle}`" 
+                <GmapMarker v-for="(indexMarkerSingle, keyMarkerSingle) in markerSingle" :key="`single-${keyMarkerSingle}`"
                     :position="{ lat: parseFloat(indexMarkerSingle.data.lat), lng: parseFloat(indexMarkerSingle.data.lng) }"
                     :icon="loadMarkerSingle(indexMarkerSingle)" @click="detailMarkerSingle(indexMarkerSingle)"/>
             </div>
 
             <div id="marker-hotspot" v-if="!markerSingleShow">
-                <GmapMarker v-for="(indexMarkerHotspot, keyMarkerHotspot) in markerHotspot" :key="`hotspot-${keyMarkerHotspot}`" 
+                <GmapMarker v-for="(indexMarkerHotspot, keyMarkerHotspot) in markerHotspot" :key="`hotspot-${keyMarkerHotspot}`"
                     :position="{ lat: parseFloat(indexMarkerHotspot.lat), lng: parseFloat(indexMarkerHotspot.lng) }"
                     :icon="loadMarkerHotspot(indexMarkerHotspot.tk)" @click="$refs.hotspot.detail(indexMarkerHotspot)"/>
             </div>
-            
+
             <div id="marker-darurat" v-if="!markerSingleShow && polyPatroli == null && polyPengawalan == null">
-                <GmapMarker v-for="(indexMarkerDarurat, keyMarkerDarurat) in markerDarurat" :key="`darurat-${keyMarkerDarurat}`" 
+                <GmapMarker v-for="(indexMarkerDarurat, keyMarkerDarurat) in markerDarurat" :key="`darurat-${keyMarkerDarurat}`"
                     :position="{ lat: parseFloat(indexMarkerDarurat.lat), lng: parseFloat(indexMarkerDarurat.lng) }"
                     :icon="require('@/assets/darurat.png').default" @click="$refs.bottombar.$refs.darurat.detail(indexMarkerDarurat)"/>
             </div>
 
             <div id="marker-kegiatan" v-if="kegiatanStatus && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
-                <GmapMarker v-for="(indexMarkerKegiatan, keyMarkerKegiatan) in markerKegiatan" :key="`kegiatan-${keyMarkerKegiatan}`" 
+                <GmapMarker v-for="(indexMarkerKegiatan, keyMarkerKegiatan) in markerKegiatan" :key="`kegiatan-${keyMarkerKegiatan}`"
                     :position="{ lat: parseFloat(indexMarkerKegiatan.lat), lng: parseFloat(indexMarkerKegiatan.lng) }"
                     :icon="require('@/assets/kegiatan.png').default" @click="$refs.bottombar.$refs.kegiatan.detail(indexMarkerKegiatan)"/>
             </div>
-            
+
             <div id="marker-kejadian" v-if="kejadianStatus && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
-                <GmapMarker v-for="(indexMarkerKejadian, keyMarkerKejadian) in markerKejadian" :key="`kegiatan-${keyMarkerKejadian}`" 
+                <GmapMarker v-for="(indexMarkerKejadian, keyMarkerKejadian) in markerKejadian" :key="`kegiatan-${keyMarkerKejadian}`"
                     :position="{ lat: parseFloat(indexMarkerKejadian.lat), lng: parseFloat(indexMarkerKejadian.lng) }"
                     :icon="require('@/assets/kejadian.png').default" @click="$refs.bottombar.$refs.kejadian.detail(indexMarkerKejadian)"/>
             </div>
 
             <!-- <div id="marker-pengaduan" v-if="pengaduanStatus && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
-                <GmapMarker v-for="(indexMarkerPengaduan, keyMarkerPengaduan) in markerPengaduan" :key="`kegiatan-${keyMarkerPengaduan}`" 
+                <GmapMarker v-for="(indexMarkerPengaduan, keyMarkerPengaduan) in markerPengaduan" :key="`kegiatan-${keyMarkerPengaduan}`"
                     :position="{ lat: parseFloat(indexMarkerPengaduan.lat), lng: parseFloat(indexMarkerPengaduan.lng) }"
                     :icon="require('@/assets/pengaduan.png').default" @click="$refs.bottombar.$refs.pengaduan.detail(indexMarkerPengaduan)"/>
             </div> -->
-            
+
             <div id="marker-personil" v-if="markerPersonilShow && !markerSingleShow && polyPatroli == null && polyPengawalan == null">
                 <gmap-custom-marker v-for="(indexMarkerPersonil, keyMarkerPersonil) in markerPersonil" :key="`personil-${keyMarkerPersonil}`"
                     :marker="{ lat: parseFloat(indexMarkerPersonil.lat), lng: parseFloat(indexMarkerPersonil.lng) }"
@@ -57,21 +57,21 @@
             </div>
 
             <div id="marker-lokasi-vital" v-if="!markerSingleShow && polyPatroli == null && polyPengawalan == null">
-                <GmapMarker v-for="(indexMarkerLokasiVital, keyMarkerLokasiVital) in markerLokasiVital" :key="`lokasivital-${keyMarkerLokasiVital}`" 
+                <GmapMarker v-for="(indexMarkerLokasiVital, keyMarkerLokasiVital) in markerLokasiVital" :key="`lokasivital-${keyMarkerLokasiVital}`"
                     :position="{ lat: parseFloat(indexMarkerLokasiVital.lat), lng: parseFloat(indexMarkerLokasiVital.lng) }"
                     :icon="indexMarkerLokasiVital.jenis.icon" @click="$refs.lokasiVital.detail(indexMarkerLokasiVital)"/>
             </div>
 
             <div id="marker-masyarakat-kejadian">
-                <GmapMarker v-for="(indexMarkerMasyarakatKejadian, keyMarkerMasyarakatKejadian) in markerMasyarakatKejadian" 
-                    :key="`masyarakat-kejadian-${keyMarkerMasyarakatKejadian}`" 
+                <GmapMarker v-for="(indexMarkerMasyarakatKejadian, keyMarkerMasyarakatKejadian) in markerMasyarakatKejadian"
+                    :key="`masyarakat-kejadian-${keyMarkerMasyarakatKejadian}`"
                     :position="{ lat: parseFloat(indexMarkerMasyarakatKejadian.lat), lng: parseFloat(indexMarkerMasyarakatKejadian.lng) }"
                     :icon="require('@/assets/masyarakat-kejadian.png').default" @click="$refs.masyarakat.detail(indexMarkerMasyarakatKejadian)"/>
             </div>
-            
+
             <div id="marker-masyarakat-darurat">
-                <GmapMarker v-for="(indexMarkerMasyarakatDarurat, keyMarkerMasyarakatDarurat) in markerMasyarakatDarurat" 
-                    :key="`masyarakat-darurat-${keyMarkerMasyarakatDarurat}`" 
+                <GmapMarker v-for="(indexMarkerMasyarakatDarurat, keyMarkerMasyarakatDarurat) in markerMasyarakatDarurat"
+                    :key="`masyarakat-darurat-${keyMarkerMasyarakatDarurat}`"
                     :position="{ lat: parseFloat(indexMarkerMasyarakatDarurat.lat), lng: parseFloat(indexMarkerMasyarakatDarurat.lng) }"
                     :icon="require('@/assets/masyarakat-darurat.png').default" @click="$refs.masyarakat.detail(indexMarkerMasyarakatDarurat)"/>
             </div>
@@ -80,7 +80,7 @@
 				<GmapMarker key="markerPatroliStart" :position="patroliStart" :icon="require('@/assets/patroli-mulai.png').default" />
                 <GmapMarker key="markerPatroliEnd" :position="patroliEnd" :icon="require('@/assets/patroli-selesai.png').default" />
 			</div>
-            
+
             <div v-if="polyPengawalan != null">
 				<GmapMarker key="markerPengawalanStart" :position="pengawalanStart" :icon="require('@/assets/pengawalan-mulai.png').default" />
                 <GmapMarker key="markerPengawalanEnd" :position="pengawalanEnd" :icon="require('@/assets/pengawalan-selesai.png').default" />
@@ -119,8 +119,8 @@ import LaravelEcho from "laravel-echo"
 
 export default {
     name: 'dashboard',
-    components: { 
-        BottomBar, LeftBar, 
+    components: {
+        BottomBar, LeftBar,
         RightBar, TopBar, 'gmap-custom-marker' : CustomMarker,
         Hotspot, LokasiVital, Masyarakat, AudioKejadian,
     },
@@ -319,23 +319,25 @@ export default {
                     host: socketUrl,
                     auth: { headers: { Authorization: token }}
                 })
-                
+
+                Echo.join(socketPrefix+"-online")
+
                 Echo.private(socketPrefix + ':Monit')
-                    .listen('.call-ready', this.callReady)
                     .listen('.darurat-baru', this.daruratBaru)
                     .listen('.kegiatan-baru', this.kegiatanBaru)
                     .listen('.kegiatan-komentar', this.kegiatanKomentar)
-                    // .listen('.pengaduan-baru', this.pengaduanBaru)
-                    // .listen('.pengaduan-komentar', this.pengaduanKomentar)
                     .listen('.kejadian-baru', this.kejadianBaru)
                     .listen('.kejadian-tindaklanjut', this.kejadianTindaklanjut)
                     .listen('.personil-relokasi', this.relokasiPersonil)
                     .listen('.masyarakat-relokasi', this.relokasiMasyarakat)
                     .listen('.personil-logout', this.personilLogout)
+
+                Echo.private(socketPrefix+':Monit.'+this.user.id)
+                    .listen('.incoming-call', this.incomingCall)
             }
         },
-        callReady (data) {
-            this.$refs.bottombar.$refs.personil.$refs.detail.$refs.videoCall.callReady()
+        incomingCall(data) {
+
         },
         daruratBaru({ data }) {
             this.socketDarurat = true
@@ -350,8 +352,8 @@ export default {
                     self.detailDaruratBaru(data)
                 },
             })
-            if(this.$refs.bottombar.$refs.personil.$refs.detail.$refs.videoCall.call == false) { 
-                this.$refs.emergency.play() 
+            if(this.$refs.bottombar.$refs.personil.$refs.detail.$refs.videoCall.call == false) {
+                this.$refs.emergency.play()
             }
         },
         detailDaruratBaru(data) {

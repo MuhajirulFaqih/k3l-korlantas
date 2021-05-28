@@ -92,6 +92,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index']);
+        Route::get('kesatuan', [AdminController::class, 'getKesatuan']);
     });
 
     Route::prefix('informasi')->group(function () {

@@ -47,6 +47,8 @@ class PersonilTransformer extends TransformerAbstract
             'ptt_ht' => $personil->ptt_ht,
             'lat' => $personil->lat,
             'lng' => $personil->lng,
+            'pers_polres' => in_array(optional($personil->kesatuan->jenis)->jenis, ['POLRES', 'SATKER_POLRES', 'POLSEK']),
+            'pers_polda' => in_array(optional($personil->kesatuan->jenis)->jenis, ['POLDA', 'SATKER POLDA', 'SUBSATKER POLDA']),
             'kapolsek' => strpos($personil->jabatan->jabatan, 'KAPOLSEK') === 0 ? $personil->kesatuan->id_kec : null,
             'isDanaDesa' => $personil->jabatan->aksess_dana_desa,
             // 'menu_tigapilar' => in_array($personil->id_jabatan, explode(',', env('TIGAPILAR', ''))) || $personil->bhabin != null,

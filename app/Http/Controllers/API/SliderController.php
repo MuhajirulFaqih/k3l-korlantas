@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Models\Slider;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 class SliderController extends Controller
 {
@@ -20,13 +21,13 @@ class SliderController extends Controller
             return response()->json(['message' => 'Tidak ada content.'], 204);
 
         return response()->json($slider);
-        
+
     }
 
     public function store(Request $request)
     {
         $user = $request->user();
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $validatedData = $request->validate([

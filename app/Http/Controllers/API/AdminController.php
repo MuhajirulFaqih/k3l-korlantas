@@ -6,10 +6,12 @@ use App\Models\Admin;
 use App\Models\Kesatuan;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\AdminTransformer;
+use App\Transformers\KesatuanTransformer;
 use App\Transformers\ResponseUserTransformer;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Artisan;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class AdminController extends Controller
@@ -39,13 +41,16 @@ class AdminController extends Controller
         if ($user->jenis_pemilik != 'personil')
             return response()->json(['error' => 'Terlarang'], 403);
 
+        Artisan::call("admin:online");
+
         $id_kesatuan = Kesatuan::ascendantsAndSelf($user->pemilik->id_kesatuan)->pluck('id')->all();
-        $collection = Kesatuan::whereIn('id', $id_kesatuan)->paginate(10);
+        $collection = Kesatuan::with('auth')->whereIn('id', $id_kesatuan)->has('auth')->paginate(10);
 
 
         return fractal()
             ->collection($collection)
-            ->transformWith(UserTransformer::class)
+            ->parseIncludes(['auth'])
+            ->transformWith(KesatuanTransformer::class)
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->respond();
     }
