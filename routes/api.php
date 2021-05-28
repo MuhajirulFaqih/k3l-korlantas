@@ -7,6 +7,7 @@ use App\Http\Controllers\API\DaruratController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\API\ExportKejadianController;
 use App\Http\Controllers\API\ExportLaporan;
+use App\Http\Controllers\API\ExportKegiatanController;
 use App\Http\Controllers\API\ExportPengaduanController;
 use App\Http\Controllers\API\HTController;
 use App\Http\Controllers\API\InformasiController;
@@ -305,17 +306,17 @@ Route::middleware('auth:api')->group(function () {
 //TEMPAT VITAL END
 
 // Form Laporan
-    Route::prefix('form')->group(function () {
-        Route::get('tipe-laporan', [ExportLaporan::class, 'selectTipe']);
-        Route::get('jenis-giat', [ExportLaporan::class, 'jenisGiat']);
-    });
+    // Route::prefix('form')->group(function () {
+    //     Route::get('tipe-laporan', [ExportLaporan::class, 'selectTipe']);
+    //     Route::get('jenis-giat', [ExportLaporan::class, 'jenisGiat']);
+    // });
 //end Form
 
-    Route::prefix('export-laporan')->group(function () {
-        Route::get('show-data', [ExportLaporan::class, 'index']);
-        Route::post('show-data', [ExportLaporan::class, 'index']);
-        Route::POST('download/{option}', [ExportLaporan::class, 'exportExcelbyChecklist']);
-    });
+    // Route::prefix('export-laporan')->group(function () {
+    //     Route::get('show-data', [ExportLaporan::class, 'index']);
+    //     Route::post('show-data', [ExportLaporan::class, 'index']);
+    //     Route::POST('download/{option}', [ExportLaporan::class, 'exportExcelbyChecklist']);
+    // });
 
     /*Route::prefix('export-laporan-masyarakat')->group(function () {
         Route::get('show-data', 'API\ExportLaporanMasyarakat@index');
@@ -419,18 +420,24 @@ Route::middleware('auth:api')->group(function () {
     }
 
 
+    Route::prefix('export-kegiatan')->group(function () {
+        Route::get('/', [ExportKegiatanController::class, 'index']);
+        Route::get('/jenis', [ExportKegiatanController::class, 'jenis']);
+        Route::post('/cetak', [ExportKegiatanController::class, 'cetak']);
+    });
+
     Route::prefix('export-kejadian')->group(function () {
         Route::get('/', [ExportKejadianController::class, 'index']);
         Route::post('/cetak', [ExportKejadianController::class, 'cetak']);
     });
 
-    Route::group([
-        'prefix' => 'export-pengaduan',
-        'middleware' => ['auth:api']
-    ], function () {
-        Route::get('/', [ExportPengaduanController::class, 'index']);
-        Route::post('/cetak', [ExportPengaduanController::class, 'cetak']);
-    });
+    // Route::group([
+    //     'prefix' => 'export-pengaduan',
+    //     'middleware' => ['auth:api']
+    // ], function () {
+    //     Route::get('/', [ExportPengaduanController::class, 'index']);
+    //     Route::post('/cetak', [ExportPengaduanController::class, 'cetak']);
+    // });
 });
 
 Route::post('news', [NewsController::class, 'tambah']);
