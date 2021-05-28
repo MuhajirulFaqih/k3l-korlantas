@@ -19,10 +19,21 @@
 		          :per-page="perPage" />
 		    </b-col>
 		    <b-col cols="4" md="4">
-		    	<b-form-input
-		        	align="right"
-		          	v-model="filterDebounced"
-		          	placeholder="Cari Channel..."/>
+				<form @submit.prevent="search">
+                    <b-input-group align="right">
+                        <b-form-input
+                            align="right"
+                            class="e-form"
+                            @keyup="whenSearch"
+                            v-model="filterDebounced"
+                            placeholder="Cari Channel..."/>
+                        <b-input-group-append>
+                            <button class="btn e-btn e-btn-primary" type="submit">
+                                <ph-magnifying-glass class="phospor"/>
+                            </button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </form>
 		    </b-col>
 		</b-row>
 
@@ -61,7 +72,7 @@
 					no-close-on-backdrop
 					no-close-on-esc
 					title-tag="h4"
-					size="md"
+					size="lg"
 					header-class="red"
 					header-text-variant="white"
 					:title="modalTitle">
@@ -76,10 +87,10 @@
 				</b-col>
 				<template slot="modal-footer">
 					<b-btn v-if="!singleChannel.channel_id" type="submit" variant="primary">
-						<icon name="save"/> Simpan
+						Simpan
 					</b-btn>
 					<b-btn v-else type="submit" variant="primary">
-						<icon name="paper-plane"/> Edit
+						Edit
 					</b-btn>
 					<b-btn variant="secondary" @click="$refs.modalForm.hide('cancel')">Batal</b-btn>
 				</template>
@@ -233,21 +244,21 @@
         			channel: '',
         		}
 		    },
-		    debounceFilter: debounce(function () {
-		        this.filter = this.filterDebounced
-		        this.currentPage = 1
-			}, 500),    
+		    search: debounce(function () {
+                this.filter = this.filterDebounced
+                this.currentPage = 1
+            }, 500),
+            whenSearch () {
+                if(this.filterDebounced == '') {
+                    this.search()
+                }
+            },
 			refreshTable () {
 				this.totalRows > this.perPage ? 
 				(this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
 				: this.$refs.table.refresh()
 			},
 		},
-		watch: {
-			filterDebounced (newFilter) {
-		        this.debounceFilter()
-		    },
-		}
 	}
 </script>
 <style scoped="">

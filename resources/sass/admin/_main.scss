@@ -308,6 +308,10 @@ a.article, a.article:hover {
             cursor: no-drop;
         }
     }
+
+    .custom-select option {
+        color: $dark;
+    }
     
     .ui.fluid.search > input {
         color: $content !important;
