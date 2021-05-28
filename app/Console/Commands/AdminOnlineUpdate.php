@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class AdminOnlineUpdate extends Command
 {
@@ -41,22 +42,30 @@ class AdminOnlineUpdate extends Command
      */
     public function handle()
     {
-        $this->info("Sync online admin");
+        try {
+            $this->info("Sync online admin");
 
-        $url = env('SOCKET_URL')."/apps/".env('SOCKET_APP_ID')."/channels/presence-".env('SOCKET_PREFIX')."-online/users?auth_key=".env("SOCKET_APP_KEY");
-        $response = Http::get($url);
-        $this->info("Url ". $url);
+            $url = env('SOCKET_URL')."/apps/".env('SOCKET_APP_ID')."/channels/presence-".env('SOCKET_PREFIX')."-online/users?auth_key=".env("SOCKET_APP_KEY");
+            $response = Http::get($url);
+            $this->info("Url ". $url);
 
-        $jsonBody = $response->json();
+            if ($response->clientError() || $response->serverError())
+                return true;
 
-        if (!isset($jsonBody['users']))
+            $jsonBody = $response->json();
+
+
+            if (!isset($jsonBody['users']))
+                return true;
+
+            $ids = array_map(function ($items){return $items['id']; }, $jsonBody['users']);
+
+            User::whereIn('id', $ids)->update(['online' => true]);
+            User::whereNotIn('id', $ids)->update(['online' => false]);
+
             return true;
-
-        $ids = array_map(function ($items){return $items->id; }, $jsonBody['users']);
-
-        User::whereIn('id', $ids)->update(['status' => true]);
-        User::whereNotIn('id', $ids)->update(['status' => false]);
-
-        return true;
+        } catch (\Exception $e){
+            Log::info("Eror", $e->getTrace());
+        }
     }
 }

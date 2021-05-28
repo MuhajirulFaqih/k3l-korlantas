@@ -12,7 +12,7 @@
                 <b-row>
                     <b-col cols="9">
                         <div class="e-call">
-                            <div class="e-call-waiting" v-if="videoCall.inCall == false && this.call == true">
+                            <div class="e-call-waiting" v-if="inCall == false && this.call == true">
                                 <div class="d-inline-block">
                                     <ph-hourglass-medium class="phospor"/>
                                 </div>
@@ -25,9 +25,9 @@
                                             @click.native="updateMainVideoStreamer(publisher)"
                                             video-class="e-person-other-thumb"/>
                                 <user-video v-for="sub in subscribers" :key="sub.stream.connection.connectionId"
-                                            :stream-manager="sub" @click.native="updateMainVideoStreamer(sub)"/>
+                                            :stream-manager="sub" @click.native="updateMainVideoStreamer(sub)"/><!--
                                 <video ref="videoOutputOtherThumb1" id="videoInput" autoplay
-                                       class="e-person-other-thumb"></video>
+                                       class="e-person-other-thumb"></video>-->
                                 <!-- <video ref="videoOutputOtherThumb2" id="videoInput2" autoplay class="e-person-other-thumb"></video>
                                 <video ref="videoOutputOtherThumb3" id="videoInput3" autoplay class="e-person-other-thumb"></video> -->
                             </div>
@@ -66,15 +66,24 @@
                 mainStreamManager: null,
                 publisher: null,
                 subscribers: [],
+                inCall: false
             }
         },
         components: {
             UserVideo
         },
         methods: {
+            showModal (item) {
+                this.single = item
+                let self = this
+                setTimeout(function() {
+                    self.joinSession()
+                    self.$refs.videoCall.show()
+                }, 500)
+            },
             joinSession() {
                 this.OV = new OpenVidu()
-
+                this.OV.enableProdMode()
                 this.session = this.OV.initSession()
 
                 this.session.on('streamCreated', ({stream}) => {
@@ -109,7 +118,7 @@
                             this.session.publish(this.publisher)
                         })
 
-                        this.callPersonil()
+                        this.callPersonil(this.single.nrp)
                     .catch(error => {
                         console.log("Error get connection :", error.code, error.message)
                     })
@@ -118,7 +127,7 @@
                 window.addEventListener('beforeunload', this.leaveSession)
             },
             callPersonil(nrp){
-                axios.post(baseUrl+'/call/notify-personil', {
+                axios.post('call/notify-personil', {
                     nrp: nrp
                 })
                 .then((data) => {
@@ -133,16 +142,20 @@
                 this.publisher = undefined
                 this.subscribers = []
                 this.OV = undefined
+                this.$refs.videoCall.hide()
 
                 window.removeEventListener('beforeunload', this.leaveSession)
+            },
+            closeCall(){
+                this.leaveSession()
             },
             updateMainVideoStreamer(stream) {
                 if (this.mainStreamManager === stream) return
                 this.mainStreamManager = stream
             },
-            requestToken() {
+            getToken() {
                 return new Promise((resolve, reject) => {
-                    axios.post(baseUrl + '/call/admin')
+                    axios.post(baseUrl + '/api/call/admin')
                         .then(response => response.data)
                         .then(data => resolve(data.token))
                         .catch(error => reject(error.response))

@@ -43,7 +43,7 @@ class AdminController extends Controller
 
         Artisan::call("admin:online");
 
-        $id_kesatuan = Kesatuan::ascendantsAndSelf($user->pemilik->id_kesatuan)->pluck('id')->all();
+        $id_kesatuan = Kesatuan::ancestorsAndSelf($user->pemilik->id_kesatuan)->pluck('id')->all();
         $collection = Kesatuan::with('auth')->whereIn('id', $id_kesatuan)->has('auth')->paginate(10);
 
 

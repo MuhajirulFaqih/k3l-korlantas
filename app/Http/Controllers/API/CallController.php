@@ -104,6 +104,8 @@ class CallController extends Controller
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->toArray();
 
+        $data['data']['pesan'] = 'Panggilan masuk';
+
         $this->kirimNotifikasiViaOnesignal('vcon', $data['data'], [$personil->auth->id]);
 
         return response()->json(['success' => true]);
