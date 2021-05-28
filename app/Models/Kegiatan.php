@@ -40,8 +40,8 @@ class Kegiatan extends Model
                     ->join('user', 'user.id', '=', 'kegiatan.id_user')
                     ->join('personil', 'personil.id', '=', 'user.id_pemilik', 'left')
                     ->whereRaw('CONCAT (kegiatan.detail,\'||\', jenis_kegiatan.jenis, \'||\', personil.nama, \'||\', personil.nrp)')
-                    ->get()
                     ->groupBy('kegiatan.id')
+                    ->get()
                     ->pluck('id')
                     ->all()
             );
@@ -93,6 +93,33 @@ class Kegiatan extends Model
     public function scopeFilterJenisPemilik($query, $user)
     {
         return $this->jenisPemilik($query, $user);
+    }
+
+    public function scopeFilterLaporan($query, $rentang, $id_jenis) {
+        if ($rentang != '') {
+            list($mulai, $selesai) = $rentang;
+            $query->whereDate('waktu_kegiatan', '>=', $mulai)
+                    ->whereDate('waktu_kegiatan', '<=', $selesai);
+        }
+
+        if ($id_jenis != '') {
+            $query->whereIn('id',
+                DB::table('kegiatan')
+                    ->selectRaw('kegiatan.id as id')
+                    ->leftJoin('kegiatan_jenis_kegiatan', 'kegiatan_jenis_kegiatan.id_kegiatan', '=', 'kegiatan.id')
+                    ->where(function($sub) use ($id_jenis) {
+                        foreach ($id_jenis as $key => $value) { 
+                            $sub->orWhere('kegiatan_jenis_kegiatan.id_jenis_kegiatan', $value); 
+                        }
+                    })
+                    ->groupBy('id')
+                    ->get()
+                    ->pluck('id')
+                    ->all()
+            );
+        }
+
+        return $query;
     }
 
     public function kelurahan(){

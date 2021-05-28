@@ -47,6 +47,9 @@
                         <router-link to="/laporan-kegiatan" :class="$route.name == 'Laporan Kegiatan | Administrator' ? 'active' : ''">Kegiatan</router-link>
                     </li>
                     <li>
+                        <router-link to="/laporan-quick-response" :class="$route.name == 'Laporan Quick Response | Administrator' ? 'active' : ''">Quick Response</router-link>
+                    </li>
+                    <li>
                         <router-link to="/laporan-kejadian" :class="$route.name == 'Laporan Kejadian | Administrator' ? 'active' : ''">Kejadian</router-link>
                     </li>
                     <li>

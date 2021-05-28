@@ -331,6 +331,18 @@ a.article, a.article:hover {
         color: $content !important;
     }
     
+    .ui.label {
+        font-weight: 300 !important;
+        background: #182435 !important;
+        color: $content !important;
+    }
+
+    .ui.multiple.dropdown>.label i.icon.delete {
+        &::before, &::after {
+            background: $content !important;
+        }
+    }
+    
     .btn-dropdown {
         .btn, .btn:hover, .btn:focus, .btn:active, 
         .btn:not(:disabled):not(.disabled):active:focus, 

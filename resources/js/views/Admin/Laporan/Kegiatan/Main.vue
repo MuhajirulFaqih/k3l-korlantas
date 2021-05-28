@@ -21,10 +21,10 @@
             <b-col cols="11" md="11">
                 <b-row>
                     <b-col cols="3" md="3">
-                        <b-form-select
-                            @select="selectData"
-                            :v-model="jenisGiat"
-                            :options="itemJenisGiat"
+                        <multi-select
+                            @select="onSelectJenisGiat"
+                            :selected-options="jenisGiat"
+                            :options="jenisGiatOptions"
                             placeholder="Pilih Jenis Kegiatan"
                         />
                     </b-col>
@@ -49,6 +49,7 @@
                 <b-row>
                     <b-col>
                         <button class="btn btn-primary float-right" :disabled="proses" @click="printData">
+                            <b-spinner style="width: 1rem; height: 1rem; top: -3px; position: relative;" variant="light" v-if="proses"/>
                             <ph-printer class="phospor"/>
                         </button>
                     </b-col>
@@ -57,12 +58,9 @@
         </b-row>
 
         <div class="position-relative mt-2">
-            <center class="m-2">
-                <b-spinner v-if="proses" variant="primary"/>
-            </center>
             <b-table
                 responsive
-                ref="tabelLaporan"
+                ref="table"
                 :busy.sync="isBusy"
                 :fields="tableColumns"
                 :items="providerLaporan"
@@ -80,7 +78,8 @@
                     {{ row.item.user.pangkat }} {{ row.item.user.nama }} <br/> {{ row.item.user.jabatan }}
                 </template>
                 <template #cell(img)="row">
-                    <b-img :src="row.item.dokumentasi" width="100px" height="100px"></b-img>
+                    <b-img :src="row.item.dokumentasi" v-if="row.item.dokumentasi != null" width="100px" height="100px"></b-img>
+                    <div v-else>-</div>
                 </template>
             </b-table>
 
@@ -114,7 +113,6 @@
                 isBusy: false,
                 sortBy: "kegiatan.id",
                 sortDesc: true,
-                rentangTanggal: null,
                 tableColumns: [
                     {
                         key: 'index',
@@ -146,19 +144,12 @@
                     },
                     { key: 'user.nrp', label: 'Nrp' },
                     { key: 'nama', label: 'Nama' },
+                    { key: 'img', label: 'Dokumentasi' },
                 ],
                 proses: false,
-                option: 1,
-                tipeLaporan: [],
-                itemTipeLaporan: {},
+                rentangTanggal: null,
                 jenisGiat: [],
-                lastSelectItem: {},
-                itemJenisGiat: [],
-                semua: "0",
-                checked: [],
-                unchecked: [],
-                type: 1,
-                tableData: ""
+                jenisGiatOptions: [],
             };
         },
         methods: {
@@ -172,14 +163,18 @@
                     default:
                         sortBy = ctx.sortBy;
                 }
-
+                let id_jenis = this.jenisGiat.map((v) => { return v.value })
+                if(this.rentangTanggal != null) {
+                    if(this.rentangTanggal[0] != null) {
+                        var mulai = format(parseISO(formatISO(this.rentangTanggal[0], { representation: 'complete' })), 'yyyy-MM-dd')
+                        var selesai = format(parseISO(formatISO(this.rentangTanggal[1], { representation: 'complete' })), 'yyyy-MM-dd')
+                    }
+                }
                 let payload = {
                     page: ctx.currentPage,
                     filter: ctx.filter === "" ? null : ctx.filter,
-                    option: this.option,
-                    type: this.type,
-                    id_jenis: this.type == 2 ? this.jenisGiat : null,
-                    rentang: this.rentangTanggal,
+                    id_jenis: id_jenis,
+                    rentang: this.rentangTanggal == null ? '' : this.rentangTanggal[0] != null ? ([mulai, selesai]) : '',
                     sort: sortBy !== null ? sortBy + ":" + (ctx.sortDesc ? "desc" : "asc") : "waktu_kegiatan:desc"
                 };
 
@@ -189,143 +184,69 @@
                         this.totalRows = pagination.total;
                         this.perPage = pagination.per_page;
                         this.currentPage = pagination.current_page;
-                        this.tableData = data;
-                        this.checked = [];
-                        var self = this;
-                        data.forEach(function (key) {
-                            if (self.unchecked.indexOf(key.id) > -1) {
-                            } else {
-                                self.checked.push(key.id);
-                            }
-                        });
                         return data;
                     })
                     .catch(({response}) => {
                         // Catch error
+                        console.log(response)
                         return response;
                     });
 
                 return promise;
             },
-            selectData(jenisGiat, lastSelectItem) {
+            refreshTable () {
+                this.totalRows > this.perPage ? 
+                (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
+                : this.$refs.table.refresh()
+            },
+            onSelectJenisGiat(jenisGiat) {
                 this.jenisGiat = jenisGiat
-                this.lastSelectItem = lastSelectItem
-                this.semua = '0'
-                if (this.type == '1') {
-                    this.semua = '1'
-                }
-                this.$refs.tabelLaporan.refresh()
+                this.refreshTable()
             },
-            showData() {
-                this.type = 1
-                this.rentangTanggal = null
-                this.jenisGiat = []
-                this.semua = '0'
-                this.$refs.tabelLaporan.refresh()
-            },
-            showDataType() {
-                this.checked = [];
-                this.unchecked = [];
-                this.jenisGiat = this.itemJenisGiat[0].id
-                this.semua = "0";
-
-                if (this.option == 1 && this.type == 1) {
-                    this.semua = "1";
-                }
-                this.$refs.tabelLaporan.refresh();
-            },
-
             onInputRentangTgl(val) {
-                this.semua = "1";
-                this.$refs.tabelLaporan.refresh();
+                this.refreshTable()
             },
-            semuaToggle() {
-                this.checked = [];
-                if (this.semua == "0") {
-                    var self = this;
-                    var data = this.tableData;
-                    data.forEach(function (key) {
-                        self.checked.push(key.id);
-                        var index = self.unchecked.indexOf(key.id);
-                        self.unchecked.splice(index, 1);
-                    });
-                } else {
-                    var self = this;
-                    var table = this.tableData;
-                    table.forEach(function (key) {
-                        self.unchecked.push(key.id);
-                    });
-                }
-            },
-            toggleChecked(value) {
-                if (this.checked.length == this.tableData.length) {
-                    this.semua = "1";
-                } else {
-                    this.semua = "0";
-                }
-
-                var uncheck = this.unchecked;
-
-                if (this.checked.indexOf(value) > -1) {
-                    var index = this.unchecked.indexOf(value);
-                    uncheck.splice(index, 1);
-                } else {
-                    uncheck.push(value);
-                }
-            },
-
             printData() {
-                if (
-                    this.option == "" ||
-                    (this.option == 1 && this.type == "") ||
-                    (this.option == 1 && this.type == 2 && this.jenisGiat.length == 0) ||
-                    (this.option == 2 && this.rentangTanggal == "") ||
-                    (this.option == 2 && this.type == "" && this.rentangTanggal == "") ||
-                    (this.option == 2 && this.type == 2 && this.jenisGiat.length == 0 && this.rentangTanggal == "")
-                ) {
-                    console.log('Data tidak lengkap')
-                    this.$toast.error("Silahkan lengkapi data jenis laporan", {
-                        layout: "topRight"
-                    });
-                } else {
-                    this.proses = true
+                this.proses = true
 
-                    var data = {
-                        option: this.option,
-                        type: this.type,
-                        id_jenis: this.type == 2 ? this.jenisGiat : null,
-                        rentang: this.rentangTanggal
-                    };
-                    axios({
-                        method: "POST",
-                        url: "export-laporan/cetak",
-                        data: data,
-                        responseType: "blob"
-                    })
-                        .then(response => {
-                            this.proses = false
-                            let url = window.URL.createObjectURL(new Blob([response.data], { type: 'data:application/vnd.ms-excel' }));
-                            let filename = response.headers['content-disposition'].split('=')[1].replace(/^\"+|\"+$/g, '')
-                            let link = document.createElement('a');
-                            link.href = url;
-                            link.setAttribute('download', filename);
-                            document.body.appendChild(link);
-                            link.click();
-                        })
-                        .catch(({response: {status, data: {errors}}}) => {
-                            if (status === 422)
-                                this.$toast.error(flattenDeep(values(errors)).join("<br>"))
-                        });
+                let id_jenis = this.jenisGiat.map((v) => { return v.value })
+                if(this.rentangTanggal != null) {
+                    var mulai = format(parseISO(formatISO(this.rentangTanggal[0], { representation: 'complete' })), 'yyyy-MM-dd')
+                    var selesai = format(parseISO(formatISO(this.rentangTanggal[1], { representation: 'complete' })), 'yyyy-MM-dd')
                 }
+                let payload = {
+                    id_jenis: id_jenis,
+                    rentang: this.rentangTanggal == null ? '' : [mulai, selesai],
+                }
+                axios({
+                    method: "POST",
+                    url: "export-kegiatan/cetak",
+                    data: payload,
+                    responseType: "blob"
+                })
+                .then(response => {
+                    this.proses = false
+                    let url = window.URL.createObjectURL(new Blob([response.data], { type: 'data:application/vnd.ms-excel' }));
+                    let filename = response.headers['content-disposition'].split('=')[1].replace(/^\"+|\"+$/g, '')
+                    let link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', filename);
+                    document.body.appendChild(link);
+                    link.click();
+                })
+                .catch(({response: {status, data: {errors}}}) => {
+                    this.proses = false
+                    if (status === 422)
+                        this.$toast.error(flattenDeep(values(errors)).join("<br>"))
+                })
             },
             fetchJenis() {
                 var promise = axios.get('export-kegiatan/jenis')
                     .then(({data}) => {
                         var self = this
                         data.map((val) => {
-                            self.itemJenisGiat.push({value: val.id, text: val.jenis})
+                            self.jenisGiatOptions.push({value: val.id, text: val.jenis})
                         })
-                        this.jenisGiat = data[0].id
                     })
                     .catch((error) => {
 

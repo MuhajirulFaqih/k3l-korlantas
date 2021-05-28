@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Kegiatan;
+use App\Models\JenisKegiatan;
 
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -21,11 +22,14 @@ use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\KegiatanTransformer;
 
 
-class KegiatanExport implements FromCollection, WithHeadings, WithMapping, WithEvents, WithDrawings
+class KegiatanExport implements FromCollection, WithHeadings, WithMapping, WithEvents
 {
+    private $number = 1;
+
     function __construct($request, $kegiatan) {
-        $this->tanggal_mulai = $request->tanggal_mulai;
-        $this->tanggal_selesai = $request->tanggal_selesai;
+        $this->rentang = $request->rentang;
+        $this->id_jenis = $request->id_jenis;
+        $this->tipe = $request->is_quick_response ? 'Quick Response' : 'Kegiatan';
         $this->count = 0;
         $this->kegiatan = $kegiatan;
     }
@@ -39,26 +43,38 @@ class KegiatanExport implements FromCollection, WithHeadings, WithMapping, WithE
     public function map($kegiatan): array
     {
         return [
-            $kegiatan['pemimpin'],
-            $kegiatan['kuat_pers'],
-            $kegiatan['kesatuan']['kesatuan'],
+            $this->number++,
+            $kegiatan['detail'],
+            $this->formatJenis($kegiatan['jenis']),
             Carbon::parse($kegiatan['w_kegiatan'])->translatedFormat('d F Y'),
-            $kegiatan['logistik'],
-            $kegiatan['sasaran'],
-            $kegiatan['lokasi'],
+            $kegiatan['user']['nrp'],
+            $kegiatan['user']['nama'],
+            $kegiatan['daftar_rekan'],
+            $kegiatan['nomor_polisi'],
             $kegiatan['lat'],
             $kegiatan['lng'],
-            $kegiatan['hasil'],
-            // $kegiatan['sampul']
         ];
     }
 
     public function headings() : array
     {
+        $jenis = ''; $pada = '';
+
+        if($this->id_jenis != '') {
+            $jenis = JenisKegiatan::whereIn('id', $this->id_jenis)->get()->pluck('jenis')->all();
+            $jenis = implode(' , ', $jenis);
+        }
+
+        if ($this->rentang != '') {
+            list($mulai, $selesai) = $this->rentang;
+            $pada = 'Pada ' . Carbon::parse($mulai)->translatedFormat('d F Y'). ' - ' .Carbon::parse($selesai)->translatedFormat('d F Y');
+        }
+
+
         return [
-            ['Daftar Kegiatan'],
-            ['Pada : '. Carbon::parse($this->tanggal_mulai)->translatedFormat('d F Y'). ' - ' .Carbon::parse($this->tanggal_selesai)->translatedFormat('d F Y')],[],[],
-            ['Pemimpin', 'Kuat Pers', 'Kesatuan', 'Tanggal','Logistik', 'Sasaran', 'lokasi', 'lat', 'lng', 'hasil', 'foto']
+            ["Daftar " . $this->tipe . " \r\n ".$jenis],
+            [ $pada ],[],[],
+            ['No.', 'Detail', 'Jenis '.$this->tipe, 'Waktu '.$this->tipe, 'Nrp','Nama', 'Daftar Rekan', 'Nomor Polisi', 'Lat', 'Lng', 'Foto']
         ];
     }
 
@@ -73,9 +89,7 @@ class KegiatanExport implements FromCollection, WithHeadings, WithMapping, WithE
 
                 $spreadsheet->getDefaultStyle()
                 ->getAlignment()
-                ->applyFromArray(
-                    array('horizontal' => 'left')
-                );
+                ->applyFromArray( array('horizontal' => 'left') );
 
                 $styleHeader = [
                     'borders' => [
@@ -87,22 +101,26 @@ class KegiatanExport implements FromCollection, WithHeadings, WithMapping, WithE
                 ];
 
                 
-                $spreadsheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(25);
-                // $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(15);
-                $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(10);
-                // $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(15);
-                $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(20);
-                // $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(20);
-                // $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(20);
-                $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(10);
-                $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(10);
-                $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(50);
+                $spreadsheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(8);
+                $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(40);
+                $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(45);
+                $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(25);
+                $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(20);
+                $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(26);
+                $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(30);
+                $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(15);
+                $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(15);
+                $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(15);
+                $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(25);
 
                 $spreadsheet->getActiveSheet()->getRowDimension('1')->setRowHeight(30);
                 $spreadsheet->getActiveSheet()->getRowDimension('2')->setRowHeight(15);
                 $spreadsheet->getActiveSheet()->getRowDimension('3')->setRowHeight(10);
                 $spreadsheet->getActiveSheet()->getRowDimension('4')->setRowHeight(10);
                 $spreadsheet->getActiveSheet()->getRowDimension('5')->setRowHeight(20);
+                $n=0; foreach($this->kegiatan as $k) { $n++;
+                    $spreadsheet->getActiveSheet()->getRowDimension((5 + (int) $n))->setRowHeight(90);
+                }
 
                 $spreadsheet->getActiveSheet()->getStyle('A1:K2')->getFont()->setBold(true);
                 $spreadsheet->getActiveSheet()->getStyle('A1:K1')->getFont()->setSize(16);
@@ -131,35 +149,54 @@ class KegiatanExport implements FromCollection, WithHeadings, WithMapping, WithE
                             ->setWrapText(true);
 
                 $spreadsheet->getActiveSheet()->getDefaultRowDimension()->setRowHeight(140);
+
+                $tmp = 6;
+                $rowCount = 0;
+                $data = [];
+
+                foreach ($this->kegiatan as $key => $value) {
+                    if($value['dokumentasi'] != null){
+                        $url = explode('/', $value['dokumentasi']);
+                        $drawing = new Drawing();
+                        $drawing->setName('foto');
+                        $drawing->setPath(storage_path('app/dokumentasi/'.$url[6]));
+                        $drawing->setHeight(100);
+                        $drawing->setOffsetY(10);
+                        $drawing->setOffsetX(10);
+                        $drawing->setCoordinates('K'.($tmp));
+                        $drawing->setWorksheet($event->sheet->getDelegate());
+                        $tmp++;
+                        $rowCount++;
+                        $data[] = $drawing;
+                    }
+                }
+
             },
 
         ];
     }
 
-    public function drawings()
+    public function formatJenis($jenis)
     {
-        $tmp = 4;
-        $rowCount = 0;
-        $data = [];
-
-        foreach ($this->kegiatan as $key => $value) {
-            if($value['sampul'] == null){
-                continue;
+        $viewJenis = '';
+        foreach ($jenis as $key => $value) {
+            switch ($value['jenis']['keterangan']) {
+                case 'jenis_kegiatan':
+                    $viewJenis .= "Jenis " . $this->tipe .  " : " . $value['jenis']['jenis'] . "\r\n";
+                    break;
+                case 'subjenis':
+                    $viewJenis .= $value['jenis']['parent']['jenis'] . " : " . $value['jenis']['jenis'] . "\r\n";
+                    break;
+                case 'dropdown_subjenis':
+                    $viewJenis .= $value['jenis']['parent']['jenis'] . " : " . $value['jenis']['jenis'] . "\r\n";
+                    break;
+                
+                default:
+                    break;
             }
-            $url = explode('/', $value['sampul']);
-            $drawing = new Drawing();
-            $drawing->setName('foto');
-            $drawing->setPath(storage_path('app/kegiatan/'.$url[6]));
-            $drawing->setHeight(155);
-            $drawing->setOffsetY(($rowCount * 180) + (40 + ($rowCount*6.6)));
-            $drawing->setOffsetX(10);
-            $drawing->setCoordinates('K5');
-            $tmp++;
-            $rowCount++;
-            $data[$key] = $drawing;
         }
 
-        return $data;
+        return $viewJenis;
     }
 
 }

@@ -16,6 +16,7 @@ import AdminMasyarakat from '@/views/Admin/Masyarakat/Main'
 import AdminPersonil from '@/views/Admin/Personil/Main'
 import AdminPengaturan from '@/views/Admin/Pengaturan/Main'
 import AdminLaporanKegiatan from '@/views/Admin/Laporan/Kegiatan/Main'
+import AdminLaporanQuickResponse from '@/views/Admin/Laporan/QuickResponse/Main'
 import AdminLaporanAbsensi from '@/views/Admin/Absensi/Main'
 
 import DemoKegiatan from '@/views/Demo/Kegiatan'
@@ -67,6 +68,10 @@ const router = new Router({
                     path: "/laporan-kegiatan",
                     name: "Laporan Kegiatan | Administrator",
                     component: AdminLaporanKegiatan
+                }, {
+                    path: "/laporan-quick-response",
+                    name: "Laporan Quick Response | Administrator",
+                    component: AdminLaporanQuickResponse
                 }, {
                     path: "/laporan-kejadian",
                     name: "Laporan Kejadian | Administrator",
