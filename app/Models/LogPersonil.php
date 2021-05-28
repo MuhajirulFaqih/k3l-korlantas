@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class LogPersonil extends Model
 {
-    use HasFactory;
+    use HasFactory, UserTimezoneAware;
     protected $table = 'log_status_personil';
     protected $fillable = ['id_personil', 'status_dinas', 'waktu_mulai_dinas', 'waktu_selesai_dinas'];
 

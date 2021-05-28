@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class TempatVital extends Model
 {
+    use UserTimezoneAware;
 	protected $table = 'tempat_vital';
 
     public function jenis()

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class HTChannels extends Model
 {
-    use HasFactory;
+    use HasFactory, UserTimezoneAware;
     protected $connection = 'mysqlht';
 
     protected $table = 'murmur_channels';

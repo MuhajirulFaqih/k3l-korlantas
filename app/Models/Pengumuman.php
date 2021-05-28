@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pengumuman extends Model
 {
-    use HasFactory;
+    use HasFactory, UserTimezoneAware;
     protected $table = 'pengumuman';
     protected $fillable = ['id_user', 'id_kesatuan', 'judul', 'file'];
 

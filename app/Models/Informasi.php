@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Informasi extends Model
 {
-    use HasFactory;
+    use HasFactory, UserTimezoneAware;
     protected $table = 'informasi';
     protected $fillable = ['informasi', 'aktif'];
 

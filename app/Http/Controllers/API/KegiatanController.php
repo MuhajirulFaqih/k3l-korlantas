@@ -61,7 +61,7 @@ class KegiatanController extends Controller
             'lat' => $validatedData['lat'],
             'lng' => $validatedData['lng'],
             'id_kelurahan_binmas' => $validatedData['id_kelurahan_binmas'],
-            'is_quick_response' => $validatedData['is_quick_response'] == '' ? 0 : 1
+            'is_quick_response' => $validatedData['is_quick_response'] == '1' ? 1 : 0
         ];
 
         $kegiatan = Kegiatan::create($data);
@@ -217,7 +217,7 @@ class KegiatanController extends Controller
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->respond();
     }
-   
+
     public function getJenisTipeByPersonil(Request $request)
     {
         $user = $request->user();
@@ -245,7 +245,7 @@ class KegiatanController extends Controller
 
         $kesatuan = $user->pemilik->kesatuan;
         $kesatuan_induk = Kesatuan::where('kode_satuan', substr($kesatuan->kode_satuan, 0, 5));
-        
+
         if($kesatuan_induk->count() == 0)
             return response()->json(['error' => 'Tipe laporan kosong'], 204);
 
@@ -260,11 +260,11 @@ class KegiatanController extends Controller
         }
 
         foreach ($response as $key => $value) {
-            $options[] = [ 'id' => $value->id, 'kesatuan' => $value->kesatuan ]; 
+            $options[] = [ 'id' => $value->id, 'kesatuan' => $value->kesatuan ];
         }
 
         return response()->json(['data' => $options]);
-        
+
     }
 
     public function getJenisTipeByKesatuan($tipe, Request $request)

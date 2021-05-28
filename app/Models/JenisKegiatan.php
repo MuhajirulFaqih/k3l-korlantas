@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\NodeTrait;
 
 class JenisKegiatan extends Model
 {
-    use HasFactory, NodeTrait;
+    use HasFactory, NodeTrait, UserTimezoneAware;
 
     protected $table = 'jenis_kegiatan';
 

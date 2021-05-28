@@ -595,6 +595,17 @@ class UserController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function updateTimezone(Request $request){
+        $user = $request->user();
+
+        $user->timezone = $request->timezone ?? env("APP_TIMEZONE");
+
+        if (!$user->save())
+            return response()->json(['error' => 'Terjadi Kesalahan'], 500);
+
+        return response()->json(['success' => true]);
+    }
+
     public function requestAdminToken(Request $request){
         $validator = $request->validate([
            'username' => 'required|min:3',

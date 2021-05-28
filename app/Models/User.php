@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,7 +11,7 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, UserTimezoneAware;
 
     protected $table = 'user';
 
@@ -20,7 +21,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'password', 'fcm_id', 'perangkat', 'diverifikasi', 'id_pemilik', 'jenis_pemilik', 'kode'
+        'username', 'password', 'fcm_id', 'perangkat', 'diverifikasi', 'id_pemilik', 'jenis_pemilik', 'kode', 'timezone'
     ];
 
     /**

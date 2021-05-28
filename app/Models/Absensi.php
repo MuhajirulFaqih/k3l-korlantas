@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Absensi extends Model
 {
-    use HasFactory;
+    use HasFactory, UserTimezoneAware;
 
     protected $table = 'absensi_personil';
     protected $guarded = [];

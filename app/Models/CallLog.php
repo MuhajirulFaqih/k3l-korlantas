@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CallLog extends Model
 {
-    use HasFactory;
+    use HasFactory, UserTimezoneAware;
 
     protected $table = 'call_log';
     protected $guarded = [];

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Provinsi extends Model
 {
-    use HasFactory;
+    use HasFactory, UserTimezoneAware;
 
     /**
      * Nama tabel yang dipakai oleh model.

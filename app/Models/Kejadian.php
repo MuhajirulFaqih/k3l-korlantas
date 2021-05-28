@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -9,7 +10,7 @@ use App\Traits\FilterJenisPemilik;
 
 class Kejadian extends Model
 {
-    use HasFactory, FilterJenisPemilik;
+    use HasFactory, FilterJenisPemilik, UserTimezoneAware;
 
     protected $table = 'kejadian';
     protected $fillable = [
@@ -93,7 +94,7 @@ class Kejadian extends Model
         $query->whereRaw('id NOT IN (select id_kejadian as id from tindak_lanjut
                             where tindak_lanjut.status = "selesai"
                             order by created_at desc)');
-        
+
         return $query;
     }
 
@@ -102,7 +103,7 @@ class Kejadian extends Model
         $query->whereRaw('id IN (select id_kejadian as id from tindak_lanjut
                             where tindak_lanjut.status = "selesai"
                             order by created_at desc)');
-        
+
         return $query;
     }
 
@@ -110,7 +111,7 @@ class Kejadian extends Model
     {
         $query->whereRaw('id NOT IN (select id_kejadian as id from tindak_lanjut
                             order by created_at desc)');
-        
+
         return $query;
     }
 
@@ -120,12 +121,12 @@ class Kejadian extends Model
             case 'selesai':
                 $sub->whereRaw('k.id IN (select id_kejadian as id from tindak_lanjut where tindak_lanjut.status = "selesai" and tindak_lanjut.id_kejadian  = k.id)');
                 break;
-            
+
             case 'proses_penanganan':
                 $sub->whereRaw('k.id IN (select id_kejadian as id from tindak_lanjut where tindak_lanjut.status = "proses_penanganan" and tindak_lanjut.id_kejadian  = k.id order by created_at desc)');
                 $sub->whereRaw('k.id NOT IN (select id_kejadian as id from tindak_lanjut where tindak_lanjut.status = "selesai" and tindak_lanjut.id_kejadian  = k.id)');
                 break;
-            
+
             case 'laporan_baru':
                 $sub->where('k.verifikasi', '1');
                 $sub->whereRaw('k.id NOT IN (select id_kejadian as id from tindak_lanjut where tindak_lanjut.id_kejadian  = k.id )');
@@ -135,7 +136,7 @@ class Kejadian extends Model
                 $sub->whereNull('k.verifikasi');
                 $sub->whereRaw('k.id NOT IN (select id_kejadian as id from tindak_lanjut where tindak_lanjut.id_kejadian  = k.id)');
                 break;
-            
+
             default:
                 $sub->whereNotNull('k.id');
                 break;
@@ -143,7 +144,7 @@ class Kejadian extends Model
     }
 
     public function scopeFilterJenisPemilik($query, $user)
-    {   
+    {
         return $this->jenisPemilik($query, $user);
     }
 }

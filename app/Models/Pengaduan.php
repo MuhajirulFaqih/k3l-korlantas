@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -9,7 +10,7 @@ use App\Traits\FilterJenisPemilik;
 
 class Pengaduan extends Model
 {
-    use HasFactory, FilterJenisPemilik;
+    use HasFactory, FilterJenisPemilik, UserTimezoneAware;
     protected $table = 'pengaduan';
 
     protected $fillable = ['id_user', 'lat', 'lng', 'lokasi', 'id_kesatuan', 'keterangan', 'foto'];

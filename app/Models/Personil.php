@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use App\Traits\FilterJenisPemilik;
 
 class Personil extends Model
 {
-    use HasFactory, FilterJenisPemilik;
+    use HasFactory, FilterJenisPemilik, UserTimezoneAware;
 
     protected $table = 'personil';
 

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PersonilTerdekat extends Model
 {
-    use HasFactory;
+    use HasFactory, UserTimezoneAware;
     protected $table = 'personil_terdekat';
 
     protected $fillable = ['id_personil', 'id_induk', 'jenis_induk', 'lat', 'lng'];

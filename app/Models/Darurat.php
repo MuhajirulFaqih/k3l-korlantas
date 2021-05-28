@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -9,7 +10,7 @@ use App\Traits\FilterJenisPemilik;
 
 class Darurat extends Model
 {
-    use HasFactory, FilterJenisPemilik;
+    use HasFactory, FilterJenisPemilik, UserTimezoneAware;
     protected $table = 'darurat';
     protected $fillable = ['id_user', 'lat', 'lng', 'acc', 'id_kesatuan', 'selesai'];
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -9,7 +10,7 @@ use Kalnoy\Nestedset\NodeTrait;
 
 class Kesatuan extends Model
 {
-    use HasFactory, NodeTrait;
+    use HasFactory, NodeTrait, UserTimezoneAware;
 
     protected $table = 'pers_kesatuan';
 
@@ -31,7 +32,7 @@ class Kesatuan extends Model
     {
         return $this->belongsTo(JenisKesatuan::class, 'id_jenis_kesatuan');
     }
-    
+
     public function kegiatan()
     {
         return $this->hasMany(JenisKegiatanKesatuan::class, 'id_kesatuan');

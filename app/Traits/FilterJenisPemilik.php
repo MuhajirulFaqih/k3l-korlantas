@@ -2,6 +2,7 @@
 namespace App\Traits;
 
 use App\Models\Kesatuan;
+use Illuminate\Support\Facades\Log;
 
 trait FilterJenisPemilik
 {
@@ -18,6 +19,7 @@ trait FilterJenisPemilik
         } else {
             return $query;
         }
+        Log::info("id_kesatuan", $id_kesatuan);
         return $query->whereIn('id_kesatuan', $id_kesatuan);
     }
 }

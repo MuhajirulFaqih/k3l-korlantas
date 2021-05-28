@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -9,7 +10,7 @@ use App\Traits\FilterJenisPemilik;
 
 class Kegiatan extends Model
 {
-    use HasFactory, FilterJenisPemilik;
+    use HasFactory, FilterJenisPemilik, UserTimezoneAware;
 
     protected $table = 'kegiatan';
     protected $guarded = [];
@@ -57,7 +58,7 @@ class Kegiatan extends Model
 
         return $query;
     }
-    
+
     public function scopeFilter($query, $filter){
         if ($filter){
             $query->whereIn('id',
@@ -88,7 +89,7 @@ class Kegiatan extends Model
         }
         return $query->where('is_quick_response', 0);
     }
-    
+
     public function scopeFilterJenisPemilik($query, $user)
     {
         return $this->jenisPemilik($query, $user);

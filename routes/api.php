@@ -53,6 +53,7 @@ Route::prefix('user')->group(function () {
         Route::post('ubah-password-admin', [UserController::class, 'change_password_admin']);
         Route::post('update_pp', [UserController::class, 'updatePP']);
         Route::post('ubah_profil', [UserController::class, 'change_profil']);
+        Route::post('update-timezone', [UserController::class, 'updateTimezone']);
         Route::get('sms_otp/androido', [UserController::class, 'smsOtpO']);
         Route::post('lacak', [UserController::class, 'tracking']);
         Route::post('lacak-masyarakat', [UserController::class, 'trackingMasyarakat']);
@@ -71,10 +72,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('set', function () {
         $htHost = base64_encode(base64_encode(env("HT_HOST")));
         $htPass = base64_encode(base64_encode(env("HT_PASS")));
-        $vcWss = base64_encode(base64_encode(env("VC_WSS_URL")));
-        $vcNatServer = base64_encode(base64_encode(env("VC_NAT_SERVER")));
 
-        $response = ['1' => $htHost, '2' => $htPass, '3' => $vcWss, '4' => $vcNatServer];
+        $response = ['1' => $htHost, '2' => $htPass];
 
         return response()->json($response);
     });
@@ -142,7 +141,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/', [KegiatanController::class, 'upload_laporan']);
 
         Route::get('tipejenis', [KegiatanController::class, 'getJenisTipe']);
-        
+
         Route::get('tipejenisbypersonil', [KegiatanController::class, 'getJenisTipeByPersonil']);
         Route::get('kesatuanquickresponse', [KegiatanController::class, 'getKesatuanQuickResponse']);
         Route::get('tipejenisbykesatuan/{tipe}', [KegiatanController::class, 'getJenisTipeByKesatuan']);
