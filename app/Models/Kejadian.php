@@ -143,6 +143,16 @@ class Kejadian extends Model
         }
     }
 
+    public function scopeFilterLaporan($query, $rentang) {
+        if ($rentang != '') {
+            list($mulai, $selesai) = $rentang;
+            $query->whereDate('w_kejadian', '>=', $mulai)
+                    ->whereDate('w_kejadian', '<=', $selesai);
+        }
+
+        return $query;
+    }
+
     public function scopeFilterJenisPemilik($query, $user)
     {
         return $this->jenisPemilik($query, $user);

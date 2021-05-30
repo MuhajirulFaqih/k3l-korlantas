@@ -17,6 +17,7 @@ import AdminPersonil from '@/views/Admin/Personil/Main'
 import AdminPengaturan from '@/views/Admin/Pengaturan/Main'
 import AdminLaporanKegiatan from '@/views/Admin/Laporan/Kegiatan/Main'
 import AdminLaporanQuickResponse from '@/views/Admin/Laporan/QuickResponse/Main'
+import AdminLaporanKejadian from '@/views/Admin/Laporan/Kejadian/Main'
 import AdminLaporanAbsensi from '@/views/Admin/Absensi/Main'
 
 import DemoKegiatan from '@/views/Demo/Kegiatan'
@@ -75,7 +76,7 @@ const router = new Router({
                 }, {
                     path: "/laporan-kejadian",
                     name: "Laporan Kejadian | Administrator",
-                    component: null
+                    component: AdminLaporanKejadian
                 }, {
                     path: "/laporan-absensi",
                     name: "Laporan Absensi | Administrator",

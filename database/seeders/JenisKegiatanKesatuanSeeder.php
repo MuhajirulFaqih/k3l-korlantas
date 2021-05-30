@@ -413,12 +413,22 @@ class JenisKegiatanKesatuanSeeder extends Seeder
                         'has_rute' => false,
                         'subjenis' => [
                             [
-                                'jenis' => 'ANEV kegiatan Bhabinkamtibmas',
+                                'jenis' => 'Jenis Pembinaan',
                                 'subjenis' => [
-                                    ['jenis' => 'Deteksi Dini'],
-                                    ['jenis' => 'Sambang'],
-                                    ['jenis' => 'Pembinaan Polmas'],
-                                    ['jenis' => 'Terobosan Kreatif'],
+                                    [ 'jenis' => 'Pelatihan Bhabinkamtibmas' ],
+                                    [
+                                        'jenis' => 'ANEV kegiatan Bhabinkamtibmas',
+                                        'subjenis' => [
+                                            ['jenis' => 'Jenis ANEV',
+                                                'subjenis' => [
+                                                    ['jenis' => 'Deteksi Dini'],
+                                                    ['jenis' => 'Sambang'],
+                                                    ['jenis' => 'Pembinaan Polmas'],
+                                                    ['jenis' => 'Terobosan Kreatif'],
+                                                ]
+                                            ]
+                                        ]
+                                    ],
                                 ]
                             ],
                         ]

@@ -25,6 +25,7 @@ class ExportKegiatanController extends Controller
 
         $data = Kegiatan::filterQuickResponse($request->is_quick_response)
                 ->filterLaporan($request->rentang, $request->id_jenis)
+                ->filterJenisPemilik($user)
                 ->orderBy($orderBy, $direction);
 
         $paginator = $data->paginate(10);
@@ -58,6 +59,7 @@ class ExportKegiatanController extends Controller
 
         $data = Kegiatan::filterQuickResponse($request->is_quick_response)
                 ->filterLaporan($request->rentang, $request->id_jenis)
+                ->filterJenisPemilik($user)
                 ->orderBy('waktu_kegiatan', 'desc')->get();
 
         $kegiatan = fractal()

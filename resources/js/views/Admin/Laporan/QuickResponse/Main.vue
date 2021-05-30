@@ -212,12 +212,14 @@
 
                 let id_jenis = this.jenisGiat.map((v) => { return v.value })
                 if(this.rentangTanggal != null) {
-                    var mulai = format(parseISO(formatISO(this.rentangTanggal[0], { representation: 'complete' })), 'yyyy-MM-dd')
-                    var selesai = format(parseISO(formatISO(this.rentangTanggal[1], { representation: 'complete' })), 'yyyy-MM-dd')
+                    if(this.rentangTanggal[0] != null) {
+                        var mulai = format(parseISO(formatISO(this.rentangTanggal[0], { representation: 'complete' })), 'yyyy-MM-dd')
+                        var selesai = format(parseISO(formatISO(this.rentangTanggal[1], { representation: 'complete' })), 'yyyy-MM-dd')
+                    }
                 }
                 let payload = {
                     id_jenis: id_jenis,
-                    rentang: this.rentangTanggal == null ? '' : [mulai, selesai],
+                    rentang: this.rentangTanggal == null ? '' : this.rentangTanggal[0] != null ? ([mulai, selesai]) : '',
                     is_quick_response: true,
                 }
                 axios({

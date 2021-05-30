@@ -201,7 +201,7 @@
                     type="button" class="btn e-btn e-btn-primary mx-1"
                     @click="pilihPersonil(single)"><ph-caret-circle-right class="phospor"/> Verifikasi
                 </button>
-                <button v-if="formTindakLanjut && personilKejadian == false && single.selesai == 0 && single.verifikasi == 1"
+                <button v-if="formTindakLanjut && personilKejadian == false && (single.selesai == 0 || single.selesai == null) && single.verifikasi == 1"
                     type="button"
                     class="btn e-btn e-btn-success mx-1"
                     @click="tambahTindakLanjut(single.id)"><ph-arrows-left-right class="phospor"/> Tambah tindak lanjut</button>
