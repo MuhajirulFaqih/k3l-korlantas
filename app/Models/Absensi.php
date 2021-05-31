@@ -6,10 +6,11 @@ use App\Traits\UserTimezoneAware;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Traits\FilterJenisPemilik;
 
 class Absensi extends Model
 {
-    use HasFactory, UserTimezoneAware;
+    use HasFactory, FilterJenisPemilik, UserTimezoneAware;
 
     protected $table = 'absensi_personil';
     protected $guarded = [];
@@ -19,35 +20,37 @@ class Absensi extends Model
         return $this->belongsTo(Personil::class, 'id_personil');
     }
 
-    public function scopeFiltered($query, $kesatuan, $tanggal, $nrp){
-        if ($kesatuan == null && $tanggal[0] == null && $nrp == null) {
-            return $query;
+    public function scopeFilterLaporan($query, $rentang, $kesatuan, $nrp) {
+        if ($rentang != '') {
+            list($mulai, $selesai) = $rentang;
+            $query->whereDate('created_at', '>=', $mulai)
+                    ->whereDate('created_at', '<=', $selesai);
         }
 
-        return $query->whereIn(
-            'id',
-            DB::table('absensi_personil as a')
-                ->select('a.id')
-                ->join('personil as p', 'p.id', '=', 'a.id_personil')
-                ->join('pers_pangkat as pg', 'pg.id', '=', 'p.id_pangkat')
-                ->join('pers_jabatan as j', 'j.id', '=', 'p.id_jabatan')
-                ->join('pers_kesatuan as k', 'k.id', '=', 'p.id_kesatuan')
-                ->where(function($query) use ($kesatuan, $tanggal, $nrp) {
-                    if($kesatuan != '') {
-                        $query->where('p.id_kesatuan', '=', $kesatuan);
-                    }
-                    if($tanggal[0] != null) {
-                        list($mulai, $selesai) = $tanggal;
-                        $mulai = date('Y-m-d', strtotime($mulai));
-                        $selesai = date('Y-m-d', strtotime($selesai));
+        if (count($kesatuan) != 0 || $nrp != '') {
+            $query->whereIn('id',
+                    DB::table('absensi_personil as a')
+                    ->select('a.id')
+                    ->join('personil as p', 'p.id', '=', 'a.id_personil')
+                    ->join('pers_pangkat as pg', 'pg.id', '=', 'p.id_pangkat')
+                    ->join('pers_jabatan as j', 'j.id', '=', 'p.id_jabatan')
+                    ->join('pers_kesatuan as k', 'k.id', '=', 'p.id_kesatuan')
+                    ->where(function($query) use ($kesatuan, $nrp) {
+                        if(count($kesatuan) != 0) { $query->whereIn('p.id_kesatuan', $kesatuan); }
+                        if($nrp != '') { $query->where('p.nrp', 'LIKE', '%'.$nrp.'%'); }
+                    })
+                    ->groupBy('id')
+                    ->get()
+                    ->pluck('id')
+                    ->all()
+            );
+        }
 
-                        $query->whereBetween(DB::raw('DATE(a.created_at)'), [ $mulai, $selesai ]);
-                    }
-                    if($nrp != '') {
-                        $query->where('p.nrp', 'LIKE', '%'.$nrp.'%');
-                    }
-                })
-                ->get()->pluck('id')->all()
-        );
+        return $query;
+    }
+
+    public function scopeFilterJenisPemilik($query, $user)
+    {
+        return $this->jenisPemilik($query, $user);
     }
 }

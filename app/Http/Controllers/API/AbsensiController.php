@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Exports\AbsensiExport;
 use App\Models\Absensi;
+use App\Models\Kesatuan;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Serializers\DataArraySansIncludeSerializer;
@@ -19,16 +20,15 @@ class AbsensiController extends Controller
         $user = $request->user();
         list($orderBy, $direction) = explode(':', $request->sort);
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
+        
+        $id_kesatuan = Kesatuan::descendantsAndSelf($request->kesatuan)->pluck('id')->all();
 
-        $paginator = $request->id_kesatuan == '' &&
-        			$request->rentangTanggal[0] == '' &&
-        			$request->nrp == '' ?
-            		Absensi::orderBy($orderBy, $direction)->paginate(10) :
-            		Absensi::filtered($request->id_kesatuan, $request->rentangTanggal, $request->nrp)
-		            ->orderBy($orderBy, $direction)
-		            ->paginate(10);
+        $paginator = Absensi::filterLaporan($request->rentang, $id_kesatuan, $request->nrp)
+                    ->filterJenisPemilik($user)
+                    ->orderBy($orderBy, $direction)
+                    ->paginate(10);
 
         $collection = $paginator->getCollection();
 
@@ -84,6 +84,7 @@ class AbsensiController extends Controller
     {
         Absensi::create([
             'id_personil' => $personil->id,
+            'id_kesatuan' => $personil->kesatuan->id,
             'waktu_mulai' => \Carbon\Carbon::now(),
             'waktu_selesai' => null,
             'lat_datang' => $request['lat'],
@@ -135,15 +136,26 @@ class AbsensiController extends Controller
     public function export(Request $request)
     {
     	$user = $request->user();
-    	if (!in_array($user->jenis_pemilik, ['admin']))
+
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
+        
+        $id_kesatuan = Kesatuan::descendantsAndSelf($request->kesatuan)->pluck('id')->all();
 
-        $data =  Absensi::filtered($request->kesatuan,
-    								$request->tanggal,
-    								$request->nrp)
-	            ->orderBy('id_personil', 'DESC')
-	            ->get();
+        $absensi = Absensi::filterLaporan($request->rentang, $id_kesatuan, $request->nrp)
+                    ->filterJenisPemilik($user)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
-	    return Excel::download(new AbsensiExport($data), 'Document.xlsx');
+        $absensi = fractal()
+                ->collection($absensi)
+                ->transformWith(new AbsensiTransformer)
+                ->serializeWith(new DataArraySansIncludeSerializer)
+                ->respond();
+
+        $absensi = json_decode($absensi->getContent(), true);
+        $absensi = collect($absensi['data']);
+
+        return Excel::download(new AbsensiExport($request, $absensi), 'absensi.xlsx');
     }
 }

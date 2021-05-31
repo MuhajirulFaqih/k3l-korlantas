@@ -18,7 +18,7 @@ import AdminPengaturan from '@/views/Admin/Pengaturan/Main'
 import AdminLaporanKegiatan from '@/views/Admin/Laporan/Kegiatan/Main'
 import AdminLaporanQuickResponse from '@/views/Admin/Laporan/QuickResponse/Main'
 import AdminLaporanKejadian from '@/views/Admin/Laporan/Kejadian/Main'
-import AdminLaporanAbsensi from '@/views/Admin/Absensi/Main'
+import AdminLaporanAbsensi from '@/views/Admin/Laporan/Absensi/Main'
 
 import DemoKegiatan from '@/views/Demo/Kegiatan'
 import DemoQuickResponse from '@/views/Demo/QuickResponse'

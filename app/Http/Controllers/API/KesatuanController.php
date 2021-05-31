@@ -128,4 +128,26 @@ class KesatuanController extends Controller
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->respond();
     }
+    
+    public function getByLevel($level, Request $request){
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $kesatuan = Kesatuan::where('level', 2)->orderBy('kesatuan', 'asc')->get();
+
+        return response()->json($kesatuan);
+    }
+    
+    public function getChild(Kesatuan $kesatuan, Request $request){
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $kesatuan = $kesatuan->children()->get();
+
+        return response()->json($kesatuan);
+    }
 }

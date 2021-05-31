@@ -51,7 +51,7 @@
                 <li :class="openMenuClass('area')">
                     <div @click="toggleSub('area')">
                         <ph-globe-hemisphere-west class="phospor" />
-                        <span>Area</span>
+                        <span>Beat</span>
                     </div>
                 </li>
                 <li>

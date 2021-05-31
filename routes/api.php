@@ -114,6 +114,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [KesatuanController::class, 'ambilSemua']);
 
         Route::get('/all', [KesatuanController::class, 'index']);
+        Route::get('/level/{level}', [KesatuanController::class, 'getByLevel']);
+        Route::get('/child/{kesatuan}', [KesatuanController::class, 'getChild']);
 
         Route::post('/', [KesatuanController::class, 'store']);
 

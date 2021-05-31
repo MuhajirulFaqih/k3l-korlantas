@@ -42,7 +42,7 @@
                     class="dropdown-toggle">
                     <ph-book class="phospor"/> Laporan
                 </a>
-                <ul class="collapse list-unstyled" id="laporan">
+                <ul :class="classLaporan" id="laporan">
                     <li>
                         <router-link to="/laporan-kegiatan" :class="$route.name == 'Laporan Kegiatan | Administrator' ? 'active' : ''">Kegiatan</router-link>
                     </li>
@@ -83,6 +83,15 @@
                 title: appName,
                 isActive: false,
             };
+        },
+        computed: {
+            classLaporan() {
+                return (this.$route.name == 'Laporan Kegiatan | Administrator' 
+                    || this.$route.name == 'Laporan Quick Response | Administrator' 
+                    || this.$route.name == 'Laporan Kejadian | Administrator' 
+                    || this.$route.name == 'Laporan Absensi | Administrator') ? 
+                    'collapse list-unstyled show' : 'collapse list-unstyled'
+            }
         },
         methods: {
             toggleSidebar() {
