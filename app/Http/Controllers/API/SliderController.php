@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Slider;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class SliderController extends Controller
 {
@@ -15,12 +16,16 @@ class SliderController extends Controller
     	if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
             return response()->json(['error' => 'Anda tidak memiliki akses '], 403);
 
-        $slider = Slider::all()->toArray();
+        $slider = Slider::all();
+        $response = [];
+        foreach ($slider as $key) {
+            $response[] = [ 'id' => $key->id, 'foto' => ($key->foto ? url('api/upload/' . $key->foto) : null) ];
+        }
 
         if (count($slider) === 0)
             return response()->json(['message' => 'Tidak ada content.'], 204);
 
-        return response()->json($slider);
+        return response()->json($response);
 
     }
 
@@ -38,7 +43,7 @@ class SliderController extends Controller
 
         if (isset($validatedData['foto'])) {
             $foto = $validatedData['foto']
-                ->storeAs('foto', $user->id . '_' . Str::random(40) . '.' .
+                ->storeAs('slider', $user->id . '_' . Str::random(40) . '.' .
                     $validatedData['foto']->extension());
         }
 
@@ -47,5 +52,13 @@ class SliderController extends Controller
         Slider::create($data);
 
         return response()->json(['success' => true], 201);
+    }
+
+    public function destroy(Slider $slider)
+    {
+        if($slider->delete()) {
+            Storage::delete($slider->foto);
+            return response()->json(['success' => true], 201);
+        }
     }
 }

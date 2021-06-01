@@ -290,7 +290,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('slider')->group(function () {
         Route::get('/', [SliderController::class, 'index']);
         Route::post('/', [SliderController::class, 'store']);
-        Route::delete('/{slider}', [SliderController::class, 'delete']);
+        Route::delete('/{slider}', [SliderController::class, 'destroy']);
     });
     // End of slider
 

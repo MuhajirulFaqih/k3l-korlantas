@@ -1,48 +1,35 @@
 <template>
 	<div>
 		<b-row>
-	    	<b-col cols="3">
+	    	<b-col cols="4">
 				<b-row>
 	    			<b-col cols="12">
-						<h4 class="d-inline-block mr-3">Informasi </h4>
+						<h4 class="d-inline-block mr-3">Slider </h4>
 						<b-button @click="$refs.modalTambah.show()" variant="primary" size="sm">
 							<ph-plus class="phospor"/> Tambah
 						</b-button>
 					</b-col>
 	    		</b-row>
 			</b-col>
-	    	<b-col cols="9">
-		        <b-pagination
-					align="right"
-		          	:total-rows="totalRows"
-		          	v-model="currentPage"
-		          	:per-page="perPage" />
-		    </b-col>
-		    <!-- <b-col cols="4" md="4">
-		    	<b-form-input
-		        	align="right"
-		          	v-model="filterDebounced"
-		          	placeholder="Cari Channel..."/>
-		    </b-col> -->
 		</b-row>
 
-		<div class="position-relative">
+		<div class="position-relative mt-4">
 			<b-table responsive
 	               ref="table"
-				   :items="providerInformasi"
+				   :items="providerSlider"
 	               :busy.sync="isBusy"
-	               :fields="tableColumns"
-	               :current-page="currentPage"
-	               :per-page="perPage"
-	               :filter="filter"
-	               :sort-by.sync="sortBy"
-	               :sort-desc.sync="sortDesc">
+	               :fields="tableColumns">
 
 		        <template v-slot:cell(index)="data">
-		          	{{ ((currentPage - 1) * 10) + data.index + 1 }}
+		          	{{ data.index + 1 }}
 		        </template>
-			    <template v-slot:cell(aktif)="row">
-			    	<b-form-checkbox v-model="row.item.aktif" value="true" unchecked-value="false" @change="aktifChange(row.item)"/>
+		        <template v-slot:cell(foto)="row">
+					<img :src="row.item.foto" style="width: 300px;" alt="">
+		        </template>
+			    <template v-slot:cell(aksi)="row">
+			    	<b-button size="md" v-b-tooltip title="Hapus slider" variant="danger" @click="prepareDelete(row.item)">
+			    		<ph-trash class="phospor"/>
+			    	</b-button>
 			    </template>
 		    </b-table>
 
@@ -56,17 +43,19 @@
 				no-close-on-esc
 				ok-title="Simpan"
 				cancel-title="Batal"
-				@ok="submitInformasi"
+				@ok="submitSlider"
 				@hide="resetFormTambah"
 				ref="modalTambah"
 				size="lg">
 				<template slot="modal-header">
-					<h3 class="modal-title">Tambah informasi</h3>
+					<h3 class="modal-title">Tambah slider</h3>
 				</template>
 				<b-row>
 					<b-form-group label-class="h3" class="col-md-6 col-xl-12">
-						<b-form-group label="Informasi" label-class="h6 mt2" label-cols="2">
-							<b-form-textarea v-model="payload.info" type="text" />
+						<b-form-group label="Foto" label-class="h6 mt2" label-cols="2">
+							<b-form-file id="foto" class="e-form" placeholder="Pilih gambar..." accept="image/*"></b-form-file>
+							<br/>
+							<span>*) Masukkan gambar dengan aspect ratio 169 : 61</span>
 						</b-form-group>
 					</b-form-group>
 				</b-row>
@@ -75,43 +64,33 @@
 </template>
 <script>
 	import format from 'date-fns/format'
-	import { debounce } from 'lodash'
+	import Swal from 'sweetalert2'
+	import { debounce, flattenDepth, values } from 'lodash'
 
 	const dateFnsBahasa = {
 	    locale: require('date-fns/locale/id')
 	}
 
 	export default {
-		name: 'informasi',
+		name: 'slider',
 		data () {
 			return {
-				totalRows: 0,
-				perPage: 10,
-        		currentPage: 1,
-        		filter: '',
-        		filterDebounced: '',
-        		isBusy: false,
-        		sortBy: 'id',
-				sortDesc: true,
-				tableColumns: [
+				isBusy: false,
+        		tableColumns: [
 					{ key: 'index', label: 'No' },
-					{ key: 'informasi', label: 'Informasi' },
-					{ key: 'aktif', label: 'Status' },
+					{ key: 'foto', label: 'Foto' },
+					{ key: 'aksi', label: 'Aksi' },
 				],
 				payload: {
-					info: null
+					foto: null
 				}
 			}
 		},
 		methods: {
-			providerInformasi (ctx) {
+			providerSlider (ctx) {
 				this.isBusy = true
-				let payload = { page: ctx.currentPage }
-				var promise = axios.get("informasi", { params: payload, })
-				.then(({data: { data, meta: {pagination}} }) => {
-					this.totalRows = pagination.total
-					this.perPage = pagination.per_page
-					this.currentPage = pagination.current_page
+				var promise = axios.get("slider")
+				.then(({ data }) => {
 					return data
 				})
 				.catch(({response}) => {
@@ -120,61 +99,55 @@
 
 				return promise
 			},
-			aktifChange(item) {
-				if (this.isBusy) {
-					return
-				}
-				axios.post('informasi/'+item.id, { aktif: item.aktif })
-				.then(({data}) => {
-					if ('success' in data){
-						this.$toast.success('Status informasi berhasil di ubah')
-					} else {
-						this.$toast.error('Informasi gagal di ubah')
-					}
-					this.refreshTable()
+			prepareDelete (item) {
+		    	Swal.fire({
+				  	title: 'Hapus data',
+				  	text: "Apakah anda yakin menghapus data slider ini?",
+				  	icon: 'error',
+				  	showCancelButton: true,
+				  	confirmButtonColor: '#e53935',
+				  	confirmButtonText: 'Hapus',
+				  	cancelButtonText: 'Batal'
+				}).then((result) => {
+				 	if (result.value) {
+					    axios.delete('slider/' + item.id, {
+			              	headers: {
+			              		'Content-Type': 'multipart/form-data' 
+			              	}
+				        })
+				        .then((response) => {
+				        	this.$toast.success('Data slider berhasil dihapus')
+				        	this.$refs.table.refresh()
+				        })
+				        .catch(({ response: { status, data: { errors }}}) => {
+			                if (status === 422)
+			                	this.$toast.danger('Terjadi kesalahan saat menghapus data', { layout: 'topRight' })
+			            })
+				  	}
 				})
-				.catch(({response}) => {
-					this.$toast.error('Informasi gagal di ubah')
-					this.refreshTable()
-				})
-			},
+		    },
 			resetFormTambah(){
 				//this.payload.info = null
 			},
-			submitInformasi(e){
+			submitSlider(e){
 				e.preventDefault();
 				
-				if (this.payload.info === null){
-					this.$toast.error('Informasi tidak boleh kosong')
-					return
-				}
+				let data = new FormData()
+				data.append('foto', document.getElementById('foto').files[0])
 
-				axios.post('informasi', this.payload)
+				axios.post(`slider`, data, {
+					headers: { 'Content-Type': 'multipart/form-data' }
+				})
 				.then(({data}) => {
-					if ('success' in data){
-						this.$toast.success('Informasi berhasil tambah')
-						this.payload.info = null
-						this.$refs.modalTambah.hide()
-					} else {
-						this.$toast.error('Informasi gagal tambah')
-					}
-					this.refreshTable()
+					this.$refs.modalTambah.hide()
+					this.$refs.table.refresh()
+					this.$toast.success('Slider berhasil ditambahkan')
 				})
-				.catch(({response}) => {
-					this.$toast.error('Informasi gagal tambah')
-					this.refreshTable()
+				.catch(({ response: { status, data: { errors }}}) => {
+					if (status === 422)
+						this.$toast.error(flattenDepth(values(errors)).join('<br>'))
 				})
-			},
-			refreshTable () {
-				this.totalRows > this.perPage ? 
-				(this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
-				: this.$refs.table.refresh()
 			},
 		},
-		watch: {
-			filterDebounced (newFilter) {
-		        this.debounceFilter()
-		    },
-		}
 	}
 </script>
