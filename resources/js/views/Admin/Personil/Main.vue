@@ -61,12 +61,20 @@
 							<b-dropdown-item @click="prepareReset(row.item)">
 								<ph-arrows-clockwise class="phospor"/> Reset password
 							</b-dropdown-item>
-							<b-dropdown-item @click="updatePtt(row.item)">
-								<span v-if="row.item.ptt_ht">
-									<ph-microphone class="phospor"/> PTT HT Aktif
+							<b-dropdown-item @click="prepareBeat(row.item)">
+								<span v-if="row.item.is_patroli_beat == 1">
+									<ph-check-circle class="phospor text-success"/> Patroli Beat Aktif
 								</span>
 								<span v-else>
-									<ph-microphone-slash class="phospor"/> PTT HT Nonaktif
+									<ph-x-circle class="phospor text-danger"/> Patroli Beat Nonaktif
+								</span>
+							</b-dropdown-item>
+							<b-dropdown-item @click="updatePtt(row.item)">
+								<span v-if="row.item.ptt_ht">
+									<ph-microphone class="phospor text-success"/> PTT HT Aktif
+								</span>
+								<span v-else>
+									<ph-microphone-slash class="phospor text-danger"/> PTT HT Nonaktif
 								</span>
 							</b-dropdown-item>
 							<b-dropdown-item @click="prepareDelete(row.item)">
@@ -393,6 +401,18 @@
                 this.inputKesatuan = null
 				this.srcProfil = null
 				this.itemsKelurahan = []
+			},
+            prepareBeat(item){
+			    var promise = axios.get('personil/'+item.id+'/beat')
+				.then(({ data }) => {
+					if ('success' in data){
+						this.$toast.success('Status patroli beat personil '+ item.nama +' berhasil di ubah')
+						this.refreshTable()
+					}
+					else {
+						this.$toast.error('Status patroli beat personil '+ item.nama +' gagal di ubah')
+					}
+				})
 			},
             updatePtt(item){
 			    var promise = axios.get('personil/'+item.id+'/ptt')

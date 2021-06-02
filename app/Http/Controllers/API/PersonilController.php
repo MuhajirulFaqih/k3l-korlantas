@@ -89,6 +89,21 @@ class PersonilController extends Controller
 
         return response()->json(['success' => true]);
     }
+    
+    public function ubahBeat(Request $request, Personil $personil)
+    {
+        $user = $request->user();
+
+        if ($user->jenis_pemilik !== 'admin')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $personil->is_patroli_beat = $personil->is_patroli_beat == null || $personil->is_patroli_beat == 0 ? 1 : null;
+
+        if (!$personil->save())
+            return response()->json(['error' => 'Terjadi kesalahan'], 500);
+
+        return response()->json(['success' => true]);
+    }
 
     public function tambah(Request $request)
     {

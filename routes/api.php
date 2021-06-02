@@ -266,6 +266,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/', [PersonilController::class, 'tambah']);
         Route::post('update', [PersonilController::class, 'update']);
         Route::get('{personil}/ptt', [PersonilController::class, 'ubahPttHt']);
+        Route::get('{personil}/beat', [PersonilController::class, 'ubahBeat']);
         Route::delete('/{personil}', [PersonilController::class, 'delete']);
         Route::post('foto', [PersonilController::class, 'uploadFoto']);
         Route::get('{personil}', [PersonilController::class, 'lihat']);

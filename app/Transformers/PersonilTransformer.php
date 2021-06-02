@@ -44,6 +44,7 @@ class PersonilTransformer extends TransformerAbstract
             'sispammako' => $personil->jabatan->sispammako,
             'foto' => Storage::exists("personil/".$personil->nrp.".jpg") ? url('api/upload/personil/' . $personil->nrp . '.jpg').'?time='.Storage::lastModified('personil/'.$personil->nrp.'.jpg') : url('api/upload/personil/presisi.jpg'),
             'terakhir_diupdate' => (string)$personil->updated_at,
+            'is_patroli_beat' => $personil->is_patroli_beat,
             'ptt_ht' => $personil->ptt_ht,
             'lat' => $personil->lat,
             'lng' => $personil->lng,
