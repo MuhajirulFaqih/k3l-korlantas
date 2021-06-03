@@ -25,7 +25,7 @@ class DaruratController extends Controller
 
         $data = [
             'id_user' => $user->id,
-            'id_kesatuan' => $user->pemilik->id_kesatuan ?? null,
+            'id_kesatuan' => $user->jenis_pemilik != 'masyarakat' ? ($user->pemilik->id_kesatuan ?? null) : 1,
             'lat' => $validatedData['lat'],
             'lng' => $validatedData['lng'],
             'acc' => $validatedData['acc']
@@ -61,7 +61,7 @@ class DaruratController extends Controller
     public function selesai(Request $request, Darurat $darurat){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'masyarakat']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         if ($user->jenis_pemilik == 'masyarakat' && $user->id != $darurat->id_user)
@@ -72,7 +72,7 @@ class DaruratController extends Controller
             return response()->json(['error' => 'Terjadi kesalahan'], 500);
 
 
-        if ($user->jenis_pemilik == 'admin')
+        if ($user->jenis_pemilik == 'admin' || $user->jenis_pemilik == 'kesatuan')
             broadcast(new DaruratSelesaiEvent($darurat));
         else
             $this->kirimNotifikasiViaGcm('darurat-selesai', $darurat->toArray(), [$darurat->user->fcm_id]);
@@ -109,7 +109,7 @@ class DaruratController extends Controller
     public function lihat(Request $request, Darurat $darurat){
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['admin', 'personil', 'masyarakat']))
+        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         if ($user->jenis_pemilik == 'masyarakat' && $user->id !== $darurat->id_user)

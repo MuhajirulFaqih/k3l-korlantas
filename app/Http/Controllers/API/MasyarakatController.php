@@ -21,7 +21,7 @@ class MasyarakatController extends Controller
         $user = $request->user();
         list($orderBy, $direction) = explode(':', $request->sort);
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
 
         $paginator = $request->filter == '' ?
@@ -44,7 +44,7 @@ class MasyarakatController extends Controller
     public function update(Request $request, $id)
     {
         $user = $request->user();
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
         if(is_null($request->nik) || $request->nik == '' || $request->nik == 'null') {
             $validatedData = $request->validate([
@@ -104,7 +104,7 @@ class MasyarakatController extends Controller
     public function show(Request $request, Masyarakat $masyarakat){
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         return fractal()
@@ -134,7 +134,7 @@ class MasyarakatController extends Controller
     public function cancelCall(Request $request){
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $masyarakat = Masyarakat::find($request->id_masyarakat);
@@ -156,7 +156,7 @@ class MasyarakatController extends Controller
     public function call(Request $request){
         $user = $request->user();
 
-        if($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $masyarakat = Masyarakat::find($request->id_masyarakat);
@@ -192,7 +192,7 @@ class MasyarakatController extends Controller
     public function ambilSemua(Request $request){
         $user = $request->user();
 
-        if($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $masyarakat = Masyarakat::get();

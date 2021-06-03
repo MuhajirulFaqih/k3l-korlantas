@@ -11,7 +11,7 @@ class MonitController extends Controller
 {
     public function index(Request $request){
         $user = $request->user();
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki aksess ke halaman ini'], 401);
 
         $data = [

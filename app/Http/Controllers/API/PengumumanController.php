@@ -16,7 +16,7 @@ class PengumumanController extends Controller
     public function index(Request $request){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'personil']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
             return response()->json(['errors' => 'Terlarang'], 403);
 
         list($orderBy, $direction) = explode(':', $request->sort ?? 'created_at:desc');
@@ -81,7 +81,7 @@ class PengumumanController extends Controller
     public function show(Request $request, Pengumuman $pengumuman){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'personil']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
             return response()->json(['errors' => 'Terlarang'], 403);
 
         $personil = $user->pemilik;

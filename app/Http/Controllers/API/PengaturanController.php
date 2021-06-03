@@ -11,8 +11,7 @@ class PengaturanController extends Controller
     public function load(Request $request){
         $user = $request->user();
 
-        // Hanya admin yang memiliki akses
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $pengaturan = Pengaturan::get();
@@ -23,8 +22,7 @@ class PengaturanController extends Controller
     public function notif(Request $request){
         $user = $request->user();
 
-        // Hanya admin yang memiliki akses
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $pengaturan = Pengaturan::getByKey('auto_send_notification')->first();
@@ -35,8 +33,7 @@ class PengaturanController extends Controller
     public function bannerGrid(Request $request){
         $user = $request->user();
 
-        // Hanya admin yang memiliki akses
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -60,8 +57,7 @@ class PengaturanController extends Controller
     public function defaultPassword(Request $request){
         $user = $request->user();
 
-        // Hanya admin yang memiliki akses
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -80,7 +76,7 @@ class PengaturanController extends Controller
     public function pdfVisiMisi(Request $request){
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -104,7 +100,7 @@ class PengaturanController extends Controller
     public function pdfKebijakanKapolres(Request $request){
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -128,7 +124,7 @@ class PengaturanController extends Controller
     public function pdfProgramKapolres(Request $request){
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -153,7 +149,7 @@ class PengaturanController extends Controller
         $user = $request->user();
 
         // Hanya admin yang memiliki akses
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -178,7 +174,7 @@ class PengaturanController extends Controller
         $user = $request->user();
 
         // Hanya admin yang memiliki akses
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([

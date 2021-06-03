@@ -20,6 +20,7 @@ class DemoKegiatanSeeder extends Seeder
 
         $kegiatan = \App\Models\Kegiatan::create([
             'id_user' => 1,
+            'id_kesatuan' => 3,
             'daftar_rekan' => null,
             'nomor_polisi' => null,
             'detail' => 'Detail kegiatan',

@@ -13,7 +13,7 @@ class JabatanController extends Controller
     public function ambilSemua(Request $request){
         $user = $request->user();
 
-        if($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $jabatan = Jabatan::get();

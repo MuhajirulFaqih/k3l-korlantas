@@ -27,7 +27,7 @@ class DinasController extends Controller
     public function index(Request $request){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'kesatuan']))
             return response()->json(['Anda tidak memiliki akses ke halaman ini'], 403);
 
         $dinas = Dinas::get();

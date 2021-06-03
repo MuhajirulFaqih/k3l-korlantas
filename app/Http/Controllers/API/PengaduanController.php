@@ -47,7 +47,7 @@ class PengaduanController extends Controller
     public function lihat(Request $request, Pengaduan $pengaduan){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'masyarakat']) || ($user->jenis_pemilik == 'masyarakat' && $pengaduan->id_user != $user->id))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'masyarakat']) || ($user->jenis_pemilik == 'masyarakat' && $pengaduan->id_user != $user->id))
             return response()->json(['error' => 'Terlarang'], 403);
 
 
@@ -61,7 +61,7 @@ class PengaduanController extends Controller
     public function lihatKomentar(Request $request, Pengaduan $pengaduan){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'masyarakat']) || ($user->jenis_pemilik == 'masyarakat' && $pengaduan->id_user != $user->id))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'masyarakat']) || ($user->jenis_pemilik == 'masyarakat' && $pengaduan->id_user != $user->id))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $paginator = $pengaduan->komentar()->orderBy('created_at', 'DESC')->paginate(10);
@@ -78,7 +78,7 @@ class PengaduanController extends Controller
     public function buatKomentar(Request $request, Pengaduan $pengaduan){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'masyarakat']) || ($user->jenis_pemilik == 'masyarakat' && $pengaduan->id_user != $user->id))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'masyarakat']) || ($user->jenis_pemilik == 'masyarakat' && $pengaduan->id_user != $user->id))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -111,7 +111,7 @@ class PengaduanController extends Controller
     public function tambah(Request $request){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['masyarakat', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['masyarakat', 'kesatuan', 'admin']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validateData = $request->validate([
@@ -129,7 +129,7 @@ class PengaduanController extends Controller
 
         $pengaduan = Pengaduan::create([
             'id_user' => $user->id,
-            'id_kesatuan' =>$user->pemilik->id_kesatuan ?? null,
+            'id_kesatuan' => $user->jenis_pemilik != 'masyarakat' ? ($user->pemilik->id_kesatuan ?? null) : 1,
             'keterangan' => $validateData['keterangan'],
             'lokasi' => $validateData['lokasi'],
             'lat' => $validateData['lat'],

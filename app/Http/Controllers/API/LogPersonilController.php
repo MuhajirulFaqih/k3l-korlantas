@@ -16,7 +16,7 @@ class LogPersonilController extends Controller
         $user = $request->user();
         list($orderBy, $direction) = explode(':', $request->sort);
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
 
         $paginator = $request->filter == '' ?

@@ -18,7 +18,7 @@ class DemoDaruratSeeder extends Seeder
         DB::table('darurat')->truncate();
 
         \App\Models\Darurat::create(
-            [ "id_user" => 1, "lat" => '-7.118737', "lng" => '111.8926732', 'acc' => '50', 'selesai' => 0],
+            [ "id_user" => 1, 'id_kesatuan' => 3, "lat" => '-7.118737', "lng" => '111.8926732', 'acc' => '50', 'selesai' => 0],
         );
     }
 }

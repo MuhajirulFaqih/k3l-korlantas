@@ -331,6 +331,7 @@ export default {
                 this.singleTindakLanjut.keterangan = ''
                 this.singleTindakLanjut.foto = ''
                 this.$parent.$parent.$parent.$refs.topbar.isReload()
+                this.$parent.refreshTable()
             })
             .catch(({ response: { status, data: { errors }}}) => {
                 if (status === 422)
@@ -356,6 +357,7 @@ export default {
                 this.prosesVerifikasi = false
                 this.personilKejadian = false
                 this.$toast.success('Data berhasil di verifikasi')
+                this.$parent.refreshTable()
             })
         },
         pilihPersonil (data) {

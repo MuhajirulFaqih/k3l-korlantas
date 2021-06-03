@@ -53,7 +53,7 @@ class PersonilController extends Controller
     {
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -79,7 +79,7 @@ class PersonilController extends Controller
     {
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $personil->ptt_ht = !$personil->ptt_ht;
@@ -94,7 +94,7 @@ class PersonilController extends Controller
     {
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $personil->is_patroli_beat = $personil->is_patroli_beat == null || $personil->is_patroli_beat == 0 ? 1 : null;
@@ -109,7 +109,7 @@ class PersonilController extends Controller
     {
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validData = $request->validate([
@@ -154,7 +154,7 @@ class PersonilController extends Controller
         $personil = Personil::find($id);
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         return fractal()
@@ -179,7 +179,7 @@ class PersonilController extends Controller
     {
         $user = $request->user();
 
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang !!!'], 403);
 
         if (!$personil)
@@ -325,7 +325,7 @@ class PersonilController extends Controller
     public function tracking(Request $request)
     {
         $user = $request->user();
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
 
         $paginator = Personil::terlacak('day', 1, $request->jenis)->orderBy('updated_at', 'desc')->paginate(10);
@@ -362,7 +362,7 @@ class PersonilController extends Controller
         $user = $request->user();
         list($orderBy, $direction) = explode(':', $request->sort);
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
         $paginator = $request->filter == '' ?
             LogPersonil::where('status_dinas', 2)
@@ -388,7 +388,7 @@ class PersonilController extends Controller
         $user = $request->user();
         list($orderBy, $direction) = explode(':', $request->sort);
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki aksess di halaman ini'], 403);
         $paginator = $request->filter == '' ?
             LogPersonil::where('status_dinas', 3)
@@ -413,7 +413,7 @@ class PersonilController extends Controller
     {
         $user = $request->user();
 
-        if ($user->jenis_pemilik != 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $user = (new PersonilService())->fetchPersonil($request->nrp);

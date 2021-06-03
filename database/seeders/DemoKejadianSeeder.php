@@ -20,6 +20,7 @@ class DemoKejadianSeeder extends Seeder
         \App\Models\Kejadian::insert([
             [ 
                 'id_user' => 1, 
+                'id_kesatuan' => 3,
                 'id_darurat' => null, 
                 'w_kejadian' => \Carbon\Carbon::now(), 
                 'kejadian' => 'Senpi', 

@@ -95,7 +95,7 @@ class KegiatanController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         return fractal()
@@ -144,7 +144,7 @@ class KegiatanController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'kesatuan', 'masyarakat']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         if ($user->jenis_pemilik == 'masyarakat' && $user->id != $kegiatan->id_user)
@@ -167,7 +167,7 @@ class KegiatanController extends Controller
     {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'masyarakat']))
+        if (!in_array($user->jenis_pemilik, ['personil', 'admin', 'kesatuan', 'masyarakat']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         if ($user->jenis_pemilik == 'masyarakat' && $user->id != $kegiatan->id_user)
@@ -195,7 +195,7 @@ class KegiatanController extends Controller
                 ->serializeWith(DataArraySansIncludeSerializer::class);
         // Broadcast to monit
         $data = $fractal->toArray();
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             event(new KomentarEvent($data['data']));
 
         return $fractal->respond();

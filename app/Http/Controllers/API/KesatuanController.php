@@ -16,7 +16,7 @@ class KesatuanController extends Controller
         $user = $request->user();
         list($orderBy, $direction) = explode(':', $request->sort);
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
 
         $paginator = $request->filter == '' ?
@@ -39,7 +39,7 @@ class KesatuanController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $validatedData = $request->validate([
@@ -73,7 +73,7 @@ class KesatuanController extends Controller
     public function update(Request $request, $id)
     {
         $user = $request->user();
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Anda tidak memiliki akses ke halaman ini'], 403);
 
         $validatedData = $request->validate([
@@ -118,7 +118,7 @@ class KesatuanController extends Controller
     public function ambilSemua(Request $request){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $kesatuan = Kesatuan::with('parent')->get();

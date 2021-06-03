@@ -54,8 +54,7 @@
 					<b-form-group label-class="h3" class="col-md-6 col-xl-12">
 						<b-form-group label="Foto" label-class="h6 mt2" label-cols="2">
 							<b-form-file id="foto" class="e-form" placeholder="Pilih gambar..." accept="image/*"></b-form-file>
-							<br/>
-							<span>*) Masukkan gambar dengan aspect ratio 169 : 61</span>
+							<div class="mt-3">*) Masukkan gambar dengan aspect ratio 169 : 61</div>
 						</b-form-group>
 					</b-form-group>
 				</b-row>

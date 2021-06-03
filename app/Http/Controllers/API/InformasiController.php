@@ -14,7 +14,7 @@ class InformasiController extends Controller
     public function getAktif(Request $request){
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['admin', 'personil']))
+        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
             return response()->json(['error' => 'Anda tidak memiliki aksess pada halaman ini'], 403);
 
         $active = Informasi::active()->get();
@@ -28,7 +28,7 @@ class InformasiController extends Controller
     public function getAll(Request $request){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'personil']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
             return response()->json(['error' => 'Anda tidak memiliki aksess pada halaman ini'], 403);
 
         $paginator = Informasi::orderBy('aktif', 'desc')->orderBy('created_at', 'desc')->paginate(10);
@@ -45,8 +45,7 @@ class InformasiController extends Controller
     public function tambah(Request $request){
         $user = $request->user();
 
-        // Hanya admin yang memiliki akses
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validatedData = $request->validate([
@@ -67,8 +66,7 @@ class InformasiController extends Controller
     public function ubahInformasi(Request $request, Informasi $informasi){
         $user = $request->user();
 
-        // Hanya admin yang memiliki akses
-        if ($user->jenis_pemilik !== 'admin')
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $validatedData = $request->validate([

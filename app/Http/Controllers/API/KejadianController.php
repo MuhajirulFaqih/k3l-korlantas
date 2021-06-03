@@ -39,7 +39,7 @@ class KejadianController extends Controller
 
         $store = [
             'id_user'    => $user->id,
-            'id_kesatuan' =>$user->pemilik->id_kesatuan ?? null,
+            'id_kesatuan' => $user->jenis_pemilik != 'masyarakat' ? ($user->pemilik->id_kesatuan ?? null) : 1,
             'w_kejadian' => Carbon::now(),
             'kejadian'   => $request->kejadian,
             'lokasi'     => $request->lokasi,
@@ -226,7 +226,7 @@ class KejadianController extends Controller
     {
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['admin', 'personil', 'masyarakat']))
+        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         if($user->jenis_pemilik == 'masyarakat' && $user->id != $kejadian->id_user)
@@ -281,12 +281,14 @@ class KejadianController extends Controller
 
     public function total(Request $request)
     {
-        if(!in_array($request->user()->jenis_pemilik, ['admin']))
+        if(!in_array($request->user()->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
-        $data['total'] = Kejadian::count();
-        $data['proses'] = Kejadian::filterProsesPenanganan()->count();
-        $data['selesai'] = Kejadian::filterSelesai()->count();
-        $data['belum'] = Kejadian::filterBelumDitangani()->count();
+        
+        $user = $request->user();
+        $data['total'] = Kejadian::filterJenisPemilik($user)->count();
+        $data['proses'] = Kejadian::filterJenisPemilik($user)->filterProsesPenanganan()->count();
+        $data['selesai'] = Kejadian::filterJenisPemilik($user)->filterSelesai()->count();
+        $data['belum'] = Kejadian::filterJenisPemilik($user)->filterBelumDitangani()->count();
 
         return response()->json([$data]);
     }
