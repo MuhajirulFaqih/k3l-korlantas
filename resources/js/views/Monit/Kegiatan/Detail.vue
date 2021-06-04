@@ -239,19 +239,19 @@ export default {
             jenis.forEach((v) => {
                 switch (v.jenis.keterangan) {
                     case 'jenis_kegiatan':
-                        viewJenis += `<div class="4">Jenis Kegiatan</div> 
-                                    <div class="1">:</div> 
-                                    <div class="7">${v.jenis.jenis}</div>`
+                        viewJenis += `<div class="col-5">Jenis Kegiatan</div> 
+                                    <div class="col-1"> : </div> 
+                                    <div class="col-6">${v.jenis.jenis}</div>`
                         break;
                     case 'subjenis':
-                        viewJenis += `<div class="4">${v.jenis.parent.jenis}</div> 
-                                    <div class="1">:</div> 
-                                    <div class="7">${v.jenis.jenis}</div>`
+                        viewJenis += `<div class="col-5">${v.jenis.parent.jenis}</div> 
+                                    <div class="col-1"> : </div> 
+                                    <div class="col-6">${v.jenis.jenis}</div>`
                         break;
                     case 'dropdown_subjenis':
-                        viewJenis += `<div class="4">${v.jenis.parent.jenis}</div> 
-                                    <div class="1">:</div> 
-                                    <div class="7">${v.jenis.jenis}</div>`
+                        viewJenis += `<div class="col-5">${v.jenis.parent.jenis}</div> 
+                                    <div class="col-1"> : </div> 
+                                    <div class="col-6">${v.jenis.jenis}</div>`
                         break;
                 
                     default:

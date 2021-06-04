@@ -20,7 +20,7 @@ trait FilterJenisPemilik
             return $query;
         }
         Log::info("id_kesatuan", $id_kesatuan);
-        return $query->whereIn('id_kesatuan', $id_kesatuan);
+        return $query->whereIn('id_kesatuan', $id_kesatuan)->orWhereNull('id_kesatuan');
     }
     
     protected function pemilikKesatuan($query, $user)
@@ -35,6 +35,6 @@ trait FilterJenisPemilik
             return $query;
         }
         Log::info("id", $id_kesatuan);
-        return $query->whereIn('id', $id_kesatuan);
+        return $query->whereIn('id', $id_kesatuan)->orWhereNull('id_kesatuan');
     }
 }

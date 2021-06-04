@@ -29,6 +29,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\API\MonitController;
 use App\Http\Controllers\API\PengumumanController;
 use App\Http\Controllers\API\DinasController;
+use App\Http\Controllers\API\KlbController;
 use App\Http\Controllers\API\TitikApiController;
 use App\Http\Controllers\API\PengaturanController;
 use Illuminate\Http\Request;
@@ -227,6 +228,16 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/', [DaruratController::class, 'tambah']);
     });
 // End Darurat
+
+// Klb
+    Route::prefix('klb')->group(function () {
+        Route::get('/', [KlbController::class, 'index']);
+
+        Route::get('{klb}', [KlbController::class, 'show']);
+
+        Route::post('/', [KlbController::class, 'store']);
+    });
+// End Klb
 
 // Berita
     Route::prefix('news')->group(function () {
@@ -443,6 +454,7 @@ Route::middleware('auth:api')->group(function () {
     //     Route::get('/', [ExportPengaduanController::class, 'index']);
     //     Route::post('/cetak', [ExportPengaduanController::class, 'cetak']);
     // });
+    
 });
 
 Route::post('news', [NewsController::class, 'tambah']);

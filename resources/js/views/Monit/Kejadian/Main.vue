@@ -116,7 +116,6 @@ export default {
                 { key: 'index', label: 'No' },
                 { key: 'kejadian', label: 'Kejadian', thStyle: { width: '25%' }, sortable: true },
                 { key: 'lokasi', label: 'Lokasi', sortable: true },
-                { key: 'kuat', label: 'Kuat pers', sortable: true },
                 { 
                     key: 'w_kejadian', label: 'Waktu kejadian', 
                     formatter: v => format(parseISO(v), 'd MMMM yyyy HH:mm:ss', {locale: id}) ,

@@ -39,7 +39,7 @@ class KejadianController extends Controller
 
         $store = [
             'id_user'    => $user->id,
-            'id_kesatuan' => $user->jenis_pemilik != 'masyarakat' ? ($user->pemilik->id_kesatuan ?? null) : 1,
+            'id_kesatuan' => $user->pemilik->id_kesatuan ?? null,
             'w_kejadian' => Carbon::now(),
             'kejadian'   => $request->kejadian,
             'lokasi'     => $request->lokasi,
@@ -270,11 +270,7 @@ class KejadianController extends Controller
         $kejadian->update([
             'verifikasi' => 1
         ]);
-        $this->broadcastNotifikasiKejadianVerified($request->user(),
-                                                $kejadian,
-                                                $request->jenis,
-                                                $request->kesatuan,
-                                                $request->personil);
+        $this->broadcastNotifikasiKejadianVerified($request->user(), $kejadian, $request->jenis, $request->kesatuan, $request->personil);
 
         return response()->json(['success' => true], 200);
     }
