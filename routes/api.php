@@ -200,19 +200,14 @@ Route::middleware('auth:api')->group(function () {
 
 //Call
     Route::prefix('call')->group(function () {
-        Route::post('request-to-admin', [CallController::class, 'createCallFromPersonil']);
-        Route::post('request', [CallController::class, 'createCall']);
-
         Route::post('notify-personil', [CallController::class, 'notifyPersonil']);
         Route::post('notify-admin', [CallController::class, 'notifyAdmin']);
 
+        Route::delete('end-session/{id_session}', [CallController::class, 'endSession']);
+
+        Route::get('reject', [CallController::class, 'rejectCall']);
+        Route::post('personil', [CallController::class, 'createCallFromPersonil']);
         Route::post('admin', [CallController::class, 'requestCallFromAdminKesatuan']);
-
-        Route::get('ready', [CallController::class, 'ready']);
-
-        Route::post('update', [CallController::class, 'updateCall']);
-
-        Route::get('history', [CallController::class, 'getCall']);
     });
 
 // END KEJADIAN GROUP

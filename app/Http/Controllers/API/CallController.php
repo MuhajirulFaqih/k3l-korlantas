@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Events\CallAdminEvent;
 use App\Events\CallReady;
+use App\Events\RejectCallEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\CallLog;
@@ -13,9 +14,6 @@ use App\Models\User;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\CallTransformer;
 use App\Transformers\MasyarakatTransformer;
-use App\Transformers\PersonilTransformer;
-use App\Transformers\ResponseUserTransformer;
-use App\Transformers\UserTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -87,10 +85,91 @@ class CallController extends Controller
         return response()->json(['error' => 'Terjadi kesalahan']);
     }
 
-    public function notifyPersonil(Request $request){
+    public function createCallFromPersonil(Request $request)
+    {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
+        if ($user->jenis_pemilik !== 'personil')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $personil = $user->pemilik;
+
+        $id_admin = $request->id_admin;
+
+        $callLog = CallLog::where('id_admin', $id_admin)->where('is_calling', true)->first();
+
+        if (!$callLog){
+            $formatedPersonil = fractal()
+                ->item($personil)
+                ->transformWith(MasyarakatTransformer::class)
+                ->serializeWith(DataArraySansIncludeSerializer::class)
+                ->toArray();
+
+            broadcast(new CallAdminEvent($id_admin, $formatedPersonil));
+
+            return response()->json(['success' => true, 'status' => 'Sending call request']);
+        }
+
+        $responseToken = Http::withBasicAuth("OPENVIDUAPP", env("OPENVIDU_SECRET"))
+            ->withHeaders([
+                'Content-Type' => 'application/json'
+            ])
+            ->post(env('OPENVIDU_URL') . '/openvidu/api/sessions/session' . $callLog->id . '/connection', [
+                'type' => 'WEBRTC',
+                'data' => '',
+                'role' => 'PUBLISHER'
+            ]);
+
+        $responseTokenJson = $responseToken->json();
+        if ($responseToken->ok()) {
+            $participant = $callLog->participants()->where('id_user', $user->id)->first();
+            if ($participant)
+                $participant->update([
+                    'connection_id' => $responseTokenJson['id'],
+                    'status' => $responseTokenJson['status']
+                ]);
+            else
+                $callLog->participants()->create([
+                    'id_user' => $user->id,
+                    'connection_id' => $responseTokenJson['id'],
+                    'status' => $responseTokenJson['status'],
+                    'active_at' => Carbon::now()
+                ]);
+
+            return response()->json($responseTokenJson);
+        }
+
+        return response()->json(['error' => 'Terjadi kesalahan']);
+    }
+
+    public function endSession(Request $request, $session_id){
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['kesatuan', 'admin']))
+            return response()->json(['error' => "error"]);
+
+        $callLog = CallLog::where('session_id', $session_id)->first();
+
+        if (!$callLog)
+            return response()->json(['error' => 'Call not found'], 404);
+
+        $callLog->update([
+            'is_calling' => false
+        ]);
+
+        $responseHttp = Http::withBasicAuth("OPENVIDUAPP", env("OPENVIDU_SECRET"))->delete(env('OPENVIDU_URL').'/openvidu/api/sessions/'.$session_id);
+
+        if (!$responseHttp->ok())
+            return response()->json(['error' => 'Terjadi kesalahan']);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function notifyPersonil(Request $request)
+    {
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         $personil = Personil::where('nrp', $request->nrp)->first();
@@ -98,15 +177,27 @@ class CallController extends Controller
         if (!$personil)
             return response()->json(['error' => 'Personil tidak ditemukan'], 404);
 
-        $data = fractal()
-            ->item($user)
-            ->transformWith(ResponseUserTransformer::class)
-            ->serializeWith(DataArraySansIncludeSerializer::class)
-            ->toArray();
 
-        $data['data']['pesan'] = 'Panggilan masuk';
+        $data = [
+            'pesan' => 'Panggilan masuk',
+            'nama' => $user->jenis_pemilik == 'kesatuan' ? $user->pemilik->kesatuan : $user->pemilik->nama,
+            'id' => $user->id,
+            'sessionId' => $request->session_id
+        ];
 
-        $this->kirimNotifikasiViaOnesignal('vcon', $data['data'], [$personil->auth->id]);
+        $this->kirimNotifikasiViaOnesignal('incoming-vcon', $data, [$personil->auth->id]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function rejectCall(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->jenis_pemilik != 'personil')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        event(new RejectCallEvent($request->id_admin));
 
         return response()->json(['success' => true]);
     }
@@ -139,33 +230,6 @@ class CallController extends Controller
             ->respond();
     }
 
-    public function createCallFromPersonil(Request $request)
-    {
-        $user = $request->user();
-
-        if ($user->jenis_pemilik !== 'masyarakat')
-            return response()->json(['error' => 'Terlarang'], 403);
-
-        $personil = $user->pemilik;
-
-        $admin = Admin::where('status', true)->where('in_call', false)->where('visiblility', true)->first();
-
-        if (!$admin)
-            return response()->json(['error' => 'Panggilan sibuk. Silahkan ulangi beberapa saat'], 404);
-
-        $user = $admin->auth;
-
-        $formatedPersonil = fractal()
-            ->item($personil)
-            ->transformWith(MasyarakatTransformer::class)
-            ->serializeWith(DataArraySansIncludeSerializer::class)
-            ->toArray();
-
-        broadcast(new CallAdminEvent($user->id, $formatedPersonil));
-
-        return response()->json(['success' => true, 'username' => $user->username]);
-    }
-
     public function cancelCall(Request $request)
     {
         $user = $request->user();
@@ -183,10 +247,10 @@ class CallController extends Controller
             return response()->json(['error' => "Not Found"], 404);
 
         if (env('USE_ONESIGNAL', false))
-            $this->kirimNotifikasiViaOnesignal('cancel-call', ['pesan' => 'Cancel call'], [$notifyUser->id]);
+            $this->kirimNotifikasiViaOnesignal('cancel-vcal', ['pesan' => 'Cancel Call'], [$notifyUser->id]);
 
         if ($notifyUser->fcm_id)
-            $this->kirimNotifikasiViaGcm('cancel-call', ['pesan' => 'Cancel call'], [$notifyUser->fcm_id]);
+            $this->kirimNotifikasiViaGcm('cancel-vcal', ['pesan' => 'Cancel Call'], [$notifyUser->fcm_id]);
 
         return response()->json(['success' => true]);
     }

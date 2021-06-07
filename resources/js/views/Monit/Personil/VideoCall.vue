@@ -19,17 +19,12 @@
                                 Memanggil...
                             </div>
                             <user-video :stream-manager="mainStreamManager" video-class="e-person"/>
-                            <video ref="videoOutput" id="videoOutput" autoplay class="e-person"></video>
                             <div class="e-person-other" id="video-container">
                                 <user-video :stream-manager="publisher"
                                             @click.native="updateMainVideoStreamer(publisher)"
                                             video-class="e-person-other-thumb"/>
                                 <user-video v-for="sub in subscribers" :key="sub.stream.connection.connectionId"
-                                            :stream-manager="sub" @click.native="updateMainVideoStreamer(sub)"/><!--
-                                <video ref="videoOutputOtherThumb1" id="videoInput" autoplay
-                                       class="e-person-other-thumb"></video>-->
-                                <!-- <video ref="videoOutputOtherThumb2" id="videoInput2" autoplay class="e-person-other-thumb"></video>
-                                <video ref="videoOutputOtherThumb3" id="videoInput3" autoplay class="e-person-other-thumb"></video> -->
+                                            :stream-manager="sub" video-class="e-person-other-thumb" @click.native="updateMainVideoStreamer(sub)"/>
                             </div>
                             <button class="btn e-btn e-btn-danger e-call-close" @click="closeCall">
                                 <ph-phone-slash class="phospor"/>
@@ -65,6 +60,7 @@
                 session: undefined,
                 mainStreamManager: null,
                 publisher: null,
+                sessionId: null,
                 subscribers: [],
                 inCall: false
             }
@@ -128,7 +124,8 @@
             },
             callPersonil(nrp){
                 axios.post('call/notify-personil', {
-                    nrp: nrp
+                    nrp: nrp,
+                    session_id: this.sessionId
                 })
                 .then((data) => {
 
@@ -144,19 +141,31 @@
                 this.OV = undefined
                 this.$refs.videoCall.hide()
 
+                this.endSession()
+
                 window.removeEventListener('beforeunload', this.leaveSession)
+            },
+            endSession(){
+                axios.delete('call/end-session/'+ this.sessionId)
+                    .then((data) => {
+                        console.log(data)
+                    })
             },
             closeCall(){
                 this.leaveSession()
             },
             updateMainVideoStreamer(stream) {
-                if (this.mainStreamManager === stream) return
+                if (this.mainStreamManager == stream) return
                 this.mainStreamManager = stream
             },
             getToken() {
                 return new Promise((resolve, reject) => {
                     axios.post(baseUrl + '/api/call/admin')
                         .then(response => response.data)
+                        .then(data => {
+                            this.sessionId = data.sessionId
+                            return data
+                        })
                         .then(data => resolve(data.token))
                         .catch(error => reject(error.response))
                 })
