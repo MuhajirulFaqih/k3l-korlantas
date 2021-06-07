@@ -48,8 +48,8 @@
                         <span>Lokasi Vital</span>
                     </div>
                 </li>
-                <li :class="openMenuClass('area')">
-                    <div @click="toggleSub('area')">
+                <li :class="beat ? 'active' : ''">
+                    <div @click="triggerBeat">
                         <ph-globe-hemisphere-west class="phospor" />
                         <span>Beat</span>
                     </div>
@@ -376,6 +376,8 @@ export default {
                 tooltip: 'always',
                 tooltipPlacement: 'bottom',
             },
+            beat: false,
+            kmlLayer: [],
         }
     },
     computed:{
@@ -576,6 +578,30 @@ export default {
         // },
         toggleKejadian (val) {
             this.kejadianStatus = this.$parent.kejadianStatus = !this.kejadianStatus
+        },
+        triggerBeat () {
+            this.beat = !this.beat
+            if(this.beat == true) {
+                var maps = this.$parent.$refs.maps
+                maps.$mapPromise.then((map) => {
+                    var kmlLayer = []
+
+                    for (let index = 0; index < 9; index++) {
+                        kmlLayer.push(new google.maps.KmlLayer(`${baseUrl}/beat-${index + 1}-mapping.kmz?dummy=` + (new Date()).getTime()))
+                        kmlLayer.push(new google.maps.KmlLayer(`${baseUrl}/beat-${index + 1}-titik-lokasi.kmz?dummy=` + (new Date()).getTime()))
+                    }
+
+                    for (let index = 0; index < kmlLayer.length; index++) {
+                        kmlLayer[index].setMap(map)
+                    }
+                    this.kmlLayer = kmlLayer
+                })
+            } else {
+                var maps = this.$parent.$refs.maps
+                maps.$mapPromise.then((map) => {
+                    for (let index = 0; index < this.kmlLayer.length; index++) { this.kmlLayer[index].setMap(null) }
+                })
+            }
         },
     },
     watch: {
