@@ -35,6 +35,6 @@ trait FilterJenisPemilik
             return $query;
         }
         Log::info("id", $id_kesatuan);
-        return $query->whereIn('id', $id_kesatuan)->orWhereNull('id_kesatuan');
+        return $query->whereIn('id', $id_kesatuan);
     }
 }

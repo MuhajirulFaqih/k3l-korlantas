@@ -591,9 +591,7 @@ export default {
                         kmlLayer.push(new google.maps.KmlLayer(`${baseUrl}/beat-${index + 1}-titik-lokasi.kmz?dummy=` + (new Date()).getTime()))
                     }
 
-                    for (let index = 0; index < kmlLayer.length; index++) {
-                        kmlLayer[index].setMap(map)
-                    }
+                    for (let index = 0; index < kmlLayer.length; index++) { kmlLayer[index].setMap(map) }
                     this.kmlLayer = kmlLayer
                 })
             } else {

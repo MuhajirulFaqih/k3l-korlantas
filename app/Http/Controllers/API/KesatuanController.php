@@ -20,8 +20,8 @@ class KesatuanController extends Controller
             return response()->json(['error' => 'Anda tidak memiliki akses di halaman ini'], 403);
 
         $paginator = $request->filter == '' ?
-            Kesatuan::with('parent')->orderBy($orderBy, $direction)->paginate(10) :
-            Kesatuan::with('parent')->filtered($request->filter)
+            Kesatuan::with('parent')->filterJenisPemilik($user)->orderBy($orderBy, $direction)->paginate(10) :
+            Kesatuan::with('parent')->filterJenisPemilik($user)->filtered($request->filter)
             ->orderBy($orderBy, $direction)
             ->paginate(10);
 
@@ -121,7 +121,7 @@ class KesatuanController extends Controller
         if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
 
-        $kesatuan = Kesatuan::with('parent')->get();
+        $kesatuan = Kesatuan::with('parent')->filterJenisPemilik($user)->get();
         return fractal()
             ->collection($kesatuan)
             ->transformWith(KesatuanTransformer::class)

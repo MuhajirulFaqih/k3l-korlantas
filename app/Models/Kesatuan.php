@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
+use App\Traits\FilterJenisPemilik;
 
 class Kesatuan extends Model
 {
-    use HasFactory, NodeTrait, UserTimezoneAware;
+    use HasFactory, NodeTrait, UserTimezoneAware, FilterJenisPemilik;
 
     protected $table = 'pers_kesatuan';
 
@@ -54,5 +55,10 @@ class Kesatuan extends Model
                 ) LIKE ?", ['%' . addcslashes($filter, '%_') . '%'])
                 ->get()->pluck('id')->all()
             );
+    }
+
+    public function scopeFilterJenisPemilik($query, $user)
+    {
+        return $this->pemilikKesatuan($query, $user);
     }
 }

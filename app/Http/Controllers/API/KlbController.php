@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Klb;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Transformers\KlbTransformer;
@@ -34,7 +35,7 @@ class KlbController extends Controller
             ->respond();
     }
 
-    public function store(Request $request){
+    public function store(Request $request) {
         $validatedData = $request->validate([
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
@@ -52,15 +53,22 @@ class KlbController extends Controller
         ];
 
         $klb = Klb::create($data);
-
-        $data = fractal()
-                ->item($klb)
-                ->transformWith(KlbTransformer::class)
-                ->serializeWith(DataArraySansIncludeSerializer::class)
-                ->toArray();
         
-        //Todo broadcast
-
+        //Start broadcast
+        $data = [
+            'id' => $klb->id,
+            'pesan' => $user->nama.' mengirimkan kejadian luar biasa.',
+            'nama' => $user->nama
+        ];
+        $penerimaOneSignal = User::join('personil', 'personil.id', '=', 'user.id_pemilik')
+                            ->where('jenis_pemilik', 'personil')->whereIn('id_jabatan', [1, 2, 30])->get()->pluck('id')->all();
+        $penerima = User::join('personil', 'personil.id', '=', 'user.id_pemilik')
+                            ->where('jenis_pemilik', 'personil')->whereIn('id_jabatan', [1, 2, 30])->whereNotNull('fcm_id')->get()->pluck('fcm_id')->all();
+        if (env('USE_ONESIGNAL')) {
+            $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $data, collect($penerimaOneSignal)->all());
+        }
+        $this->kirimNotifikasiViaGcm('kejadian-luar-biasa-baru', $data, collect($penerima)->all());
+        //End broadcast
         return response()->json(['success' => true, 'id' => $klb->id]);
     }
 
