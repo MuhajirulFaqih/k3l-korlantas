@@ -12,6 +12,7 @@ use App\Models\Kejadian;
 use App\Models\Darurat;
 use App\Models\User;
 use App\Serializers\DataArraySansIncludeSerializer;
+use App\Services\UserService;
 use App\Transformers\PersonilTransformer;
 use App\Transformers\LogMasyarakatTransformer;
 use App\Transformers\ResponseUserTransformer;
@@ -255,7 +256,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Terjadi kesalahan'], 500);
 
         // Todo Send whatsapp activation code
-        //$this->sendSms($masyarakat->no_telp, env('APP_MASYARAKAT_NAME')." - Kode otentikasi: {$kode}. Demi keamanan, jangan berikan kode RAHASIA ini kepada siapapun.");
+        (new UserService())->sendWa($masyarakat->no_telp, env('APP_MASYARAKAT_NAME')." - {$kode} adalah kode verifikasi anda.");
 
         $token = Http::post(url('api/user/auth'), [
             'username' => $request->no_telp,
@@ -266,7 +267,7 @@ class UserController extends Controller
         ]);
 
 
-        return response()->json(['success' => true, 'id' => $user->id, 'token' => $token->json()], 201);
+        return response()->json(['success' => true, 'id' => $user->id, 'token' => $token->json(), 'no_telp', $masyarakat->no_telp], 201);
     }
 
     public function kode_verifikasi(Request $request){
