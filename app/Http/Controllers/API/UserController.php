@@ -176,11 +176,13 @@ class UserController extends Controller
         if ($user->jenis_pemilik != 'masyarakat')
             return response()->json(['error' => 'Terlarang'], 403);
 
-        $kode = $user->kode;
-
         $response = (new UserService())->sendWa($request->telp, env('APP_MASYARAKAT_NAME')." - {$user->kode} adalah kode verifikasi anda.");
 
         Log::info("Kirim pesan wa", $response);
+
+        if (isset($response['error']))
+            return response()->json(['error' => $response['error']], isset($response['code']) ? $response['code'] : 500);
+
 
         return response()->json(['success' => true]);
     }
