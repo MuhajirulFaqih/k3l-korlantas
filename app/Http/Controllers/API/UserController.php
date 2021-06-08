@@ -272,9 +272,8 @@ class UserController extends Controller
 
     public function kode_verifikasi(Request $request){
         $otp = $request->otp;
-        $idUser = $request->idUser;
 
-        $user = User::find($idUser);
+        $user = $request->user();
 
         if (!$user)
             return response()->json(['error' => 'Pengguna tidak ditemukan'], 403);

@@ -39,7 +39,6 @@ use Illuminate\Support\Str;
 // User Routes
 Route::prefix('user')->group(function () {
     Route::post('registrasi', [UserController::class, 'register']);
-    Route::post('otp', [UserController::class, 'kode_verifikasi']);
     Route::as('login')->post('auth', [AuthController::class, 'issueToken']);
     Route::post('auth/social', [UserController::class, 'loginSocialMedia']);
     Route::post('auth-admin', [AuthController::class, 'issueTokenAdmin']);
@@ -47,6 +46,7 @@ Route::prefix('user')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::get('/', [UserController::class, 'details']);
+        Route::post('otp', [UserController::class, 'kode_verifikasi']);
         Route::post('fcm_id', [UserController::class, 'fcm']);
         Route::post('ubah-nik', [UserController::class, 'ubahNik']);
         Route::post("ubah_telp", [UserController::class, 'ubahNomor']);
@@ -449,7 +449,7 @@ Route::middleware('auth:api')->group(function () {
     //     Route::get('/', [ExportPengaduanController::class, 'index']);
     //     Route::post('/cetak', [ExportPengaduanController::class, 'cetak']);
     // });
-    
+
 });
 
 Route::post('news', [NewsController::class, 'tambah']);
