@@ -170,6 +170,21 @@ class UserController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function resendKodeVerifikasi(Request $request){
+        $user = $request->user();
+
+        if ($user->jenis_pemilik != 'masyarakat')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $kode = $user->kode;
+
+        $response = (new UserService())->sendWa($request->telp, env('APP_MASYARAKAT_NAME')." - {$user->kode} adalah kode verifikasi anda.");
+
+        Log::info("Kirim pesan wa", $response);
+
+        return response()->json(['success' => true]);
+    }
+
     public function ubahNomorO(Request $request){
         $user = $request->user();
 
@@ -258,7 +273,9 @@ class UserController extends Controller
             return response()->json(['error' => 'Terjadi kesalahan'], 500);
 
         // Todo Send whatsapp activation code
-        (new UserService())->sendWa($masyarakat->no_telp, env('APP_MASYARAKAT_NAME')." - {$kode} adalah kode verifikasi anda.");
+        $response = (new UserService())->sendWa($masyarakat->no_telp, env('APP_MASYARAKAT_NAME')." - {$kode} adalah kode verifikasi anda.");
+
+        Log::info("Kirim pesan wa", $response);
 
         $token = Http::post(url('api/user/auth'), [
             'username' => $request->no_telp,
