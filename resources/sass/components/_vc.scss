@@ -58,3 +58,111 @@
         border-radius: .45rem;
     }
 }
+
+.e-call-ios {
+    position: relative;
+    height: 100vh;
+    max-width: 400px;
+    video {
+        object-fit: cover;
+    }
+    .e-call-ios-add-contact {
+        opacity: 0;
+        transition: all .5s;
+        position: absolute;
+        color: rgba(249, 251, 255, 0.719);
+        top: .45em;
+        right: .45em;
+        font-size: 2em;
+        z-index: 1000;
+    }
+    &:hover {
+        .e-call-ios-add-contact {
+            opacity: 1;
+        }
+    }
+    .e-call-ios-video {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 400px;
+        height: 100%;
+        justify-content: center;
+    }
+    &.e-call-ios-flex-last {
+        .e-call-ios-video {
+            .e-call-ios-square:last-child {
+                flex: 0 0 100% !important;
+                max-width: 100%;
+            }
+        }
+    }
+    
+    .e-call-ios-big {
+        flex: 0 0 100%;
+        max-width: 100%;
+        height: 100%;
+        &:hover {
+            .e-call-ios-square-options {
+                opacity: 1;
+            }
+        }
+    }
+    .e-call-ios-thumb {
+        position: absolute;
+        bottom: 1em;
+        right: 1em;
+        height: 10em;
+        width: 7em;
+        border-radius: .65em;
+        border: 1px solid $content;
+        &:hover {
+            .e-call-ios-square-options {
+                opacity: 1;
+            }
+        }
+    }
+    .e-call-ios-square-options { 
+        position: absolute;
+        transition: all .5s;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: inline-block;
+        opacity: 0; 
+        background: rgba(38, 48, 64, 0.46);
+        backdrop-filter: blur(6px);
+        color: $white;
+        border-radius: 5px;
+    }
+    .e-call-ios-square {
+        position: relative;
+        flex: 0 0 50%;
+        max-width: 50%;
+        background: rgba(38, 48, 64, 0.46);
+        border: 1px solid $content;
+        &:hover {
+            .e-call-ios-square-options {
+                opacity: 1;
+            }
+        }
+    }
+    .e-call-ios-square-50 { height: 50%; }
+    .e-call-ios-square-33 { height: 33.333333%; }
+    .e-call-ios-close {
+        position: absolute;
+        left: 50%;
+        bottom: 1em;
+        transform: translateX(-50%);
+        font-size: 2em;
+        z-index: 100;
+        border-radius: .45rem;
+    }
+    .e-call-ios-icon {
+        position: absolute;
+        bottom: 1em;
+        font-size: 2em;
+        color: rgba(191, 205, 230, 0.719);
+    }
+    .e-call-ios-camera { left: 1em; }
+    .e-call-ios-microphone { right: 1em; }
+}

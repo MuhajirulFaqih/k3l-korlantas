@@ -1,6 +1,7 @@
 <template>
     <div class="monit">
         <router-view ref="main"></router-view>
+        <div class="screen"><span>Aplikasi hanya diperuntukkan untuk desktop yang lebih besar</span></div>
     </div>
 </template>
 

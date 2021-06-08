@@ -20,6 +20,7 @@ import AdminLaporanQuickResponse from '@/views/Admin/Laporan/QuickResponse/Main'
 import AdminLaporanKejadian from '@/views/Admin/Laporan/Kejadian/Main'
 import AdminLaporanAbsensi from '@/views/Admin/Laporan/Absensi/Main'
 
+import IOSVideoCall from '@/views/Monit/Personil/IOSVideoCall'
 import DemoKegiatan from '@/views/Demo/Kegiatan'
 import DemoQuickResponse from '@/views/Demo/QuickResponse'
 
@@ -106,7 +107,12 @@ const router = new Router({
 			path: '/demo-quick-response',
 			name: 'Demo Quick Reponse',
 			component: DemoQuickResponse,
-		}
+		},
+        {
+			path: '/ios-video-call',
+			name: 'Video Call',
+			component: IOSVideoCall,
+		},
     ]
 });
 

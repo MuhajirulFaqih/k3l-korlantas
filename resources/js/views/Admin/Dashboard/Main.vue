@@ -1,50 +1,55 @@
 <template>
 	<div>
 		<b-row>
-			<b-col cols="4" @click="$router.push({ name: 'Personil' })">
-				<b-card no-body header-class="bg-primary" bg-variant="primary">
-					<div slot="header">
-						<b-row>		
-							<b-col cols="8">
-								<h2>{{ personil }}</h2>
-								<span>Personil</span>
-							</b-col>
-							<b-col cols="4">
-								<ph-user-circle class="phospor" size="60"/>
-							</b-col>
-						</b-row>
-					</div>
-		        </b-card>
+			<b-col cols="4">
+				<b-col cols="12 mb-4" @click="$router.push({ name: 'Personil' })">
+					<b-card no-body header-class="bg-primary pt-5 pb-4" bg-variant="primary">
+						<div slot="header">
+							<b-row>		
+								<b-col cols="8">
+									<h1>{{ personil }}</h1>
+									<span>Personil</span>
+								</b-col>
+								<b-col cols="4 text-center">
+									<ph-user-circle class="phospor" size="70"/>
+								</b-col>
+							</b-row>
+						</div>
+					</b-card>
+				</b-col>
+				<b-col cols="12 mb-4" @click="$router.push({ name: 'Masyarakat' })">
+					<b-card no-body header-class="bg-success pt-5 pb-4" bg-variant="success">
+						<div slot="header">
+							<b-row>		
+								<b-col cols="8">
+									<h1>{{ masyarakat }}</h1>
+									<span>Masyarakat</span>
+								</b-col>
+								<b-col cols="4 text-center">
+									<ph-users class="phospor" size="70"/>
+								</b-col>
+							</b-row>
+						</div>
+					</b-card>
+				</b-col>
+				<b-col cols="12 mb-4" @click="$router.push({ name: 'Kesatuan' })">
+					<b-card no-body header-class="bg-danger pt-5 pb-4" bg-variant="danger">
+						<div slot="header">
+							<b-row>		
+								<b-col cols="8">
+									<h1>{{ kesatuan }}</h1>
+									<span>Kesatuan</span>
+								</b-col>
+								<b-col cols="4 text-center">
+									<ph-circles-three class="phospor" size="70"/>
+								</b-col>
+							</b-row>
+						</div>
+					</b-card>
+				</b-col>
 			</b-col>
-			<b-col cols="4" @click="$router.push({ name: 'Masyarakat' })">
-				<b-card no-body header-class="bg-success" bg-variant="success">
-					<div slot="header">
-						<b-row>		
-							<b-col cols="8">
-								<h2>{{ masyarakat }}</h2>
-								<span>Masyarakat</span>
-							</b-col>
-							<b-col cols="4">
-								<ph-users class="phospor" size="60"/>
-							</b-col>
-						</b-row>
-					</div>
-		        </b-card>
-			</b-col>
-			<b-col cols="4" @click="$router.push({ name: 'Kesatuan' })">
-				<b-card no-body header-class="bg-danger" bg-variant="danger">
-					<div slot="header">
-						<b-row>		
-							<b-col cols="8">
-								<h2>{{ kesatuan }}</h2>
-								<span>Kesatuan</span>
-							</b-col>
-							<b-col cols="4">
-								<ph-circles-three class="phospor" size="60"/>
-							</b-col>
-						</b-row>
-					</div>
-		        </b-card>
+			<b-col cols="8">
+				
 			</b-col>
 		</b-row>
 		<br/>
