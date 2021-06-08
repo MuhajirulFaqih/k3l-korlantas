@@ -229,7 +229,7 @@ class UserController extends Controller
             'nama' => 'required',
             'no_telp' => 'required|min:8|max:13|unique:masyarakat',
             'alamat' => 'required|min:5',
-            'nik' => 'required|size:16|unique:masyarakat',
+            //'nik' => 'required|size:16|unique:masyarakat',
             //'id_kel' => 'required|min:10',
             'password' => 'required',
         ]);
@@ -238,7 +238,7 @@ class UserController extends Controller
             'nama' => $validData['nama'],
             'alamat' => $validData['alamat'],
             'no_telp' => $validData['no_telp'],
-            'nik' => $validData['nik']
+            'nik' => isset($validData['nik']) ? $validData['nik'] : null
             //'id_kel' => $validData['id_kel']
         ]);
 
