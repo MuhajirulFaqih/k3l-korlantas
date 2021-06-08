@@ -120,6 +120,18 @@
     }
 }
 
+.e-modal-ios {
+    .modal-content {
+        background: $dark;
+    }
+    .modal-header {
+        background: $dark;
+    }
+    .modal-body {
+        background: $modalBody;
+    }
+}
+
 .modal-backdrop {
     opacity: 1;
     background: rgba(14, 17, 22, .90);

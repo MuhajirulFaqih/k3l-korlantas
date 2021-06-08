@@ -64,6 +64,7 @@
             </center>
         </b-col>
     </b-modal>
+    <div class="screen"><span>Aplikasi hanya diperuntukkan untuk desktop yang lebih besar</span></div>
   </div>
 </template>
 
@@ -118,7 +119,7 @@
         },
         computed: {
             namaUser (){
-                return this.$store.getters.userInfo !== null ? (this.$store.getters.userInfo.pemilik ? this.$store.getters.userInfo.pemilik.nama : '') : ''
+                return this.$store.getters.userInfo !== null ? (this.$store.getters.userInfo.pemilik ? (this.$store.getters.userInfo.pemilik.nama ? this.$store.getters.userInfo.pemilik.nama : this.$store.getters.userInfo.pemilik.kesatuan) : '') : ''
             },
             username (){
                 return this.$store.getters.userInfo !== null ? (this.$store.getters.userInfo.pemilik ? this.$store.getters.userInfo.username : '') : ''
