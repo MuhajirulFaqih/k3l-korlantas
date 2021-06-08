@@ -163,7 +163,7 @@ class UserController extends Controller
         $masyarakat->save();
         $user->save();
 
-        $this->sendSms($request->telp, env('APP_MASYARAKAT_NAME')." - Kode otentikasi: {$user->kode}. Demi keamanan, jangan berikan kode RAHASIA ini kepada siapapun.");
+        (new UserService())->sendWa($request->telp, env('APP_MASYARAKAT_NAME')." - {$user->kode} adalah kode verifikasi anda.");
 
         return response()->json(['success' => true]);
     }
