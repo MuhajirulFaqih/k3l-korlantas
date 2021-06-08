@@ -163,7 +163,9 @@ class UserController extends Controller
         $masyarakat->save();
         $user->save();
 
-        (new UserService())->sendWa($request->telp, env('APP_MASYARAKAT_NAME')." - {$user->kode} adalah kode verifikasi anda.");
+        $response = (new UserService())->sendWa($request->telp, env('APP_MASYARAKAT_NAME')." - {$user->kode} adalah kode verifikasi anda.");
+
+        Log::info("Kirim pesan wa", $response);
 
         return response()->json(['success' => true]);
     }
