@@ -51,13 +51,11 @@ Route::prefix('user')->group(function () {
         Route::post('fcm_id', [UserController::class, 'fcm']);
         Route::post('ubah-nik', [UserController::class, 'ubahNik']);
         Route::post("ubah_telp", [UserController::class, 'ubahNomor']);
-        Route::post("ubah-telp-o", [UserController::class, 'ubahNomorO']);
         Route::post('ubah_password', [UserController::class, 'change_password']);
         Route::post('ubah-password-admin', [UserController::class, 'change_password_admin']);
         Route::post('update_pp', [UserController::class, 'updatePP']);
         Route::post('ubah_profil', [UserController::class, 'change_profil']);
         Route::post('update-timezone', [UserController::class, 'updateTimezone']);
-        Route::get('sms_otp/androido', [UserController::class, 'smsOtpO']);
         Route::post('lacak', [UserController::class, 'tracking']);
         Route::post('lacak-masyarakat', [UserController::class, 'trackingMasyarakat']);
         Route::get('dinas', [UserController::class, 'getDinas']);

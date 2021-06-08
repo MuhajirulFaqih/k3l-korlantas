@@ -151,7 +151,7 @@ class UserController extends Controller
         if (!$user->pemilik instanceof Masyarakat)
             return response()->json(['error' => 'Tidak memiliki akses'], 403);
 
-        $user->diverifikasi = false;
+        $user->diverifikasi = null;
         do{
             $user->kode = rand(1000, 10000);
         }while(User::where('kode', $user->kode)->where('diverifikasi', 0)->count() > 0);
@@ -186,44 +186,6 @@ class UserController extends Controller
         if (isset($response['error']))
             return response()->json(['error' => $response['error']], isset($response['code']) ? $response['code'] : 500);
 
-
-        return response()->json(['success' => true]);
-    }
-
-    public function ubahNomorO(Request $request){
-        $user = $request->user();
-
-        if (!$user->pemilik instanceof Masyarakat)
-            return response()->json(['error' => 'Tidak memiliki akses'], 403);
-
-        $user->diverifikasi = false;
-        do{
-            $user->kode = rand(1000, 10000);
-        }while(User::where('kode', $user->kode)->where('diverifikasi', 0)->count() > 0);
-
-        $masyarakat = $user->pemilik;
-
-        $masyarakat->no_telp = $request->telp;
-
-        $masyarakat->save();
-        $user->save();
-
-        $this->sendSms($request->telp, "<#> ".env('APP_MASYARAKAT_NAME')." - Kode otentikasi: {$user->kode}. Demi keamanan, jangan berikan kode RAHASIA ini kepada siapapun.".$request->hash);
-
-        return response()->json(['success' => true]);
-    }
-
-    public function smsOtpO(Request $request){
-        $user = $request->user();
-
-        do {
-            $kode = rand(1000, 10000);
-        } while(User::where('kode', $kode)->where('diverifikasi', 0)->count()> 0);
-
-        if(!$user->update(['kode' => $kode]))
-            return response()->json(['error' => 'Terjadi Kesalahan'], 500);
-
-        $this->sendSms($user->pemilik->no_telp, "<#>".env('APP_MASYARAKAT_NAME')." - Kode otentikasi: {$kode}. Demi keamanan, jangan berikan kode ini kepada siapapun.\n".$request->hash);
 
         return response()->json(['success' => true]);
     }
@@ -306,7 +268,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Kode Verifikasi tidak sesuai'], 500);
         }
 
-        $user->diverifikasi = true;
+        $user->diverifikasi = Carbon::now();
         $user->save();
         return response()->json(['success' => true, 'id' => $user->id]);
     }

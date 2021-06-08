@@ -12,7 +12,7 @@ class UserService
 {
     public function sendWa($nomor, $pesan){
         $token = Cache::remember('token_wa', 14400, function (){
-           $response = Http::post(env('WA_URL'). '/api/user/auth', [
+           $response = Http::accept('application/json')->post(env('WA_URL'). '/api/user/auth', [
                'username' => env('WA_USERNAME'),
                'password' => env('WA_PASSWORD'),
                'client_id' => env('WA_CLIENT_ID'),
@@ -26,7 +26,9 @@ class UserService
            return null;
         });
 
-        $response = Http::withToken($token)->post(env('WA_URL').'/api/wa/send', [
+        Log::info("token wa ". $token);
+
+        $response = Http::accept('application/json')->withToken($token)->post(env('WA_URL').'/api/wa/send', [
             'number' => $nomor,
             'text' => $pesan
         ]);
