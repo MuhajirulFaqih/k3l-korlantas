@@ -167,6 +167,9 @@ class UserController extends Controller
 
         Log::info("Kirim pesan wa", $response);
 
+        if (isset($response['error']))
+            return response()->json(['error' => $response['error']], isset($response['code']) ? $response['code'] : 500);
+
         return response()->json(['success' => true]);
     }
 
