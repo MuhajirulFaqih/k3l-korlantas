@@ -46,6 +46,7 @@ Route::prefix('user')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::get('/', [UserController::class, 'details']);
+        Route::get('resend-otp', [UserController::class, 'resendKodeVerifikasi']);
         Route::post('otp', [UserController::class, 'kode_verifikasi']);
         Route::post('fcm_id', [UserController::class, 'fcm']);
         Route::post('ubah-nik', [UserController::class, 'ubahNik']);
