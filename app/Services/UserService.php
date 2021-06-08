@@ -6,6 +6,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class UserService
 {
@@ -29,6 +30,8 @@ class UserService
             'number' => $nomor,
             'text' => $pesan
         ]);
+
+        Log::info("Kirim pesan wa", $response->json());
 
         if ($response->status() == 201){
             return $response->json();
