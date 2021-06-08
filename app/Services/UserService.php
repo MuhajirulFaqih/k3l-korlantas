@@ -31,7 +31,7 @@ class UserService
             'text' => $pesan
         ]);
 
-        Log::info("Kirim pesan wa", $response->json());
+        Log::info("Kirim pesan wa ". $response->body());
 
         if ($response->status() == 201){
             return $response->json();
