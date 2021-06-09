@@ -39,6 +39,12 @@
                 </div>
                 <span>Darurat</span>
             </a>
+            <a href="javascript:void(0);" @click="showPlb" class="bottombar-menu">
+                <div class="bottombar-icon">
+                    <ph-megaphone class="phospor"/>
+                </div>
+                <span>PLB</span>
+            </a>
         </div>
         <Kegiatan ref="kegiatan"/>
         <!-- <Pengaduan ref="pengaduan"/> -->
@@ -46,6 +52,7 @@
         <History ref="history"/>
         <Personil ref="personil"/>
         <Darurat ref="darurat"/>
+        <Plb ref="plb"/>
     </div>
 </template>
 
@@ -56,12 +63,13 @@ import Kejadian from "@/views/Monit/Kejadian/Main"
 import History from "@/views/Monit/HistoryVC/Main"
 import Personil from "@/views/Monit/Personil/Main"
 import Darurat from "@/views/Monit/Darurat/Main"
+import Plb from "@/views/Monit/Plb/Main"
 export default {
     name: 'bottom-bar',
     components: { 
             Kegiatan, 
             // Pengaduan, 
-            Kejadian, History, Personil, Darurat 
+            Kejadian, History, Personil, Darurat, Plb 
     },
     data () {
         return {
@@ -94,6 +102,9 @@ export default {
         },
         showDarurat () {
             this.$refs.darurat.showModal()
+        },
+        showPlb () {
+            this.$refs.plb.showModal()
         },
     }
 }

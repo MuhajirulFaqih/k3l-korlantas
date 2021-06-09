@@ -18,13 +18,12 @@ class PlbController extends Controller
     public function index(Request $request){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
             return response()->json(['error' => 'Terlarang'], 403);
         
         list($orderBy, $direction) = $request->sort != '' ? explode(':', $request->sort) : explode(':', 'created_at:desc');
 
-        $plb = Plb::with(['user'])->filterJenisPemilik($user)
-                        ->orderBy($orderBy, $direction);
+        $plb = Plb::with(['user'])->filtered($request->filter)->orderBy($orderBy, $direction);
 
         $paginator = $plb->paginate(10);
         $collection = $paginator->getCollection();
@@ -38,6 +37,7 @@ class PlbController extends Controller
     }
 
     public function store(Request $request) {
+        if (!in_array($user->jenis_pemilik, ['personil']))
         $validatedData = $request->validate([
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
@@ -88,7 +88,7 @@ class PlbController extends Controller
     public function show(Request $request, Plb $plb){
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
+        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         return fractal()
@@ -100,6 +100,7 @@ class PlbController extends Controller
 
     public function getKesatuanTujuan(Request $request)
     {
+        if(!in_array($user->jenis_pemilik, ['personil']))
         $kesatuan = Kesatuan::filterPoldaPolres()->orderBy('kesatuan', 'ASC')->get();
         return response()->json(['data' => $kesatuan], 200);
     }

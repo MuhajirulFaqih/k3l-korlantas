@@ -200,6 +200,9 @@ export default {
                 case 'personil':
                     this.$refs.bottombar.$refs.personil.detail(item.data)
                     break;
+                case 'plb':
+                    this.$refs.bottombar.$refs.plb.detail(item.data)
+                    break;
                 default:
                     this.$refs.bottombar.$refs.darurat.detail(item.data)
                     break;
@@ -218,6 +221,9 @@ export default {
                     break;
                 case 'personil':
                     return item.data.icon
+                    break;
+                case 'plb':
+                    return require('@/assets/plb.png').default
                     break;
                 default:
                     return require('@/assets/darurat.png').default
