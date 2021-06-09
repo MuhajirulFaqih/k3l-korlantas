@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Klb;
+use App\Models\Plb;
+use App\Models\Kesatuan;
+use App\Models\Personil;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Transformers\KlbTransformer;
+use App\Transformers\PlbTransformer;
 use App\Serializers\DataArraySansIncludeSerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
-class KlbController extends Controller
+class PlbController extends Controller
 {
 
     public function index(Request $request){
@@ -21,15 +23,15 @@ class KlbController extends Controller
         
         list($orderBy, $direction) = $request->sort != '' ? explode(':', $request->sort) : explode(':', 'created_at:desc');
 
-        $klb = Klb::with(['user'])->filterJenisPemilik($user)
+        $plb = Plb::with(['user'])->filterJenisPemilik($user)
                         ->orderBy($orderBy, $direction);
 
-        $paginator = $klb->paginate(10);
+        $paginator = $plb->paginate(10);
         $collection = $paginator->getCollection();
 
         return fractal()
             ->collection($collection)
-            ->transformWith(KlbTransformer::class)
+            ->transformWith(PlbTransformer::class)
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->paginateWith(new IlluminatePaginatorAdapter($paginator))
             ->respond();
@@ -39,6 +41,7 @@ class KlbController extends Controller
         $validatedData = $request->validate([
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
+            'id_kesatuan' => 'required|numeric',
             'keterangan' => 'required'
         ]);
 
@@ -47,43 +50,57 @@ class KlbController extends Controller
         $data = [
             'id_user' => $user->id,
             'id_kesatuan' => $user->pemilik->id_kesatuan ?? null,
+            'id_kesatuan_tujuan' => $request->id_kesatuan,
             'lat' => $validatedData['lat'],
             'lng' => $validatedData['lng'],
             'keterangan' => $validatedData['keterangan']
         ];
 
-        $klb = Klb::create($data);
+        $plb = Plb::create($data);
         
         //Start broadcast
-        $data = [
-            'id' => $klb->id,
-            'pesan' => $user->nama.' mengirimkan kejadian luar biasa.',
+        $broadcast = [
+            'id' => $plb->id,
+            'pesan' => $plb->keterangan,
             'nama' => $user->nama
         ];
-        $penerimaOneSignal = User::join('personil', 'personil.id', '=', 'user.id_pemilik')
-                            ->where('jenis_pemilik', 'personil')->whereIn('id_jabatan', [1, 2, 30])->get()->pluck('id')->all();
-        $penerima = User::join('personil', 'personil.id', '=', 'user.id_pemilik')
-                            ->where('jenis_pemilik', 'personil')->whereIn('id_jabatan', [1, 2, 30])->whereNotNull('fcm_id')->get()->pluck('fcm_id')->all();
-        if (env('USE_ONESIGNAL')) {
-            $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $data, collect($penerimaOneSignal)->all());
+
+        $personil = new Personil;
+        
+        if($plb->id_kesatuan_tujuan == 1) {
+            $penerimaOneSignal = $personil->ambilId();
+            $penerima = $personil->ambilToken();
+        } else {
+            $kesatuanTujuan = Kesatuan::descendantsAndSelf($plb->id_kesatuan_tujuan)->pluck('id')->all();
+            $penerimaOneSignal = $personil->ambilIdUserByKesatuan($kesatuanTujuan);
+            $penerima = $personil->ambilTokenByKesatuan($kesatuanTujuan);
         }
+        
+        if (env('USE_ONESIGNAL')) { $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $data, collect($penerimaOneSignal)->all()); }
         $this->kirimNotifikasiViaGcm('kejadian-luar-biasa-baru', $data, collect($penerima)->all());
         //End broadcast
-        return response()->json(['success' => true, 'id' => $klb->id]);
+        
+        return response()->json(['success' => true, 'id' => $plb->id]);
     }
 
     
 
-    public function show(Request $request, Klb $klb){
+    public function show(Request $request, Plb $plb){
         $user = $request->user();
 
         if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         return fractal()
-            ->item($klb)
-            ->transformWith(KlbTransformer::class)
+            ->item($plb)
+            ->transformWith(PlbTransformer::class)
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->respond();
+    }
+
+    public function getKesatuanTujuan(Request $request)
+    {
+        $kesatuan = Kesatuan::filterPoldaPolres()->orderBy('kesatuan', 'ASC')->get();
+        return response()->json(['data' => $kesatuan], 200);
     }
 }

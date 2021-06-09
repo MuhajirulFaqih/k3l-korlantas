@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateKlbTable extends Migration
+class CreatePlbTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateKlbTable extends Migration
      */
     public function up()
     {
-        Schema::create('klb', function (Blueprint $table) {
+        Schema::create('plb', function (Blueprint $table) {
             $table->id();
             $table->integer('id_user')->unsigned()->index();
             $table->integer('id_kesatuan')->nullable();
+            $table->integer('id_kesatuan_tujuan')->nullable();
             $table->text('keterangan')->nullable();
             $table->double('lat');
             $table->double('lng');
@@ -31,6 +32,6 @@ class CreateKlbTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('klb');
+        Schema::dropIfExists('plb');
     }
 }

@@ -61,4 +61,14 @@ class Kesatuan extends Model
     {
         return $this->pemilikKesatuan($query, $user);
     }
+
+    public function scopeFilterPoldaPolres($query)
+    {
+        return $query->whereIn('id', 
+                DB::table('pers_kesatuan as k')
+                    ->select('k.id')
+                    ->where('kesatuan', 'like', '%POLDA%')
+                    ->orWhere('kesatuan', 'like', '%POLRES%')
+                    ->get()->pluck('id')->all());
+    }
 }
