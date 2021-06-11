@@ -54,6 +54,10 @@
                         <template v-slot:cell(nama)="data">
                             {{ data.item.user.nama }} <br/> {{ data.item.user.jabatan }}
                         </template>
+                        <template v-slot:cell(laporan)="data">
+                            <div v-if="data.item.is_quick_response == 1"><b-badge variant="success text-white px-1">Quick response</b-badge></div>
+                            <div v-else><b-badge variant="primary text-white px-1">Kegiatan</b-badge></div>
+                        </template>
                         <template v-slot:cell(aksi)="data">
                             <div class="dropdown-container">
                                 <b-dropdown text="Pilih" class="e-btn-dropdown" boundary>
@@ -123,6 +127,7 @@ export default {
                 },
                 { key: 'user.nrp', label: 'Nrp', sortable: true },
                 { key: 'nama', label: 'Nama', sortable: true },
+                { key: 'laporan', label: 'Status laporan', sortable: true },
                 { key: 'aksi', label: 'Aksi' },
             ]
         }
@@ -147,6 +152,9 @@ export default {
                 case 'nama':
                     sortBy = 'id_user'
                     break
+                case 'laporan':
+                    sortBy = 'is_quick_response'
+                    break
                 default:
                     sortBy = 'waktu_kegiatan'
             }
@@ -157,7 +165,7 @@ export default {
                 sort: (sortBy != "" ? sortBy : 'waktu_kegiatan') + ':' + (ctx.sortDesc ? 'desc' : 'asc'),
             }
 
-            return axios.get('kegiatan', {
+            return axios.get('kegiatan/all', {
                     params: payload,
             }).then(({ data: { data, meta: { pagination }}}) => {
                 this.totalRows = pagination.total

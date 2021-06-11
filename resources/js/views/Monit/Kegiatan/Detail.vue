@@ -4,7 +4,7 @@
             modal-class="e-modal e-modal-xl"
             title-tag="h4"
             @hide="hideModal"
-            title="Detail Kegiatan">
+            :title="getTitle">
 	  	<div class="d-block" v-if="single !== null">
             <b-row>
                 <!-- <b-col cols="12 py-2">
@@ -82,24 +82,24 @@
                                 </b-row> -->
                                 <b-row v-if="typeof single.jenis != 'undefined'" v-html="formatJenis(single.jenis)"></b-row>
                                 <b-row v-if="single.daftar_rekan">
-                                    <b-col cols="4">Daftar rekan</b-col>
+                                    <b-col cols="5">Daftar rekan</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="7"><b>{{ single.daftar_rekan }}</b></b-col>
+                                    <b-col cols="6"><b>{{ single.daftar_rekan }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="single.nomor_polisi">
-                                    <b-col cols="4">Nomor polisi</b-col>
+                                    <b-col cols="5">Nomor polisi</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="7"><b>{{ single.nomor_polisi }}</b></b-col>
+                                    <b-col cols="6"><b>{{ single.nomor_polisi }}</b></b-col>
                                 </b-row>
-                                <b-row v-if="single.nomor_polisi">
-                                    <b-col cols="4">Rute patroli</b-col>
+                                <b-row v-if="single.rute_patroli">
+                                    <b-col cols="5">Rute patroli</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="7"><b>{{ single.rute_patroli }}</b></b-col>
+                                    <b-col cols="6"><b>{{ single.rute_patroli }}</b></b-col>
                                 </b-row>
                                 <b-row v-if="typeof single.kelurahan != 'undefined'">
-                                    <b-col cols="4">{{ single.kelurahan.jenis.nama }}</b-col>
+                                    <b-col cols="5">{{ single.kelurahan.jenis.nama }}</b-col>
                                     <b-col cols="1">:</b-col>
-                                    <b-col cols="7"><b>{{ single.kelurahan.nama }}</b></b-col>
+                                    <b-col cols="6"><b>{{ single.kelurahan.nama }}</b></b-col>
                                 </b-row>
                             </perfect-scrollbar>
                         </b-col>
@@ -224,6 +224,9 @@ export default {
         showCommentPage () {
             return this.totalRows > this.perPage && this.comment.length !== this.totalRows
         },
+        getTitle () {
+            return this.single == null ? 'Detail Kegiatan' : (this.single.is_quick_response == 1 ? 'Detail Quick Response' : 'Detail Kegiatan')
+        }
     },
     methods : {
         showModal (item) {

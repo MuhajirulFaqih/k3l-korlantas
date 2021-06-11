@@ -14,6 +14,7 @@
                     <div class="rightbar-widget cursor-pointer" @click="$parent.$refs.bottombar.$refs.kegiatan.$refs.detail.showModal(v)">
                         <b-img v-if="v.dokumentasi == null" src="/assets/sample-kegiatan.png" class="w-100" alt=""/>
                         <b-img v-else :src="v.dokumentasi" class="w-100" alt=""/>
+                        <div v-if="v.is_quick_response == 1"><b-badge variant="primary text-white px-1">Quick response</b-badge></div>
                         <div>{{ v.user.nama }}</div>
                         <span>{{ v.w_kegiatan }}</span>
                         <p>{{ v.detail }}</p>
@@ -90,7 +91,7 @@ export default {
                 page: from == 'master' ? this.currentPage : (this.currentPage + 1),
                 sort: 'created_at:desc',
             }
-            axios.get('kegiatan', { params: payload })
+            axios.get('kegiatan/all', { params: payload })
             .then(({ data: { data, meta: { pagination }}}) => {
                 this.totalRows = pagination.total
                 this.perPage = pagination.per_page

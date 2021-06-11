@@ -143,9 +143,11 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [KegiatanController::class, 'list_laporan']);
 
         Route::post('/', [KegiatanController::class, 'upload_laporan']);
-
+        
+        Route::get('all', [KegiatanController::class, 'all_laporan']);
+        
         Route::get('tipejenis', [KegiatanController::class, 'getJenisTipe']);
-
+        
         Route::get('tipejenisbypersonil', [KegiatanController::class, 'getJenisTipeByPersonil']);
         Route::get('kesatuanquickresponse', [KegiatanController::class, 'getKesatuanQuickResponse']);
         Route::get('tipejenisbykesatuan/{tipe}', [KegiatanController::class, 'getJenisTipeByKesatuan']);
@@ -155,6 +157,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{kegiatan}/komentar', [KegiatanController::class, 'getKomentar']);
 
         Route::post('{kegiatan}/komentar', [KegiatanController::class, 'tambahKomentar']);
+        
 
     });
 

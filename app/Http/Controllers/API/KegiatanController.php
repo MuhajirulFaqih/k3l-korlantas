@@ -139,6 +139,38 @@ class KegiatanController extends Controller
             ->paginateWith(new IlluminatePaginatorAdapter($paginator))
             ->respond();
     }
+    
+    public function all_laporan(Request $request)
+    {
+        $user = $request->user();
+        list($orderBy, $direction) = explode(':', $request->sort ?? 'created_at:desc');
+
+        if (!in_array($user->jenis_pemilik, ['admin', 'personil' ,'kesatuan']))
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $kegiatan = $request->filter == '' ?
+        Kegiatan::with(['user'])->filterJenisPemilik($user)
+                        ->orderBy($orderBy, $direction) :
+        Kegiatan::with(['user'])->filterJenisPemilik($user)
+                        ->filter($request->filter)
+                        ->orderBy($orderBy, $direction);
+
+        $limit = $request->limit != '' ? $request->limit : 10;
+
+        if($limit == 0)
+            return null;
+
+        $paginator = $kegiatan->paginate($limit);
+        $collection = $paginator->getCollection();
+
+        return fractal()
+            ->collection($collection)
+            ->parseIncludes(['jenis', 'jenis.parent.parent.parent', 'kelurahan'])
+            ->transformWith(new KegiatanTransformer(true))
+            ->serializeWith(new DataArraySansIncludeSerializer)
+            ->paginateWith(new IlluminatePaginatorAdapter($paginator))
+            ->respond();
+    }
 
     public function getKomentar(Request $request, Kegiatan $kegiatan)
     {
