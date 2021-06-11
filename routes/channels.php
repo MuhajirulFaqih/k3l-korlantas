@@ -21,6 +21,10 @@ Broadcast::channel(env('SOCKET_PREFIX').':Monit.{id}', function ($user, $id) {
     return in_array($user->jenis_pemilik, ['admin', 'kesatuan']) && $user->id === (int) $id;
 });
 
+Broadcast::channel(env('SOCKET_PREFIX').':Personil.{id}', function ($user, $id) {
+    return in_array($user->jenis_pemilik, ['personil']) && $user->id_pemilik === (int) $id;
+});
+
 Broadcast::channel('Video.Call', function($user){
     return in_array($user->jenis_pemilik, ['admin', 'personil', 'bhabin']);
 });

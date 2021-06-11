@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Events\CallAdminEvent;
 use App\Events\CallReady;
+use App\Events\NotifyAdminReadyEvent;
+use App\Events\NotifyAdminRejectEvent;
 use App\Events\RejectCallEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
@@ -14,9 +16,11 @@ use App\Models\User;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Transformers\CallTransformer;
 use App\Transformers\MasyarakatTransformer;
+use App\Transformers\PersonilTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class CallController extends Controller
@@ -101,7 +105,7 @@ class CallController extends Controller
         if (!$callLog){
             $formatedPersonil = fractal()
                 ->item($personil)
-                ->transformWith(MasyarakatTransformer::class)
+                ->transformWith(PersonilTransformer::class)
                 ->serializeWith(DataArraySansIncludeSerializer::class)
                 ->toArray();
 
@@ -145,7 +149,7 @@ class CallController extends Controller
     public function endSession(Request $request, $session_id){
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['kesatuan', 'admin']))
+        if (!in_array($user->jenis_pemilik, ['kesatuan', 'admin', 'personil']))
             return response()->json(['error' => "error"]);
 
         $callLog = CallLog::where('session_id', $session_id)->first();
@@ -159,8 +163,10 @@ class CallController extends Controller
 
         $responseHttp = Http::withBasicAuth("OPENVIDUAPP", env("OPENVIDU_SECRET"))->delete(env('OPENVIDU_URL').'/openvidu/api/sessions/'.$session_id);
 
-        if (!$responseHttp->ok())
-            return response()->json(['error' => 'Terjadi kesalahan']);
+        Log::info("Response Http ". $responseHttp->body());
+
+        if (!$responseHttp->status() == 204)
+            return response()->json(['error' => 'Terjadi kesalahan'], $responseHttp->status());
 
         return response()->json(['success' => true]);
     }
@@ -178,16 +184,58 @@ class CallController extends Controller
             return response()->json(['error' => 'Personil tidak ditemukan'], 404);
 
 
-        $data = [
-            'pesan' => 'Panggilan masuk',
-            'nama' => $user->jenis_pemilik == 'kesatuan' ? $user->pemilik->kesatuan : $user->pemilik->nama,
-            'id' => $user->id,
-            'sessionId' => $request->session_id
-        ];
-
-        $this->kirimNotifikasiViaOnesignal('incoming-vcon', $data, [$personil->auth->id]);
+        if ($request->ready){
+            $this->sendSocketToPersonil($request, $personil);
+        } else if ($request->rejected){
+            event(new NotifyAdminRejectEvent($personil->auth->id));
+        } else {
+            $data = [
+                'pesan' => 'Panggilan masuk',
+                'nama' => $user->jenis_pemilik == 'kesatuan' ? $user->pemilik->kesatuan : $user->pemilik->nama,
+                'id' => $user->id,
+                'w_notif' => Carbon::now('UTC')->timestamp,
+                'sessionId' => $request->session_id
+            ];
+            Log::info("Sending notifikasi onesignal", $data);
+            $this->kirimNotifikasiViaOnesignal('incoming-vcon', $data, [$personil->auth->id]);
+        }
 
         return response()->json(['success' => true]);
+    }
+
+    private function sendSocketToPersonil(Request $request, Personil $personil){
+        Log::info("sendSocketToPersonil", $personil->toArray());
+        $callLog = CallLog::where('session_id', $request->session_id)->first();
+        $responseToken = Http::withBasicAuth("OPENVIDUAPP", env("OPENVIDU_SECRET"))
+            ->withHeaders([
+                'Content-Type' => 'application/json'
+            ])
+            ->post(env('OPENVIDU_URL') . '/openvidu/api/sessions/session' . $callLog->id . '/connection', [
+                'type' => 'WEBRTC',
+                'data' => '',
+                'role' => 'PUBLISHER'
+            ]);
+
+        $token = [];
+        $responseTokenJson = $responseToken->json();
+        if ($responseToken->ok()) {
+            $participant = $callLog->participants()->where('id_user', $personil->auth->id)->first();
+            if ($participant)
+                $participant->update([
+                    'connection_id' => $responseTokenJson['id'],
+                    'status' => $responseTokenJson['status']
+                ]);
+            else
+                $callLog->participants()->create([
+                    'id_user' => $personil->auth->id,
+                    'connection_id' => $responseTokenJson['id'],
+                    'status' => $responseTokenJson['status'],
+                    'active_at' => Carbon::now()
+                ]);
+
+            $token = $responseTokenJson;
+        }
+        event(new NotifyAdminReadyEvent($token, $personil->id));
     }
 
     public function rejectCall(Request $request)

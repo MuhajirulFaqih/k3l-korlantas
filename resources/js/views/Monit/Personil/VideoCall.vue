@@ -18,6 +18,12 @@
                                 </div>
                                 Memanggil...
                             </div>
+                            <div class="e-call-waiting" v-if="incoming">
+                                <div class="d-inline-block">
+                                    <ph-hourglass-medium class="phospor"/>
+                                </div>
+                                Panggilan masuk. Dari {{ single.nama }}
+                            </div>
                             <user-video :stream-manager="mainStreamManager" video-class="e-person"/>
                             <div class="e-person-other" id="video-container">
                                 <user-video :stream-manager="publisher"
@@ -26,7 +32,10 @@
                                 <user-video v-for="sub in subscribers" :key="sub.stream.connection.connectionId"
                                             :stream-manager="sub" video-class="e-person-other-thumb" @click.native="updateMainVideoStreamer(sub)"/>
                             </div>
-                            <button class="btn e-btn e-btn-danger e-call-close" @click="closeCall">
+                            <button class="btn e-btn e-btn-success e-call-close" @click="answerCall" v-if="incoming && !answered">
+                                <ph-phone-slash class="phospor"/>
+                            </button>
+                            <button class="btn e-btn e-btn-danger e-call-close" @click="closeCall" v-if="!incoming && answered">
                                 <ph-phone-slash class="phospor"/>
                             </button>
                         </div>
@@ -61,6 +70,9 @@
                 mainStreamManager: null,
                 publisher: null,
                 sessionId: null,
+                timer: null,
+                incoming: false,
+                answered: false,
                 subscribers: [],
                 inCall: false
             }
@@ -72,26 +84,66 @@
             showModal (item) {
                 this.single = item
                 let self = this
-                setTimeout(function() {
+                 setTimeout(function() {
                     self.joinSession()
                     self.$refs.videoCall.show()
                 }, 500)
+            },
+            incomingCall (item){
+                this.single = item
+                this.incoming = true
+                let self = this
+                setTimeout( function () {
+                    self.runIncoming()
+                    self.$refs.videoCall.show()
+                }, 500)
+            },
+            runIncoming(){
+                this.$refs.rbt.play()
+                this.timer = setTimeout(() => {
+                    this.sendRejectPersonil()
+                    this.leaveSession()
+                }, 40000)
             },
             joinSession() {
                 this.OV = new OpenVidu()
                 this.OV.enableProdMode()
                 this.session = this.OV.initSession()
 
+                let self = this
+
+                if (this.timer){
+                    clearTimeout(this.timer)
+                }
+
                 this.session.on('streamCreated', ({stream}) => {
+                    if (this.timer != null){
+                        clearTimeout(this.timer)
+                        this.incoming = false
+                        this.$refs.rbt.pause()
+                    }
+
                     const subscriber = this.session.subscribe(stream)
-                    this.subscribers.push(subscriber)
+                    self.subscribers.push(subscriber)
                 })
 
                 this.session.on('streamDestroyed', ({stream}) => {
-                    const index = this.subscriber.indexOf(stream.streamManager, 0)
+                    const index = self.subscribers.indexOf(stream.streamManager, 0)
                     if (index >= 0) {
                         this.subscribers.splice(index, 1)
                     }
+
+                    if (self.subscribers.length == 0){
+                        self.timer = setTimeout(() => {
+                            self.leaveSession()
+                            self.timer = null
+                        }, 10000)
+                    }
+                })
+
+                this.session.on('sessionDisconnected', ({ reason }) => {
+                    if (reason == 'sessionClosedByServer')
+                        this.leaveSession()
                 })
 
                 this.getToken().then(token => {
@@ -112,44 +164,84 @@
                             this.publisher = publisher
 
                             this.session.publish(this.publisher)
-                        })
 
-                        this.callPersonil(this.single.nrp)
-                    .catch(error => {
-                        console.log("Error get connection :", error.code, error.message)
-                    })
+                            if (!this.incoming)
+                                this.callPersonil()
+                            else
+                                this.sendSocketPersonil()
+
+                            this.timer = setTimeout(() => {
+                                this.leaveSession()
+                                this.timer = null
+                            }, 30000)
+                        })
+                        .catch(error => {
+                            console.log("Error get connection :", error.code, error.message)
+                        })
                 })
 
                 window.addEventListener('beforeunload', this.leaveSession)
             },
-            callPersonil(nrp){
+            sendSocketPersonil(){
                 axios.post('call/notify-personil', {
-                    nrp: nrp,
+                    nrp: this.single.nrp,
+                    session_id: this.sessionId,
+                    ready: true,
+                }).then((data) => {
+
+                })
+            },
+            callPersonil(){
+                axios.post('call/notify-personil', {
+                    nrp: this.single.nrp,
                     session_id: this.sessionId
                 })
                 .then((data) => {
 
                 })
             },
+            sendRejectPersonil() {
+                axios.post("call/notify-personil", {
+                    nrp: this.single.nrp,
+                    rejected: true
+                })
+                .then((data) => {
+
+                })
+            },
             leaveSession() {
+                if (this.timer != null){
+                    clearTimeout(this.timer)
+                    this.timer = null
+                }
+
                 if (this.session) this.session.disconnect()
 
+                if (this.sessionId != null)
+                    this.endSession()
+                this.$refs.rbt.pause()
+                this.incoming = false
                 this.session = undefined
                 this.mainStreamManager = undefined
                 this.publisher = undefined
                 this.subscribers = []
+                this.sessionId = null
                 this.OV = undefined
                 this.$refs.videoCall.hide()
-
-                this.endSession()
 
                 window.removeEventListener('beforeunload', this.leaveSession)
             },
             endSession(){
                 axios.delete('call/end-session/'+ this.sessionId)
-                    .then((data) => {
-                        console.log(data)
+                    .then(({ data }) => {
+
                     })
+            },
+            answerCall(){
+                this.$refs.rbt.pause()
+                clearTimeout(this.timer)
+                this.joinSession()
+                this.answered = true
             },
             closeCall(){
                 this.leaveSession()

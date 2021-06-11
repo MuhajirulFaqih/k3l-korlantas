@@ -178,6 +178,18 @@ export default {
                 return []
             })
         },
+        incomingCallById (id) {
+            let self = this
+            setTimeout(function () {
+                self.$refs.detail.incomingCallById(id)
+            })
+        },
+        incomingCall (item) {
+            let self = this
+            setTimeout(function () {
+                self.$refs.detail.incomingCall(item)
+            })
+        },
         detail (item) {
             let self = this
             setTimeout(function() {
@@ -185,7 +197,7 @@ export default {
             }, 500)
         },
         lokasi (item) {
-            if(item.lat == null && item.lng == null) { 
+            if(item.lat == null && item.lng == null) {
                 this.$toast.error("Lokasi tidak dapat di tampilkan")
                 return
             }
@@ -195,8 +207,8 @@ export default {
         },
         refreshTable () {
             if(typeof this.$refs.table != 'undefined') {
-                this.totalRows > this.perPage ? 
-                (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1) 
+                this.totalRows > this.perPage ?
+                (this.currentPage == 1 ? this.$refs.table.refresh() : this.currentPage = 1)
                 : this.$refs.table.refresh()
             }
         },

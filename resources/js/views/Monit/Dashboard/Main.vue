@@ -342,8 +342,9 @@ export default {
                     .listen('.incoming-call', this.incomingCall)
             }
         },
-        incomingCall(data) {
-
+        incomingCall({data : { data }}) {
+            console.log(data)
+            this.$refs.bottombar.$refs.personil.incomingCallById(data.id)
         },
         daruratBaru({ data }) {
             this.socketDarurat = true

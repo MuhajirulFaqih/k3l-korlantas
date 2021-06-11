@@ -44,12 +44,14 @@ class AdminController extends Controller
         Artisan::call("admin:online");
 
         $id_kesatuan = Kesatuan::ancestorsAndSelf($user->pemilik->id_kesatuan)->pluck('id')->all();
-        $collection = Kesatuan::with('auth')->whereIn('id', $id_kesatuan)->has('auth')->paginate(10);
+        $paginator = Kesatuan::with('auth')->whereIn('id', $id_kesatuan)->has('auth')->paginate(10);
+        $collection = $paginator->getCollection();
 
 
         return fractal()
             ->collection($collection)
             ->parseIncludes(['auth'])
+            ->paginateWith(new IlluminatePaginatorAdapter($paginator))
             ->transformWith(KesatuanTransformer::class)
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->respond();
