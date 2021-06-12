@@ -48,7 +48,7 @@
         components: {IOSVideoCallAddSubscribers, IOSUserVideo},
         computed: {
             publisherClass() {
-                return this.subscribers.length == 0 ? this.subscribers.length == 0 ? 'e-call-ios-big' : 'e-call-ios-thumb' :
+                return this.subscribers.length == 1 ? 'e-call-ios-thumb' :
                     (this.subscribers.length < 4 ? 'e-call-ios-square e-call-ios-square-50' :
                         'e-call-ios-square e-call-ios-square-33')
             },

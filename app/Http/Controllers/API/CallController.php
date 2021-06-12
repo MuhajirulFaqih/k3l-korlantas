@@ -194,6 +194,7 @@ class CallController extends Controller
                 'nama' => $user->jenis_pemilik == 'kesatuan' ? $user->pemilik->kesatuan : $user->pemilik->nama,
                 'id' => $user->id,
                 'w_notif' => Carbon::now('UTC')->timestamp,
+                'url' => url('ios-video-call?id=').$user->id,
                 'sessionId' => $request->session_id
             ];
 
