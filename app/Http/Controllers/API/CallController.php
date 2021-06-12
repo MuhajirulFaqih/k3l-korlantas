@@ -196,7 +196,7 @@ class CallController extends Controller
                 'w_notif' => Carbon::now('UTC')->timestamp,
                 'sessionId' => $request->session_id
             ];
-            Log::info("Sending notifikasi onesignal", $data);
+
             $this->kirimNotifikasiViaOnesignal('incoming-vcon', $data, [$personil->auth->id]);
         }
 

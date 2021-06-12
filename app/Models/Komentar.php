@@ -54,6 +54,26 @@ class Komentar extends Model
         return collect(array_values(array_unique($tokens)));
     }
 
+    public function ambilUser(Komentar $komentar){
+        $induk = $komentar->induk;
+        $idPemilikKiriman = $induk->id_user;
+        $idPengirimKomentar = $komentar->id_user;
+
+        $users = [];
+        foreach ($induk->komentar as $row){
+            $kondisi = $row->id_user !== $idPemilikKiriman &&
+                $row->id_user !== $idPengirimKomentar &&
+                !empty($row->user->fcm_id);
+
+            if ($kondisi) {
+                $users[] = $row->user;
+            }
+        }
+
+        $collection = collect($users);
+        return $collection->unique();
+    }
+
     public function ambilToken(Komentar $komentar){
         $induk = $komentar->induk;
         $idPemilikKiriman = $induk->id_user;

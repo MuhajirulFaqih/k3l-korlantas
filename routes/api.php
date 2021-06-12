@@ -49,6 +49,7 @@ Route::prefix('user')->group(function () {
         Route::get('resend-otp', [UserController::class, 'resendKodeVerifikasi']);
         Route::post('otp', [UserController::class, 'kode_verifikasi']);
         Route::post('fcm_id', [UserController::class, 'fcm']);
+        Route::get('notif', [UserController::class, 'notifikasi']);
         Route::post('ubah-nik', [UserController::class, 'ubahNik']);
         Route::post("ubah_telp", [UserController::class, 'ubahNomor']);
         Route::post('ubah_password', [UserController::class, 'change_password']);
@@ -143,11 +144,11 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [KegiatanController::class, 'list_laporan']);
 
         Route::post('/', [KegiatanController::class, 'upload_laporan']);
-        
+
         Route::get('all', [KegiatanController::class, 'all_laporan']);
-        
+
         Route::get('tipejenis', [KegiatanController::class, 'getJenisTipe']);
-        
+
         Route::get('tipejenisbypersonil', [KegiatanController::class, 'getJenisTipeByPersonil']);
         Route::get('kesatuanquickresponse', [KegiatanController::class, 'getKesatuanQuickResponse']);
         Route::get('tipejenisbykesatuan/{tipe}', [KegiatanController::class, 'getJenisTipeByKesatuan']);
@@ -157,7 +158,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{kegiatan}/komentar', [KegiatanController::class, 'getKomentar']);
 
         Route::post('{kegiatan}/komentar', [KegiatanController::class, 'tambahKomentar']);
-        
+
 
     });
 

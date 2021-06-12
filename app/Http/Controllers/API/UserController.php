@@ -13,6 +13,7 @@ use App\Models\Darurat;
 use App\Models\User;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Services\UserService;
+use App\Transformers\NotificationTransformer;
 use App\Transformers\PersonilTransformer;
 use App\Transformers\LogMasyarakatTransformer;
 use App\Transformers\ResponseUserTransformer;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class UserController extends Controller
 {
@@ -206,6 +208,21 @@ class UserController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function notifikasi(Request $request){
+        $user = $request->user();
+
+        $pagination = $user->notifications()->paginate(10);
+        $collection = $pagination->getCollection();
+
+        return fractal()
+            ->collection($collection)
+            ->transformWith(NotificationTransformer::class)
+            ->paginateWith(new IlluminatePaginatorAdapter($pagination))
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
+    }
+
 
     public function register(Request $request)
     {

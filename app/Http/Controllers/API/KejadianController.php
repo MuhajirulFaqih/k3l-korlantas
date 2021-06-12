@@ -256,7 +256,7 @@ class KejadianController extends Controller
         if (!$komentar)
             return response()->json(['error' => 'Terjadi kesalahan saat menyimpan data'], 500);
 
-        // Todo Notifikasi
+        $this->broadcastNotifikasi($user, $komentar);
 
         return response()->json(['success' => true], 201);
     }
@@ -279,7 +279,7 @@ class KejadianController extends Controller
     {
         if(!in_array($request->user()->jenis_pemilik, ['admin', 'kesatuan']))
             return response()->json(['error' => 'Terlarang'], 403);
-        
+
         $user = $request->user();
         $data['total'] = Kejadian::filterJenisPemilik($user)->count();
         $data['proses'] = Kejadian::filterJenisPemilik($user)->filterProsesPenanganan()->count();

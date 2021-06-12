@@ -2,10 +2,10 @@
     <div v-if="streamManager">
         <!-- Todo Ubah css -->
         <b-dropdown>
-            <b-dropdown-item>Mute</b-dropdown-item>
+            <b-dropdown-item>Bisukan</b-dropdown-item>
             <b-dropdown-item>Keluarkan</b-dropdown-item>
         </b-dropdown>
-        <ov-video :stream-manager="streamManager" :video-class="videoClass"/>
+        <ov-video :stream-manager="streamManager" :video-class="videoClass" :muted="muted"/>
         <div><p>{{ clientData }}</p></div>
     </div>
 </template>
@@ -19,7 +19,8 @@
         },
         props: {
             streamManager: Object,
-            videoClass: String
+            videoClass: String,
+            muted: Boolean
         },
         computed: {
             clientData() {

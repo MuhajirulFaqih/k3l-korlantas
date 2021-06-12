@@ -63,8 +63,11 @@ class User extends Authenticatable
         switch ($this->jenis_pemilik){
             case 'personil':
                 return $this->pemilik->pangkat->pangkat. ' '. $this->pemilik->nama;
+            case 'admin':
             case 'masyarakat':
                 return $this->pemilik->nama;
+            case 'kesatuan':
+                return $this->pemilik->kesatuan;
         }
 
         return null;

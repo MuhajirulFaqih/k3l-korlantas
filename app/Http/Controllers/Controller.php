@@ -10,6 +10,8 @@ use App\Models\Pengaduan;
 use App\Models\Personil;
 use App\Models\TindakLanjut;
 use App\Models\User;
+use App\Notifications\KegiatanNotification;
+use App\Notifications\KejadianNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -18,6 +20,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use LaravelFCM\Facades\FCM;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
@@ -55,6 +58,10 @@ class Controller extends BaseController
                 'pesan' => $model->user->nama.' mengomentari kiriman Anda.',
                 'nama' => $model->user->nama
             ], $this->komentar->ambilTokenPemilik($model)->all());
+
+            $notification = $model->jenis_induk == 'kegiatan' ? new KegiatanNotification($model->induk, $model->user->nama.' mengomentari kiriman Anda.') : new KejadianNotification($model->induk, $model->user->nama.' mengomentari kiriman Anda.');
+            Notification::send($model->induk->user, $notification);
+
             if (env('USE_ONESIGNAL', false)){
                 $penerimaOneSignal = $this->komentar->ambilIdPemilikOneSignal($model)->all();
                 if (count($penerimaOneSignal)){
@@ -74,6 +81,7 @@ class Controller extends BaseController
                     ], $penerimaOneSignal);
                 }
             }
+
             $penerima = $this->komentar->ambilToken($model)->all();
             if (count($penerima)) {
                 $this->kirimNotifikasiViaGcm($event, [
@@ -81,12 +89,17 @@ class Controller extends BaseController
                     'pesan' => $model->user->nama.' juga mengomentari kiriman yang Anda ikuti.',
                     'nama' => $model->user->nama
                 ], $penerima);
+
+                $penerimaUser =  $this->komentar->ambilUser($model);
+
+                $notification = $model->jenis_induk == 'kegiatan' ? new KegiatanNotification($model->induk, $model->user->nama.' juga mengomentari kiriman yang Anda ikuti.') : new KejadianNotification($model->induk, $model->user->nama.' juga mengomentari kiriman yang Anda ikuti.');
+                Notification::send($penerimaUser, $notification);
             }
         } else if ($model instanceOf TindakLanjut) {
             $event = "kejadian-tindaklanjut";
             $data = [
                 'id' => $model->id_kejadian,
-                'pesan' => "Tindak lanjut baru",
+                'pesan' => "Tindak lanjut headline baru. ".$model->status,
                 'status' => $model->status,
                 'nama' => $model->user->nama
             ];
@@ -94,11 +107,15 @@ class Controller extends BaseController
             $penerima = $this->tindaklanjut->ambilTokenPemilik($model);
             $penerima = $penerima->merge($this->tindaklanjut->ambilToken($model))->all();
             $this->kirimNotifikasiViaGcm($event, $data, $penerima);
+
+            $penerimaOneSignal = $this->tindaklanjut->ambilIdPemilik($model);
+            $penerimaOneSignal = $penerimaOneSignal->merge($this->tindaklanjut->ambilId($model))->all();
             if (env('USE_ONESIGNAL', false)){
-                $penerimaOneSignal = $this->tindaklanjut->ambilIdPemilik($model);
-                $penerimaOneSignal = $penerimaOneSignal->merge($this->tindaklanjut->ambilId($model))->all();
                 $this->kirimNotifikasiViaOnesignal($event, $data, $penerimaOneSignal);
             }
+
+            $user = User::whereIn('id', $penerimaOneSignal)->get();
+            Notification::send($user, new KejadianNotification($model->kejadian, $data['pesan']));
         } else {
             $jenisModel = $model instanceOf Kejadian ? 'kejadian' : ($model instanceOf Pengaduan ? 'pengaduan' : ($model instanceOf Kegiatan ? 'kegiatan' : 'tr'));
             $event = "{$jenisModel}-baru";
@@ -109,7 +126,7 @@ class Controller extends BaseController
             if ($jenisModel === 'pengaduan') {
                 $data['pesan'] = 'Pengaduan baru';
             } else if ($jenisModel === 'kegiatan'){
-                $data['pesan'] = 'Kegiatan baru';
+                $data['pesan'] = $model->is_quick_response == 1 ? $user->nama .' menambahkan Quick Response baru' : $user->nama .' menambahkan Kegiatan baru';
                 if ($user->jenis_pemilik === 'personil') {
                     $penerimaOneSignal = $this->personil->ambilIdLain($user->pemilik->id)->all();
                     $penerima = $this->personil->ambilTokenLain($user->pemilik->id)->all();
@@ -142,6 +159,10 @@ class Controller extends BaseController
             }
             if (env('USE_ONESIGNAL'))
                 $this->kirimNotifikasiViaOnesignal($event, $data, $penerimaOneSignal);
+
+            $notifikasi = $model instanceOf Kejadian ? new KejadianNotification($model, $data['pesan']) : new KegiatanNotification($model, $data['pesan']);
+            $userPenerima = User::whereIn('id', $penerimaOneSignal)->get();
+            Notification::send($userPenerima, $notifikasi);
 
             $this->kirimNotifikasiViaGcm($event, $data, $penerima);
         }
@@ -283,10 +304,11 @@ class Controller extends BaseController
         }
 
         if (env('USE_ONESIGNAL')){
-            Log::info('jenis', [$jenis]);
-            Log::info("Penerima", $penerimaOneSignal->all());
             $this->kirimNotifikasiViaOnesignal($event, $data, $penerimaOneSignal->all());
         }
+
+        $users = User::whereIn('id', $penerimaOneSignal->all());
+        Notification::send($users, new KejadianNotification($kejadian, $data['pesan']));
 
         $this->kirimNotifikasiViaGcm($event, $data, $penerima->all());
     }
