@@ -6,7 +6,7 @@
             <b-dropdown-item>Keluarkan</b-dropdown-item>
         </b-dropdown>
         <ov-video :stream-manager="streamManager" :video-class="videoClass" :muted="muted"/>
-        <div><p>{{ clientData }}</p></div>
+        <div><p>{{ clientData.nama }}</p></div>
     </div>
 </template>
 

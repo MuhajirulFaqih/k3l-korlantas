@@ -146,8 +146,18 @@
                         this.leaveSession()
                 })
 
+                let userInfo = this.$store.getters.userInfo
+
+                var clientData = {
+                    username: userInfo.username,
+                    jenis_pemilik: userInfo.jenis_pemilik,
+                    nama: userInfo.jenis_pemilik == 'admin' ? userInfo.pemilik.nama : userInfo.pemilik.kesatuan,
+                    jabatan: userInfo.jenis_pemilik == 'admin' ? 'Administrator' : 'Admin kesatuan',
+                    kesatuan: userInfo.jenis_pemilik == 'admin' ? 'Administartor' : userInfo.pemilik.kesatuan
+                }
+
                 this.getToken().then(token => {
-                    this.session.connect(token, {clientData: JSON.stringify({  })})
+                    this.session.connect(token, {clientData: JSON.stringify(clientData)})
                         .then(() => {
                             let publisher = this.OV.initPublisher(undefined, {
                                 audioSource: undefined,
@@ -221,6 +231,7 @@
                     this.endSession()
                 this.$refs.rbt.pause()
                 this.incoming = false
+                this.answered = false
                 this.session = undefined
                 this.mainStreamManager = undefined
                 this.publisher = undefined
