@@ -45,6 +45,8 @@ class NotificationTransformer extends TransformerAbstract
         $data = $item->toArray();
         $data['notifiable_type'] = isset($this->formatData[$item->notifiable_type]) ? $this->formatData[$item->notifiable_type] : $item->notifiable_type;
         $data['type'] = isset($this->formatData[$item->type]) ? $this->formatData[$item->type] : $item->type;
+        $data['created_at'] = $item->created_at->toDateTimeString();
+        $data['read_at'] = optional($item->read_at)->toDateTimeString();
         return $data;
     }
 }

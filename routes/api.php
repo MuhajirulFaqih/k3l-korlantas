@@ -50,6 +50,8 @@ Route::prefix('user')->group(function () {
         Route::post('otp', [UserController::class, 'kode_verifikasi']);
         Route::post('fcm_id', [UserController::class, 'fcm']);
         Route::get('notif', [UserController::class, 'notifikasi']);
+        Route::get('read-notif', [UserController::class, 'notifikasiRead']);
+        Route::get('unread-notif', [UserController::class, 'notifikasiUnread']);
         Route::post('ubah-nik', [UserController::class, 'ubahNik']);
         Route::post("ubah_telp", [UserController::class, 'ubahNomor']);
         Route::post('ubah_password', [UserController::class, 'change_password']);
@@ -267,6 +269,8 @@ Route::middleware('auth:api')->group(function () {
     // PERSONIL
     Route::prefix('personil')->group(function () {
         Route::get('tracking', [PersonilController::class, 'tracking']);
+        Route::get('pengawalan-patroli', [PersonilController::class, 'getPatroliPengawalan']);
+        Route::get('pengawalan-patroli/{log_personil}', [PersonilController::class, 'detailPatroliPengawalan']);
         Route::get('pengawalan', [PersonilController::class, 'pengawalan']);
         Route::get('patroli', [PersonilController::class, 'patroli']);
         Route::get('fetch', [PersonilController::class, 'fetchPerosonil']);
