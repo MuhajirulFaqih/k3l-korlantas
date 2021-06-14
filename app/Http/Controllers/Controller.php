@@ -127,6 +127,7 @@ class Controller extends BaseController
                 $data['pesan'] = 'Pengaduan baru';
             } else if ($jenisModel === 'kegiatan'){
                 $data['pesan'] = $model->is_quick_response == 1 ? $user->nama .' menambahkan Quick Response baru' : $user->nama .' menambahkan Kegiatan baru';
+                $data['dokumentasi'] = $model->dokumentasi;
                 if ($user->jenis_pemilik === 'personil') {
                     $penerimaOneSignal = $this->personil->ambilIdLain($user->pemilik->id)->all();
                     $penerima = $this->personil->ambilTokenLain($user->pemilik->id)->all();
@@ -171,12 +172,45 @@ class Controller extends BaseController
     public function kirimNotifikasiViaOnesignal($event, $data, $penerima){
         $penerimaCollection = collect($penerima);
         $penerima = $penerimaCollection->map(function ($item){ return (string) $item;})->all();
-        \OneSignal::sendNotificationToExternalUser(
-            $data['pesan'],
-            $penerima,
-            null,
-            ['event' => $event, 'data' => $data]
-        );
+        $parameters = [
+            'headings'       => [
+                'en' => $data['pesan'],
+            ],
+            'include_external_user_ids' => $penerima,
+            'content_available' => true,
+            'mutable_content' => true,
+            'data' => ['event' => $event, 'data' => $data],
+            "ios_category" => $event,
+        ];
+
+        switch ($event) {
+            case 'kegiatan-baru':
+                // $parameters['contents'] = [ 'en' => $data['nama'].' menambah '.$data['pesan']];
+                $parameters['ios_attachments'] = [ "id" => url('/api/upload').'/'.$data['dokumentasi']];
+                break;
+            case 'kejadian-baru':
+                $parameters['contents'] = [
+                    'en' => $data['nama'].' menambah '.$data['pesan'].' - '.$data['kejadian']. ' | '.$data['lokasi']];
+                $parameters['ios_sound'] = 'emergency.caf';
+                break;
+            case 'kejadian-luar-biasa-baru':
+                // $parameters['headings'] = [ 'en' => 'PANGGILAN LUAR BIASA' ];
+                $parameters['contents'] = [ 'en' => $data['nama'].' : '.$data['pesan'] ];
+                $parameters['ios_sound'] = 'emergency.caf';
+                break;
+            case 'incoming-vcon':
+                $parameters['ios_sound'] = 'vcall_ringtone.caf';
+                break;
+        }
+
+        \OneSignal::sendNotificationCustom($parameters);
+        
+        // \OneSignal::sendNotificationToExternalUser(
+        //     $data['pesan'],
+        //     $penerima,
+        //     null,
+        //     ['event' => $event, 'data' => $data],
+        // );
     }
 
     public function checkPlayerAndUpdateIfExists($id, $userId){

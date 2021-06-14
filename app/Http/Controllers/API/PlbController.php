@@ -37,7 +37,14 @@ class PlbController extends Controller
     }
 
     public function store(Request $request) {
-        if (!in_array($user->jenis_pemilik, ['personil']))
+        $user = $request->user();
+
+        $user = $request->user();
+
+        if(!in_array($user->jenis_pemilik, ['personil'])){
+            return response()->json(['error' => 'Terlarang'], 403);
+        }
+
         $validatedData = $request->validate([
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
@@ -68,7 +75,7 @@ class PlbController extends Controller
         $personil = new Personil;
         
         if($plb->id_kesatuan_tujuan == 1) {
-            $penerimaOneSignal = $personil->ambilId();
+            $penerimaOneSignal = $personil->ambilIdLain($user->id);
             $penerima = $personil->ambilToken();
         } else {
             $kesatuanTujuan = Kesatuan::descendantsAndSelf($plb->id_kesatuan_tujuan)->pluck('id')->all();
@@ -76,8 +83,8 @@ class PlbController extends Controller
             $penerima = $personil->ambilTokenByKesatuan($kesatuanTujuan);
         }
         
-        if (env('USE_ONESIGNAL')) { $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $data, collect($penerimaOneSignal)->all()); }
-        $this->kirimNotifikasiViaGcm('kejadian-luar-biasa-baru', $data, collect($penerima)->all());
+        if (env('USE_ONESIGNAL')) { $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $broadcast, collect($penerimaOneSignal)->all()); }
+        $this->kirimNotifikasiViaGcm('kejadian-luar-biasa-baru', $broadcast, collect($penerima)->all());
         //End broadcast
         
         return response()->json(['success' => true, 'id' => $plb->id]);
@@ -100,7 +107,12 @@ class PlbController extends Controller
 
     public function getKesatuanTujuan(Request $request)
     {
-        if(!in_array($user->jenis_pemilik, ['personil']))
+        $user = $request->user();
+
+        if(!in_array($user->jenis_pemilik, ['personil'])){
+            return response()->json(['error' => 'Terlarang'], 403);
+        }
+
         $kesatuan = Kesatuan::filterPoldaPolres()->orderBy('kesatuan', 'ASC')->get();
         return response()->json(['data' => $kesatuan], 200);
     }

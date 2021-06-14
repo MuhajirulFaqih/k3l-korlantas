@@ -17,4 +17,9 @@ class Admin extends Model
     public function auth(){
         return $this->morphOne(User::class, 'auth', 'jenis_pemilik', 'id_pemilik');
     }
+
+    public function scopeVisible($query)
+    {
+        return $query->where("visiblility", 1);
+    }
 }
