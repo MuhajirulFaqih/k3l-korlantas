@@ -39,12 +39,12 @@ class PlbController extends Controller
             ->respond();
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $user = $request->user();
 
-        if (!in_array($user->jenis_pemilik, ['personil']))
+        if(!in_array($user->jenis_pemilik, ['personil'])){
             return response()->json(['error' => 'Terlarang'], 403);
+        }
 
         $validatedData = $request->validate([
             'lat' => 'required|numeric',
@@ -72,9 +72,8 @@ class PlbController extends Controller
         ];
 
         $personil = new Personil;
-
-        if ($plb->id_kesatuan_tujuan == 1) {
-            $penerimaOneSignal = $personil->ambilId();
+        if($plb->id_kesatuan_tujuan == 1) {
+            $penerimaOneSignal = $personil->ambilIdLain($user->id);
             $penerima = $personil->ambilToken();
         } else {
             $kesatuanTujuan = Kesatuan::descendantsAndSelf($plb->id_kesatuan_tujuan)->pluck('id')->all();
@@ -82,10 +81,10 @@ class PlbController extends Controller
             $penerima = $personil->ambilTokenByKesatuan($kesatuanTujuan);
         }
 
-        if (env('USE_ONESIGNAL')) {
-            $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $broadcast, collect($penerimaOneSignal)->all());
-        }
+
+        if (env('USE_ONESIGNAL')) { $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $broadcast, collect($penerimaOneSignal)->all()); }
         $this->kirimNotifikasiViaGcm('kejadian-luar-biasa-baru', $broadcast, collect($penerima)->all());
+        //End broadcast
 
         $users = User::whereIn('id', collect($penerimaOneSignal)->all())->get();
         Notification::send($users, new KLBNotification($plb));
@@ -112,8 +111,14 @@ class PlbController extends Controller
     {
         $user = $request->user();
 
+<<<<<<< HEAD
         if (!in_array($user->jenis_pemilik, ['personil']))
             return response()->json(['error' => 'Terlarang'], 403);
+=======
+        if(!in_array($user->jenis_pemilik, ['personil'])){
+            return response()->json(['error' => 'Terlarang'], 403);
+        }
+>>>>>>> 7d9f940304359aca4a0c6c7b9286135fddc19855
 
         $kesatuan = Kesatuan::filterPoldaPolres()->orderBy('kesatuan', 'ASC')->get();
 
