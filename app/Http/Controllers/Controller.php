@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use LaravelFCM\Facades\FCM;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
@@ -99,7 +100,7 @@ class Controller extends BaseController
             $event = "kejadian-tindaklanjut";
             $data = [
                 'id' => $model->id_kejadian,
-                'pesan' => "Tindak lanjut headline baru. ".$model->status,
+                'pesan' => "Tindak lanjut headline. Status: ". Str::title($model->status),
                 'status' => $model->status,
                 'nama' => $model->user->nama
             ];

@@ -6,10 +6,12 @@ use App\Models\Plb;
 use App\Models\Kesatuan;
 use App\Models\Personil;
 use App\Models\User;
+use App\Notifications\KLBNotification;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Transformers\PlbTransformer;
 use App\Serializers\DataArraySansIncludeSerializer;
+use Illuminate\Support\Facades\Notification;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class PlbController extends Controller
@@ -39,18 +41,17 @@ class PlbController extends Controller
 
     public function store(Request $request)
     {
-
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['personil']))
-            $validatedData = $request->validate([
-                'lat' => 'required|numeric',
-                'lng' => 'required|numeric',
-                'id_kesatuan' => 'required|numeric',
-                'keterangan' => 'required'
-            ]);
+            return response()->json(['error' => 'Terlarang'], 403);
 
-        $user = $request->user();
+        $validatedData = $request->validate([
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+            'id_kesatuan' => 'required|numeric',
+            'keterangan' => 'required'
+        ]);
 
         $data = [
             'id_user' => $user->id,
@@ -82,10 +83,12 @@ class PlbController extends Controller
         }
 
         if (env('USE_ONESIGNAL')) {
-            $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $data, collect($penerimaOneSignal)->all());
+            $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $broadcast, collect($penerimaOneSignal)->all());
         }
-        $this->kirimNotifikasiViaGcm('kejadian-luar-biasa-baru', $data, collect($penerima)->all());
-        //End broadcast
+        $this->kirimNotifikasiViaGcm('kejadian-luar-biasa-baru', $broadcast, collect($penerima)->all());
+
+        $users = User::whereIn('id', collect($penerimaOneSignal)->all())->get();
+        Notification::send($users, new KLBNotification($plb));
 
         return response()->json(['success' => true, 'id' => $plb->id]);
     }
