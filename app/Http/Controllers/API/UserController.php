@@ -209,6 +209,26 @@ class UserController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function notifikasiUnread(Request $request){
+        $user = $request->user();
+
+        $collection = $user->unreadNotifications;
+
+        return fractal()
+            ->collection($collection)
+            ->transformWith(NotificationTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
+    }
+
+    public function notifikasiRead(Request $request){
+        $user = $request->user();
+
+        $user->unreadNotifications->markAsRead();
+
+        return response()->json(['success' => true]);
+    }
+
     public function notifikasi(Request $request){
         $user = $request->user();
 

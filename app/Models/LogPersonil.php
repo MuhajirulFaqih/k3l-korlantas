@@ -13,6 +13,8 @@ class LogPersonil extends Model
     protected $table = 'log_status_personil';
     protected $fillable = ['id_personil', 'status_dinas', 'waktu_mulai_dinas', 'waktu_selesai_dinas'];
 
+    protected $casts = ['waktu_mulai_dinas' => 'datetime', 'waktu_selesai_dinas' => 'datetime'];
+
     public function personil()
     {
         return $this->belongsTo(Personil::class, 'id_personil');

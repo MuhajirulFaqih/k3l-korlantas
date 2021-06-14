@@ -13,6 +13,7 @@ use App\Models\Personil;
 use App\Serializers\DataArraySansIncludeSerializer;
 use App\Services\PersonilService;
 use App\Transformers\LogPersonilTransformer;
+use App\Transformers\LogStatusDinasTransformer;
 use App\Transformers\PersonilTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -75,6 +76,38 @@ class PersonilController extends Controller
         return response()->json(['success' => true, 'foto' => $foto]);
     }
 
+    public function getPatroliPengawalan(Request $request){
+        $user = $request->user();
+
+        if ($user->jenis_pemilik != 'personil')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $paginator = $user->pemilik->logStatus()->with(['status', 'logpatroli'])->whereIn('status_dinas', [3, 2])->orderBy('created_at', 'desc')->paginate(10);
+        $collection = $paginator->getCollection();
+
+        return fractal()
+            ->collection($collection)
+            ->transformWith(LogStatusDinasTransformer::class)
+            ->paginateWith(new IlluminatePaginatorAdapter($paginator))
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
+    }
+
+    public function detailPatroliPengawalan(Request $request, LogPersonil $logPersonil){
+        $user = $request->user();
+
+        if ($user->jenis_pemilik != 'personil')
+            return response()->json(['error' => 'Terlarang'], 403);
+
+
+        return fractal()
+            ->item($logPersonil)
+            ->transformWith(LogStatusDinasTransformer::class)
+            ->parseIncludes(['patroli'])
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
+    }
+
     public function ubahPttHt(Request $request, Personil $personil)
     {
         $user = $request->user();
@@ -89,7 +122,7 @@ class PersonilController extends Controller
 
         return response()->json(['success' => true]);
     }
-    
+
     public function ubahBeat(Request $request, Personil $personil)
     {
         $user = $request->user();
