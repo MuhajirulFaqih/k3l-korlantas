@@ -15,12 +15,13 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 class PlbController extends Controller
 {
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $user = $request->user();
 
         if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
             return response()->json(['error' => 'Terlarang'], 403);
-        
+
         list($orderBy, $direction) = $request->sort != '' ? explode(':', $request->sort) : explode(':', 'created_at:desc');
 
         $plb = Plb::with(['user'])->filtered($request->filter)->orderBy($orderBy, $direction);
@@ -36,14 +37,18 @@ class PlbController extends Controller
             ->respond();
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
+
+        $user = $request->user();
+
         if (!in_array($user->jenis_pemilik, ['personil']))
-        $validatedData = $request->validate([
-            'lat' => 'required|numeric',
-            'lng' => 'required|numeric',
-            'id_kesatuan' => 'required|numeric',
-            'keterangan' => 'required'
-        ]);
+            $validatedData = $request->validate([
+                'lat' => 'required|numeric',
+                'lng' => 'required|numeric',
+                'id_kesatuan' => 'required|numeric',
+                'keterangan' => 'required'
+            ]);
 
         $user = $request->user();
 
@@ -57,7 +62,7 @@ class PlbController extends Controller
         ];
 
         $plb = Plb::create($data);
-        
+
         //Start broadcast
         $broadcast = [
             'id' => $plb->id,
@@ -66,8 +71,8 @@ class PlbController extends Controller
         ];
 
         $personil = new Personil;
-        
-        if($plb->id_kesatuan_tujuan == 1) {
+
+        if ($plb->id_kesatuan_tujuan == 1) {
             $penerimaOneSignal = $personil->ambilId();
             $penerima = $personil->ambilToken();
         } else {
@@ -75,20 +80,22 @@ class PlbController extends Controller
             $penerimaOneSignal = $personil->ambilIdUserByKesatuan($kesatuanTujuan);
             $penerima = $personil->ambilTokenByKesatuan($kesatuanTujuan);
         }
-        
-        if (env('USE_ONESIGNAL')) { $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $data, collect($penerimaOneSignal)->all()); }
+
+        if (env('USE_ONESIGNAL')) {
+            $this->kirimNotifikasiViaOnesignal('kejadian-luar-biasa-baru', $data, collect($penerimaOneSignal)->all());
+        }
         $this->kirimNotifikasiViaGcm('kejadian-luar-biasa-baru', $data, collect($penerima)->all());
         //End broadcast
-        
+
         return response()->json(['success' => true, 'id' => $plb->id]);
     }
 
-    
 
-    public function show(Request $request, Plb $plb){
+    public function show(Request $request, Plb $plb)
+    {
         $user = $request->user();
 
-        if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'personil']))
             return response()->json(['error' => 'Terlarang'], 403);
 
         return fractal()
@@ -100,8 +107,13 @@ class PlbController extends Controller
 
     public function getKesatuanTujuan(Request $request)
     {
-        if(!in_array($user->jenis_pemilik, ['personil']))
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['personil']))
+            return response()->json(['error' => 'Terlarang'], 403);
+
         $kesatuan = Kesatuan::filterPoldaPolres()->orderBy('kesatuan', 'ASC')->get();
+
         return response()->json(['data' => $kesatuan], 200);
     }
 }
