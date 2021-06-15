@@ -16,15 +16,20 @@ class UserAdminKesatuanSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('user')->truncate();
+        
         $admin = Admin::create([
             'nama' => 'Synergics Digital'
         ]);
         $admin->auth()->create(['username' => 'sudo', 'password' => bcrypt('Synergics 2021')]);
-        $kesatuan = Kesatuan::whereIn('level', [1, 2])->get();
+        $kesatuan = Kesatuan::where('kode_satuan', env('PREFIX_KODE_KESATUAN'))
+                            ->orWhere(function($query) {
+                                $query->whereIn('level', [1])->where('kesatuan', 'like', 'POLDA%');
+                            })->get();
 
         foreach ($kesatuan as $row){
             $username = str_replace(' ', '_', strtolower($row->kesatuan));
-            $row->auth()->create(['username' => $username, 'password' => bcrypt('PoldaKaltim21')]);
+            $row->auth()->create(['username' => $username, 'password' => bcrypt('k3ikorlantas2021')]);
         }
     }
 }

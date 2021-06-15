@@ -20,7 +20,7 @@ class PengaduanController extends Controller
         if(!in_array($user->jenis_pemilik, ['admin', 'kesatuan', 'masyarakat']))
             return response()->json(['error' => 'Terlarang'], 403);
 
-        list($orderBy, $dir) = explode(':', $request->sort);
+        list($orderBy, $direction) = explode(':', $request->sort);
 
         $limit = $request->limit != '' ? $request->limit : 10;
         if($limit == 0)

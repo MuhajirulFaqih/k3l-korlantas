@@ -256,7 +256,7 @@ export default {
             }
         },
         fetchKesatuan() {
-            var promise = axios.get('kesatuan')
+            var promise = axios.get('kesatuan/korlantas')
             .then(({data: {data}}) => {
                 this.kesatuan = data.map((val) => {
                     return {value: val.id, text: val.kesatuan}

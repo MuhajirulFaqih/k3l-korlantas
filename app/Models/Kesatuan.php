@@ -71,4 +71,14 @@ class Kesatuan extends Model
                     ->orWhere('kesatuan', 'like', '%POLRES%')
                     ->get()->pluck('id')->all());
     }
+
+    public function scopeFilterKorlantas($query, $user)
+    {
+        return $query->whereIn('id', 
+                DB::table('pers_kesatuan as k')
+                    ->select('k.id')
+                    ->where('kesatuan', 'like', '%KORLANTAS%')
+                    ->orWhere('kesatuan', 'like', 'POLDA%')
+                    ->get()->pluck('id')->all());
+    }
 }

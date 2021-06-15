@@ -128,6 +128,20 @@ class KesatuanController extends Controller
             ->serializeWith(DataArraySansIncludeSerializer::class)
             ->respond();
     }
+
+    public function kesatuanKorlantas(Request $request){
+        $user = $request->user();
+
+        if (!in_array($user->jenis_pemilik, ['admin', 'kesatuan']))
+            return response()->json(['error' => 'Terlarang'], 403);
+
+        $kesatuan = Kesatuan::filterKorlantas($user)->get();
+        return fractal()
+            ->collection($kesatuan)
+            ->transformWith(KesatuanTransformer::class)
+            ->serializeWith(DataArraySansIncludeSerializer::class)
+            ->respond();
+    }
     
     public function getByLevel($level, Request $request){
         $user = $request->user();

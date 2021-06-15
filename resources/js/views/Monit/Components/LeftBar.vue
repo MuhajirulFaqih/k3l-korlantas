@@ -2,7 +2,9 @@
     <div class="leftbar-outline">
         <ul class="leftbar">
             <perfect-scrollbar class="h-100">
-                <li class="leftbar-header">Peta</li>
+                <li class="py-4 px-3">
+                    <b-img :src="`${baseUrl}/assets/logo.png`" class="w-100"/>
+                </li>
                 <li :class="openMenuClass('peta')">
                     <div @click="toggleSub('peta')">
                         <ph-map-pin-line class="phospor" /> 
@@ -22,13 +24,13 @@
                         <span class="circle circle-primary"></span>
                     </div>
                 </li>
-                <!-- <li :class="openMenuClass('pengaduan')">
+                <li :class="openMenuClass('pengaduan')">
                     <div @click="toggleSub('pengaduan')">
                         <ph-newspaper-clipping class="phospor" />
                         <span>Pengaduan</span>
                         <span class="circle circle-success"></span>
                     </div>
-                </li> -->
+                </li>
                 <li :class="openMenuClass('kejadian')">
                     <div @click="toggleSub('kejadian')">
                         <ph-activity class="phospor" />
@@ -48,12 +50,12 @@
                         <span>Lokasi Vital</span>
                     </div>
                 </li>
-                <li :class="beat ? 'active' : ''">
+                <!-- <li :class="beat ? 'active' : ''">
                     <div @click="triggerBeat">
                         <ph-globe-hemisphere-west class="phospor" />
                         <span>Beat</span>
                     </div>
-                </li>
+                </li> -->
                 <li>
                     <div @click="$router.push({ name: 'Dashboard | Administrator' })">
                         <ph-user-square class="phospor" />
@@ -244,7 +246,7 @@
                 ></vue-slider>
             </li>
         </ul>
-        <!-- <ul :class="`leftbar-sub ${openMenuClass('pengaduan')}`">
+        <ul :class="`leftbar-sub ${openMenuClass('pengaduan')}`">
             <li class="text-right p-0 px-2">
                 <div @click="openMenu = ''"><ph-x class="phospor"/></div>
             </li>
@@ -263,7 +265,7 @@
                     v-bind="optionsSlider"
                 ></vue-slider>
             </li>
-        </ul> -->
+        </ul>
         <ul :class="`leftbar-sub ${openMenuClass('kejadian')}`">
             <li class="text-right p-0 px-2">
                 <div @click="openMenu = ''"><ph-x class="phospor"/></div>
@@ -336,6 +338,7 @@ export default {
     components: { VueSlider },
     data () {
         return {
+            baseUrl: baseUrl,
             isBusy: false,
             openMenu: '',
             darkMode: true,
@@ -347,8 +350,8 @@ export default {
             rightbar: true,
             kegiatanStatus: true,
             kegiatan: 10,
-            // pengaduanStatus: true,
-            // pengaduan: 10,
+            pengaduanStatus: true,
+            pengaduan: 10,
             kejadianStatus: true,
             kejadian: 10,
             hotspot: false,
@@ -573,9 +576,9 @@ export default {
         toggleKegiatan (val) {
             this.kegiatanStatus = this.$parent.kegiatanStatus = !this.kegiatanStatus
         },
-        // togglePengaduan (val) {
-        //     this.pengaduanStatus = this.$parent.pengaduanStatus = !this.pengaduanStatus
-        // },
+        togglePengaduan (val) {
+            this.pengaduanStatus = this.$parent.pengaduanStatus = !this.pengaduanStatus
+        },
         toggleKejadian (val) {
             this.kejadianStatus = this.$parent.kejadianStatus = !this.kejadianStatus
         },
@@ -658,12 +661,12 @@ export default {
                 kegiatan.length == 0 ? this.$parent.getMarkerKegiatan() : ''
             }   
         },
-        // pengaduanStatus (val) {
-        //     var pengaduan = this.$parent.markerPengaduan;
-        //     if(val) {
-        //         pengaduan.length == 0 ? this.$parent.getMarkerPengaduan() : ''
-        //     }
-        // },
+        pengaduanStatus (val) {
+            var pengaduan = this.$parent.markerPengaduan;
+            if(val) {
+                pengaduan.length == 0 ? this.$parent.getMarkerPengaduan() : ''
+            }
+        },
         kejadianStatus (val) {
             var kejadian = this.$parent.markerKejadian;
             if(val) {
@@ -673,9 +676,9 @@ export default {
         kegiatan :debounce(function (val, old) {
             this.$parent.getMarkerKegiatan()
         }, 700),
-        // pengaduan :debounce(function (val, old) {
-        //     this.$parent.getMarkerPengaduan()
-        // }, 700),
+        pengaduan :debounce(function (val, old) {
+            this.$parent.getMarkerPengaduan()
+        }, 700),
         kejadian :debounce(function (val, old) {
             this.$parent.getMarkerKejadian()
         }, 700),

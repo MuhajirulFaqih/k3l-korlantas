@@ -115,8 +115,9 @@ Route::middleware('auth:api')->group(function () {
 // Kesatuan
     Route::prefix('kesatuan')->group(function () {
         Route::get('/', [KesatuanController::class, 'ambilSemua']);
-
+        
         Route::get('/all', [KesatuanController::class, 'index']);
+        Route::get('/korlantas', [KesatuanController::class, 'kesatuanKorlantas']);
         Route::get('/level/{level}', [KesatuanController::class, 'getByLevel']);
         Route::get('/child/{kesatuan}', [KesatuanController::class, 'getChild']);
 
