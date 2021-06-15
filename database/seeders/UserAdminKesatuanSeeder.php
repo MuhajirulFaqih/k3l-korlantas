@@ -19,9 +19,9 @@ class UserAdminKesatuanSeeder extends Seeder
         DB::table('user')->truncate();
         
         $admin = Admin::create([
-            'nama' => 'Synergics Digital'
+            'nama' => 'Administrator K3I'
         ]);
-        $admin->auth()->create(['username' => 'sudo', 'password' => bcrypt('Synergics 2021')]);
+        $admin->auth()->create(['username' => 'administrator', 'password' => bcrypt('k3ikorlantas2021')]);
         $kesatuan = Kesatuan::where('kode_satuan', env('PREFIX_KODE_KESATUAN'))
                             ->orWhere(function($query) {
                                 $query->whereIn('level', [1])->where('kesatuan', 'like', 'POLDA%');

@@ -45,7 +45,7 @@ class DeploySeeder extends Seeder
         $this->call(DinasSeeder::class);
         $this->call(WilayahSeeder::class);
         $this->call(JenisKesatuanSeeder::class);
-        $this->call(KesatuanSeeder::class);
+        // $this->call(KesatuanSeeder::class);
         $this->call(UserAdminKesatuanSeeder::class);
         $this->call(JenisTempatVitalSeeder::class);
         $this->call(TempatVitalSeeder::class);
